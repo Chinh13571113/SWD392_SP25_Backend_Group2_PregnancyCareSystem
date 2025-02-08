@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: jpa
+  datasource:
+    url: ${MYSQL_URL:jdbc:mysql://localhost:3308/pregrancytracker}
+    username: ${MYSQL_ADMIN_USER:root}
+    password: ${MYSQL_ADMIN_PASS:123456}
+  jpa:
+    hibernate:
+      ddl-auto: none
+    database-platform: org.hibernate.dialect.MySQLDialect
+  servlet:
+    multipart:
+      max-file-size: 3MB
+      max-request-size: 10MB
+
+custom:
+  redis:
+    host: ${REDIS_URL:localhost}
+    port: ${REDIS_PORT:6379}
+
+jwt:
+  key: pYL/bFa3qdmZC52COcG3UO/Xd+vjJgpo42ucD7WRJRQ=
+
+upload:
+  path: C:\Users\DELL\Desktop\images
+
+
+
