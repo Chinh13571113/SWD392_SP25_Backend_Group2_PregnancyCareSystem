@@ -1,4 +1,4 @@
-package com.swd.pregrancycare.utils;
+package com.swd.pregnancycare.utils;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import javax.swing.*;
-import javax.xml.crypto.KeySelector;
 
 @Component
 public class JwtHelper {

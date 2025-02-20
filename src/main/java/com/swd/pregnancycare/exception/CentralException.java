@@ -1,4 +1,4 @@
-package com.swd.pregrancycare.exception;
+package com.swd.pregnancycare.exception;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

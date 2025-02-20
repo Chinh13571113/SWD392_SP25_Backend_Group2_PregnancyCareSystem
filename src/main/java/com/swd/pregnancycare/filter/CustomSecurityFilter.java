@@ -1,6 +1,6 @@
-package com.swd.pregrancycare.filter;
+package com.swd.pregnancycare.filter;
 
-import com.swd.pregrancycare.utils.JwtHelper;
+import com.swd.pregnancycare.utils.JwtHelper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
