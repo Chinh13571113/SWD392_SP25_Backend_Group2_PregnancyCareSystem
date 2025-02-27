@@ -6,12 +6,14 @@ import com.swd.pregnancycare.entity.UserEntity;
 import com.swd.pregnancycare.exception.InsertException;
 import com.swd.pregnancycare.repository.BlogRepo;
 import com.swd.pregnancycare.repository.UserRepo;
+import com.swd.pregnancycare.request.BlogRequest;
 import com.swd.pregnancycare.services.BlogServices;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,7 +25,7 @@ public class BlogServiceImpl implements BlogServices {
 
   @Transactional
   @Override
-  public void saveBlog(BlogDTO blog) {
+  public void saveBlog(BlogRequest blog) {
     try {
       Optional<UserEntity> user = userRepo.findByEmail(blog.getEmail());
       if (user.isPresent()) {
@@ -37,8 +39,25 @@ public class BlogServiceImpl implements BlogServices {
         newBlog.setUser(userEntity);
         blogRepo.save(newBlog);
       }
+      else throw new InsertException("Save blog error: ");
     } catch (Exception e) {
       throw new InsertException("Save blog error: " + e.getMessage());
     }
+  }
+  @Transactional
+  @Override
+  public List<BlogDTO> getAllBlogs() {
+    return blogRepo.findAll().stream().map(data -> {
+      BlogDTO blogDTO = new BlogDTO();
+      blogDTO.setId(data.getId());
+      blogDTO.setTitle(data.getTitle());
+      blogDTO.setDescription(data.getDescription());
+      blogDTO.setDatePublish(data.getDatePublish());
+      blogDTO.setStatus(data.getStatus());
+      if (data.getUser() != null) {
+        blogDTO.setUserId(data.getUser().getId());
+      }
+      return blogDTO;
+    }).toList();
   }
 }

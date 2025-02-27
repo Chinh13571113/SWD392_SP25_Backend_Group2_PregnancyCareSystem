@@ -32,4 +32,8 @@ public class BlogEntity {
   @JoinColumn(name = "id_user")
   private UserEntity user;
 
+  public boolean getStatus() {
+    return status;
+  }
+
 }
