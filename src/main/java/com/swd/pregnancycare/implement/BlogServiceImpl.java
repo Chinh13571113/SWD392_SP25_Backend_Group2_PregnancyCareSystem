@@ -7,6 +7,7 @@ import com.swd.pregnancycare.exception.InsertException;
 import com.swd.pregnancycare.repository.BlogRepo;
 import com.swd.pregnancycare.repository.UserRepo;
 import com.swd.pregnancycare.request.BlogRequest;
+import com.swd.pregnancycare.response.BaseResponse;
 import com.swd.pregnancycare.services.BlogServices;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,5 +60,21 @@ public class BlogServiceImpl implements BlogServices {
       }
       return blogDTO;
     }).toList();
+  }
+
+  @Transactional
+  @Override
+  public BaseResponse deleteBlog(int blogId) {
+      Optional<BlogEntity> blog = blogRepo.findById(blogId);
+      BaseResponse baseResponse = new BaseResponse();
+      if(blog.isPresent()) {
+        blogRepo.deleteById(blog.get().getId());
+        baseResponse.setCode(200);
+        baseResponse.setMessage("Deleted blog successfully");
+      } else {
+        baseResponse.setCode(404);
+        baseResponse.setMessage("Blog not found");
+      }
+      return baseResponse;
   }
 }

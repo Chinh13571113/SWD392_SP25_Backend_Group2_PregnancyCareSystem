@@ -1,7 +1,6 @@
 package com.swd.pregnancycare.controller;
 
 import com.swd.pregnancycare.dto.BlogDTO;
-import com.swd.pregnancycare.entity.BlogEntity;
 import com.swd.pregnancycare.request.BlogRequest;
 import com.swd.pregnancycare.response.BaseResponse;
 import com.swd.pregnancycare.services.BlogServices;
@@ -81,6 +80,31 @@ public class BlogController {
     response.setCode(200);
     response.setMessage("Got all blogs successfully");
     response.setData(blogs);
+    return ResponseEntity.ok(response);
+  }
+
+  @Operation(
+          summary = "Delete a Blog",
+          description = "Allow to delete a blogs",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "Deleted blog successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = BaseResponse.class),
+                                  examples = @ExampleObject(
+                                          name = "Success Response",
+                                          value = "{\n  \"code\": 200,\n  \"message\": \"Deleted blog successfully\",\n  \"data\": \"null\"\n}"
+                                  )
+                          )
+                  ),
+          }
+
+  )
+  @DeleteMapping
+  public  ResponseEntity<?> deleteBlog(@RequestParam int blogId) {
+    BaseResponse response = blogServices.deleteBlog(blogId);
     return ResponseEntity.ok(response);
   }
 }
