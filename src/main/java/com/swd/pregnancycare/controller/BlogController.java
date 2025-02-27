@@ -1,6 +1,8 @@
 package com.swd.pregnancycare.controller;
 
 import com.swd.pregnancycare.dto.BlogDTO;
+import com.swd.pregnancycare.entity.BlogEntity;
+import com.swd.pregnancycare.request.BlogRequest;
 import com.swd.pregnancycare.response.BaseResponse;
 import com.swd.pregnancycare.services.BlogServices;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,6 +15,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "api/blog")
@@ -43,11 +47,40 @@ public class BlogController {
 
   )
   @PostMapping("/saveBlog")
-  public ResponseEntity<?> saveBlog(@RequestBody BlogDTO blog) {
+  public ResponseEntity<?> saveBlog(@RequestBody BlogRequest blog) {
     blogServices.saveBlog(blog);
     BaseResponse response = new BaseResponse();
     response.setCode(200);
     response.setMessage("Saved blog successfully");
+    return ResponseEntity.ok(response);
+  }
+
+  @Operation(
+          summary = "Get all Blogs",
+          description = "Allow to get all blogs",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "Got all blog successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = BaseResponse.class),
+                                  examples = @ExampleObject(
+                                          name = "Success Response",
+                                          value = "{\n  \"code\": 200,\n  \"message\": \"Got all blogs successfully\",\n  \"data\": \"[{}, {}]\"\n}"
+                                  )
+                          )
+                  ),
+          }
+
+  )
+  @GetMapping
+  public ResponseEntity<?> getAllBlogs() {
+    List<BlogDTO> blogs = blogServices.getAllBlogs();
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setMessage("Got all blogs successfully");
+    response.setData(blogs);
     return ResponseEntity.ok(response);
   }
 }
