@@ -50,10 +50,14 @@ public class SecurityConfig {
                 .sessionManagement(session-> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request->
                         {
+
                             request.requestMatchers("/api/login").permitAll()
                             .requestMatchers(AUTH_WHITELIST).permitAll()
                                     .requestMatchers("/api/fetus").permitAll()
                                     .anyRequest().authenticated();
+                            request.requestMatchers("/api/blog/**").permitAll()
+                            .requestMatchers(AUTH_WHITELIST).permitAll().anyRequest().authenticated();
+
                         }
 
                 )

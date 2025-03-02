@@ -20,8 +20,17 @@ public class UserEntity {
     @ManyToOne
     @JoinColumn(name = "id_role")
     private RoleEntity role;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FetusEntity> fetus;
 
+
+
+    // Blogs
+    @OneToMany(mappedBy ="user")
+    private List<BlogEntity> blogs;
+    // Blog comments
+    @OneToMany(mappedBy = "user")
+    private List<BlogCommentEntity> blogComments;
 
 }
