@@ -3,6 +3,8 @@ package com.swd.pregnancycare.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Entity(name = "users")
 @Data
 public class UserEntity {
@@ -18,6 +20,8 @@ public class UserEntity {
     @ManyToOne
     @JoinColumn(name = "id_role")
     private RoleEntity role;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FetusEntity> fetus;
 
 
 }

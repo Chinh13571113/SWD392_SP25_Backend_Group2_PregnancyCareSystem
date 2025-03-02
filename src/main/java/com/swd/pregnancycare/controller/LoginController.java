@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Objects;
 
 @RestController
-@RequestMapping(value = "/api/login")
+@RequestMapping(value = "/api/users")
 @CrossOrigin
 @Tag(name = "Login API", description = "API for user authentication")
 
@@ -39,32 +39,12 @@ public class LoginController {
                                 )
                             )
                     ),
-//                    @ApiResponse(
-//                            responseCode = "400",
-//                            description = "Invalid request",
-//                            content = @Content(
-//                                    examples = @ExampleObject(
-//                                            name = "Invalid Request",
-//                                            value = "{ \"code\": 400, \"message\": \"Email or password is missing\", \"data\": null }"
-//                                    )
-//                            )
-//                    ),
-//                    @ApiResponse(
-//                            responseCode = "401",
-//                            description = "Unauthorized - Invalid credentials",
-//                            content = @Content(
-//                                    examples = @ExampleObject(
-//                                            name = "Unauthorized",
-//                                            value = "{ \"code\": 401, \"message\": \"Invalid email or password\", \"data\": null }"
-//                                    )
-//                            )
-//                    ),
-//                    @ApiResponse(responseCode = "500", description = "Internal server error")
+
 
             }
 
     )
-    @PostMapping
+    @PostMapping("/login")
     public ResponseEntity<?> login(
             @Parameter(description = "User email", required = true, example = "mem@gmail.com")
             @RequestParam String email,
@@ -83,5 +63,93 @@ public class LoginController {
         }
 
         return ResponseEntity.ok(response);
+    }
+    @Operation(
+            summary = "Create a new User",
+            description = "User can create a new user",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "201",
+                            description = "User created successfully",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = BaseResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid input"
+                    )
+            }
+    )
+    @PostMapping("/register")
+    public ResponseEntity<?> createUser(
+            @Parameter(description = "User name", required = true, example = "John Doe")
+            @RequestParam String name,
+            @Parameter(description = "User email", required = true, example = "john@example.com")
+            @RequestParam String email,
+            @Parameter(description = "User password", required = true, example = "password123")
+            @RequestParam String password) {
+
+
+        return ResponseEntity.ok("Create user successfully");
+    }
+
+    // Update User API
+    @Operation(
+            summary = "Update User information",
+            description = "User can update their information by providing the user ID",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "User updated successfully",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = BaseResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "User not found"
+                    )
+            }
+    )
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateUser(
+            @PathVariable Long id,
+            @Parameter(description = "User name", required = false, example = "John Doe")
+            @RequestParam(required = false) String name,
+            @Parameter(description = "User email", required = false, example = "john@example.com")
+            @RequestParam(required = false) String email,
+            @Parameter(description = "User password", required = false, example = "newpassword123")
+            @RequestParam(required = false) String password) {
+
+
+        return ResponseEntity.ok("Registered user");
+    }
+
+    // Delete User API
+    @Operation(
+            summary = "Delete User",
+            description = "User can delete their account by providing the user ID",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "User deleted successfully",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = BaseResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "User not found"
+                    )
+            }
+    )
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+
+        return ResponseEntity.ok("deleted");
     }
 }
