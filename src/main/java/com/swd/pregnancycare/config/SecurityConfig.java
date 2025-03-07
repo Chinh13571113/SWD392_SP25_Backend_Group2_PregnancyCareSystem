@@ -49,6 +49,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request->
                         {
                             request.requestMatchers("/api/login").permitAll()
+                                    .requestMatchers("/api/package").permitAll()
                             .requestMatchers(AUTH_WHITELIST).permitAll().anyRequest().authenticated();
                         }
 
