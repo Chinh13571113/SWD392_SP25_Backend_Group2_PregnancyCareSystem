@@ -1,4 +1,4 @@
-package com.swd.pregnancycare.implement;
+package com.swd.pregnancycare.services;
 
 import com.swd.pregnancycare.dto.BlogDTO;
 import com.swd.pregnancycare.entity.BlogEntity;
@@ -8,7 +8,6 @@ import com.swd.pregnancycare.repository.BlogRepo;
 import com.swd.pregnancycare.repository.UserRepo;
 import com.swd.pregnancycare.request.BlogRequest;
 import com.swd.pregnancycare.response.BaseResponse;
-import com.swd.pregnancycare.services.BlogServices;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
