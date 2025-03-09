@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class BlogServiceImpl implements BlogServices {
+public class BlogServiceImp implements BlogServices {
   @Autowired
   private BlogRepo blogRepo;
   @Autowired
