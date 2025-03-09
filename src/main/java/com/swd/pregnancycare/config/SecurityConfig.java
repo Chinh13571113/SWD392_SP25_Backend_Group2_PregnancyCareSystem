@@ -3,6 +3,7 @@ package com.swd.pregnancycare.config;
 import com.swd.pregnancycare.filter.CustomSecurityFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -51,12 +52,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request->
                         {
 
-                            request.requestMatchers("/api/login").permitAll()
-                            .requestMatchers(AUTH_WHITELIST).permitAll()
+                            request.requestMatchers("/api/users/login").permitAll()
                                     .requestMatchers("/api/fetus").permitAll()
-
-                            .requestMatchers("/api/blog/**").permitAll()
-                            .requestMatchers(AUTH_WHITELIST).permitAll().anyRequest().authenticated();
+                                    .requestMatchers(HttpMethod.GET,"/api/users").permitAll()
+                                    .requestMatchers("/api/blog/**").permitAll().requestMatchers(AUTH_WHITELIST).permitAll().anyRequest().authenticated();
 
                         }
 

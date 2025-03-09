@@ -2,6 +2,7 @@ package com.swd.pregnancycare.controller;
 
 import com.swd.pregnancycare.response.BaseResponse;
 import com.swd.pregnancycare.services.LoginServices;
+import com.swd.pregnancycare.services.UserServicesImp;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -23,6 +24,40 @@ import java.util.Objects;
 public class LoginController {
     @Autowired
     private LoginServices loginServices;
+    @Autowired
+    private UserServicesImp userServicesImp;
+
+    @Operation(
+            summary = "Get All Users",
+            description = "Get list of user",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "get list successfully",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = BaseResponse.class),
+                                    examples = @ExampleObject(
+                                            name = "Success Response",
+                                            value = "{\n  \"code\": 200,\n  \"message\": \"Login successful\",\n  \"data\": {\n    \"id\": 1,\n    \"email\": \"user@example.com\",\n    \"password\": \"hashed_password\",\n    \"full_name\": \"John Doe\",\n    \"id_role\": 2\n  }\n}"
+                                    )
+                            )
+                    ),
+
+
+            }
+
+    )
+    @GetMapping
+    public ResponseEntity<?> findAll(){
+        BaseResponse response=new BaseResponse();
+        response.setMessage("");
+        response.setData(userServicesImp.getListUser());
+        response.setCode(200);
+        return ResponseEntity.ok(response);
+    }
+
+
     @Operation(
             summary = "User Login",
             description = "Authenticate user with email and password to receive a JWT token",
