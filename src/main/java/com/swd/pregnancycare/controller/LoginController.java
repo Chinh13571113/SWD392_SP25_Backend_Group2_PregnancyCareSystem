@@ -39,7 +39,7 @@ public class LoginController {
                                     schema = @Schema(implementation = BaseResponse.class),
                                     examples = @ExampleObject(
                                             name = "Success Response",
-                                            value = "{\n  \"code\": 200,\n  \"message\": \"Login successful\",\n  \"data\": {\n    \"id\": 1,\n    \"email\": \"user@example.com\",\n    \"password\": \"hashed_password\",\n    \"full_name\": \"John Doe\",\n    \"id_role\": 2\n  }\n}"
+                                            value = "{\n  \"code\": 200,\n  \"message\": \"Get List User successful\",\n  \"data\": {\n    \"id\": 1,\n    \"email\": \"user@example.com\",\n    \"password\": \"hashed_password\",\n    \"full_name\": \"John Doe\",\n    \"id_role\": 2\n  }\n}"
                                     )
                             )
                     ),
