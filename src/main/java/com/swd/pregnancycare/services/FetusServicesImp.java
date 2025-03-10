@@ -1,19 +1,16 @@
 package com.swd.pregnancycare.services;
 
 import com.swd.pregnancycare.dto.FetusDTO;
-import com.swd.pregnancycare.entity.BlogEntity;
 import com.swd.pregnancycare.entity.FetusEntity;
-import com.swd.pregnancycare.entity.GroupEntity;
 import com.swd.pregnancycare.entity.UserEntity;
 import com.swd.pregnancycare.exception.AppException;
 import com.swd.pregnancycare.exception.ErrorCode;
 import com.swd.pregnancycare.repository.FetusRepo;
 import com.swd.pregnancycare.repository.UserRepo;
 import com.swd.pregnancycare.request.FetusRequest;
-import com.swd.pregnancycare.request.GroupRequest;
-import com.swd.pregnancycare.response.BaseResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -28,6 +25,7 @@ public class FetusServicesImp implements FetusServices {
   private FetusRepo fetusRepo;
 
   @Override
+  @PreAuthorize("hasRole('ADMIN')")
   public List<FetusDTO> getAllFetus() {
     return fetusRepo.findAll().stream().map(data -> {
       FetusDTO fetusDTO = new FetusDTO();

@@ -5,15 +5,20 @@ import com.swd.pregnancycare.entity.RoleEntity;
 import com.swd.pregnancycare.entity.UserEntity;
 import com.swd.pregnancycare.exception.AppException;
 import com.swd.pregnancycare.exception.ErrorCode;
+import com.swd.pregnancycare.mapper.UserMapper;
 import com.swd.pregnancycare.repository.RoleRepo;
 import com.swd.pregnancycare.repository.UserRepo;
 import com.swd.pregnancycare.request.UserRequest;
+import com.swd.pregnancycare.response.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServicesImp implements UserServices{
@@ -26,6 +31,7 @@ public class UserServicesImp implements UserServices{
     PasswordEncoder passwordEncoder;
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserDTO> getListUser() {
 
 
@@ -61,6 +67,15 @@ public class UserServicesImp implements UserServices{
         return true;
 
     }
+
+    @Override
+    public UserResponse getMyInfo() {
+        var context = SecurityContextHolder.getContext();
+        String name = context.getAuthentication().getName();
+        UserEntity user =userRepo.findByEmail(name).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXIST));
+        return UserMapper.INSTANCE.toUserResponse(user);
+    }
+
     private void setDefaultRole(UserEntity user) {
         if (user.getRole() == null) {
             // Truy vấn RoleEntity với tên "ROLE_USER"

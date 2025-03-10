@@ -1,10 +1,12 @@
 package com.swd.pregnancycare.config;
 
+import com.swd.pregnancycare.enums.Role;
 import com.swd.pregnancycare.filter.CustomSecurityFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -13,6 +15,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -25,6 +29,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
     private static final String[] AUTH_WHITELIST = {
             "/api/v1/auth/**",
@@ -32,7 +37,7 @@ public class SecurityConfig {
             "/v3/api-docs.yaml",
             "/swagger-ui/**",
             "/swagger-ui.html",
-            "/api/users/login",
+            "/api/authentication/login",
             "/api/users/register"
 
     };
@@ -63,19 +68,18 @@ public class SecurityConfig {
                         {
 
 
-                            request.requestMatchers("/api/fetus/**").permitAll()
+                            request
 
-                                    .requestMatchers(HttpMethod.GET,"/api/users").permitAll()
-                                    .requestMatchers("/api/blogs/**").permitAll()
                                     .requestMatchers("/api/groups/**").permitAll()
                                     .requestMatchers(AUTH_WHITELIST).permitAll().anyRequest().authenticated();
 
                         }
 
                 );
-//                .addFilterBefore(customSecurityFilter, UsernamePasswordAuthenticationFilter.class);
+
          http.oauth2ResourceServer(oauth2->
-                    oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()))
+                    oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
+                            .jwtAuthenticationConverter(jwtAuthenticationConverter()))
                  );
                 return http.build();
     }
@@ -86,5 +90,13 @@ public class SecurityConfig {
                 .withSecretKey(secretKeySpec)
                 .macAlgorithm(MacAlgorithm.HS256)
                 .build();
+    }
+    @Bean
+    JwtAuthenticationConverter jwtAuthenticationConverter(){
+        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+        return  jwtAuthenticationConverter;
     }
 }
