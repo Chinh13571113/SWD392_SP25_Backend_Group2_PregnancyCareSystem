@@ -13,7 +13,7 @@ import java.util.List;
 
 @Component
 public class JwtHelper {
-    @Value("${jwt.key")
+    @Value("${jwt.key}")
     private String jwtKey;
     public boolean decrypt(String token){
         boolean result = false;

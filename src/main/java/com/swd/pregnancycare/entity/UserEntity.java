@@ -4,12 +4,16 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Entity(name = "users")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +32,7 @@ public class UserEntity {
     @JoinColumn(name = "id_role")
     private RoleEntity role;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user")
     private List<FetusEntity> fetus;
 
 

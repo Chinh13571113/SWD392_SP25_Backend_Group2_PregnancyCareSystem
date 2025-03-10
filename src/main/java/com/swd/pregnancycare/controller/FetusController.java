@@ -68,7 +68,6 @@ public class FetusController {
 
     )
     @GetMapping()
-    @PreAuthorize("hasAuthority('ROLE_MEMBER)")
     public ResponseEntity<?> getAllFetus(){
         BaseResponse response = new BaseResponse();
         response.setData(fetusServicesImp.getAllFetus());
