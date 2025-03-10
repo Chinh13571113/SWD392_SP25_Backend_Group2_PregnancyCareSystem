@@ -1,6 +1,9 @@
 package com.swd.pregnancycare.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -12,8 +15,12 @@ public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @Email(message = "Email không hợp lệ, vui lòng nhập đúng định dạng.")
+    @NotBlank(message = "Email không được để trống.")
+    @Size(max = 255, message = "Email không được dài quá 255 ký tự.")
     @Column(name = "email")
     private String email;
+    @Size(min = 8,message = "password must be at least 8")
     @Column(name = "password")
     private String password;
     @Column(name = "full_name")

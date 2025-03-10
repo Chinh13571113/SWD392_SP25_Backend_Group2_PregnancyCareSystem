@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface BlogServices {
   BaseResponse saveBlog(BlogRequest blog);
-  BaseResponse getAllBlogs();
+  List<BlogDTO> getAllBlogs();
   BaseResponse deleteBlog(int blogId);
 }

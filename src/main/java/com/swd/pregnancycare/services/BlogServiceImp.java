@@ -1,14 +1,14 @@
-package com.swd.pregnancycare.implement;
+package com.swd.pregnancycare.services;
 
 import com.swd.pregnancycare.dto.BlogDTO;
 import com.swd.pregnancycare.entity.BlogEntity;
 import com.swd.pregnancycare.entity.UserEntity;
+import com.swd.pregnancycare.exception.ErrorCode;
 import com.swd.pregnancycare.exception.InsertException;
 import com.swd.pregnancycare.repository.BlogRepo;
 import com.swd.pregnancycare.repository.UserRepo;
 import com.swd.pregnancycare.request.BlogRequest;
 import com.swd.pregnancycare.response.BaseResponse;
-import com.swd.pregnancycare.services.BlogServices;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class BlogServiceImpl implements BlogServices {
+public class BlogServiceImp implements BlogServices {
   @Autowired
   private BlogRepo blogRepo;
   @Autowired
@@ -26,10 +26,9 @@ public class BlogServiceImpl implements BlogServices {
 
   @Transactional
   @Override
-  public BaseResponse saveBlog(BlogRequest blog) {
-      Optional<UserEntity> user = userRepo.findByEmail(blog.getEmail());
-      BaseResponse response = new BaseResponse();
+  public void saveBlog(BlogRequest blog) {
 
+      Optional<UserEntity> user = userRepo.findByEmail(blog.getEmail());
       if (user.isPresent()) {
         UserEntity userEntity = user.get();
         BlogEntity newBlog = new BlogEntity();
@@ -40,42 +39,25 @@ public class BlogServiceImpl implements BlogServices {
         newBlog.setDatePublish(LocalDateTime.now());
         newBlog.setUser(userEntity);
         blogRepo.save(newBlog);
+      }
+      else throw new InsertException(ErrorCode.BLOG_SAVED_EXCEPTION);
 
-        response.setCode(200);
-        response.setMessage("Saved a blog successfully");
-      }
-      else {
-        response.setCode(400);
-        response.setMessage("User not found");
-      }
-      return response;
   }
   @Transactional
   @Override
-  public BaseResponse getAllBlogs() {
-    BaseResponse response = new BaseResponse();
-    if(blogRepo.findAll().isEmpty()) {
-      response.setCode(400);
-      response.setMessage("Is empty");
-      return response;
-    }
-    else {
-      response.setData(blogRepo.findAll().stream().map(data -> {
-        BlogDTO blogDTO = new BlogDTO();
-        blogDTO.setId(data.getId());
-        blogDTO.setTitle(data.getTitle());
-        blogDTO.setDescription(data.getDescription());
-        blogDTO.setDatePublish(data.getDatePublish());
-        blogDTO.setStatus(data.getStatus());
-        if (data.getUser() != null) {
-          blogDTO.setUserId(data.getUser().getId());
-        }
-        return blogDTO;
-      }).toList());
-      response.setCode(200);
-      response.setMessage("Got all blogs successfully");
-      return response;
-    }
+  public List<BlogDTO> getAllBlogs() {
+    return blogRepo.findAll().stream().map(data -> {
+      BlogDTO blogDTO = new BlogDTO();
+      blogDTO.setId(data.getId());
+      blogDTO.setTitle(data.getTitle());
+      blogDTO.setDescription(data.getDescription());
+      blogDTO.setDatePublish(data.getDatePublish());
+      blogDTO.setStatus(data.getStatus());
+      if (data.getUser() != null) {
+        blogDTO.setUserId(data.getUser().getId());
+      }
+      return blogDTO;
+    }).toList();
   }
 
   @Transactional
@@ -88,7 +70,7 @@ public class BlogServiceImpl implements BlogServices {
         baseResponse.setCode(200);
         baseResponse.setMessage("Deleted blog successfully");
       } else {
-        baseResponse.setCode(400);
+        baseResponse.setCode(404);
         baseResponse.setMessage("Blog not found");
       }
       return baseResponse;

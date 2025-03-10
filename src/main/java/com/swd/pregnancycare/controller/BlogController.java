@@ -72,8 +72,8 @@ public class BlogController {
   )
   @GetMapping
   public ResponseEntity<?> getAllBlogs() {
-    BaseResponse response = blogServices.getAllBlogs();
-    return ResponseEntity.ok(response);
+    List<BlogDTO> blogs = blogServices.getAllBlogs();
+    return ResponseEntity.ok(blogs);
   }
 
   @Operation(

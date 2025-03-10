@@ -15,7 +15,7 @@ import javax.crypto.SecretKey;
 import java.util.Optional;
 
 @Service
-public class LoginServices {
+public class LoginServices  {
     @Autowired
     private UserRepo userRepo;
     @Autowired

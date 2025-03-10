@@ -1,30 +1,20 @@
 package com.swd.pregnancycare.exception;
 
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public enum ErrorCode {
-  USER_NOT_FOUND(400, "User not found"),
-  SAVED_SUCCESSFULLY(200, "Created successfully")
-  ;
-  private int code;
-  private String message;
+    USER_EXIST(400,"user existed"),
+    UNCATEGORIZED_EXCEPTION(999,"uncategorize exception"),
+    BLOG_SAVED_EXCEPTION(999,"blog save error")
+    ;
 
-  ErrorCode(int code, String message) {
-    this.code = code;
-    this.message = message;
-  }
+    private int code;
+    private String message;
 
-  public int getCode() {
-    return code;
-  }
-
-  public void setCode(int code) {
-    this.code = code;
-  }
-
-  public String getMessage() {
-    return message;
-  }
-
-  public void setMessage(String message) {
-    this.message = message;
-  }
 }
