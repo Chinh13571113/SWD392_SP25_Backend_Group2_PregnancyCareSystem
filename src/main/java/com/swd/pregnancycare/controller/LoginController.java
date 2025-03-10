@@ -2,6 +2,7 @@ package com.swd.pregnancycare.controller;
 
 import com.swd.pregnancycare.exception.AppException;
 import com.swd.pregnancycare.exception.ErrorCode;
+import com.swd.pregnancycare.request.UserRequest;
 import com.swd.pregnancycare.response.BaseResponse;
 import com.swd.pregnancycare.services.LoginServices;
 import com.swd.pregnancycare.services.UserServicesImp;
@@ -12,8 +13,10 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
@@ -22,7 +25,7 @@ import java.util.Objects;
 @RequestMapping(value = "/api/users")
 @CrossOrigin
 @Tag(name = "Login API", description = "API for user authentication")
-
+@Slf4j
 public class LoginController {
     @Autowired
     private LoginServices loginServices;
@@ -52,6 +55,8 @@ public class LoginController {
     )
     @GetMapping
     public ResponseEntity<?> findAll(){
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
         BaseResponse response=new BaseResponse();
         response.setMessage("");
         response.setData(userServicesImp.getListUser());
@@ -116,15 +121,13 @@ public class LoginController {
     )
     @PostMapping("/register")
     public ResponseEntity<?> createUser(
-            @Parameter(description = "User name", required = true, example = "John Doe")
-            @RequestParam String name,
-            @Parameter(description = "User email", required = true, example = "john@example.com")
-            @RequestParam String email,
-            @Parameter(description = "User password", required = true, example = "password123")
-            @RequestParam String password) {
-
-
-        return ResponseEntity.ok("Create user successfully");
+            @Parameter(description = "User details", required = true)
+            @RequestBody UserRequest userRequest) {
+        BaseResponse response=new BaseResponse();
+        if(!userServicesImp.createUser(userRequest)) throw new AppException(ErrorCode.REGISTER_FAILED);
+        response.setMessage("Create user successfully");
+        // Giả sử bạn đã xử lý logic để tạo user
+        return ResponseEntity.ok(response);
     }
 
     // Update User API
