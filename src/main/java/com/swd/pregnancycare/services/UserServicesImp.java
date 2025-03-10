@@ -23,4 +23,14 @@ public class UserServicesImp implements UserServices{
             return userDTO;
         }).toList();
     }
+
+    @Override
+    public Boolean deleteUserById(int id) {
+        try {
+            userRepo.deleteById(id);
+        }catch (Exception e){
+            System.out.println(e);
+        }
+        return true;
+    }
 }

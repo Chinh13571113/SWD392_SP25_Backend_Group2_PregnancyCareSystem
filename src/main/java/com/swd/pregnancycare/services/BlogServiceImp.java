@@ -3,6 +3,7 @@ package com.swd.pregnancycare.services;
 import com.swd.pregnancycare.dto.BlogDTO;
 import com.swd.pregnancycare.entity.BlogEntity;
 import com.swd.pregnancycare.entity.UserEntity;
+import com.swd.pregnancycare.exception.ErrorCode;
 import com.swd.pregnancycare.exception.InsertException;
 import com.swd.pregnancycare.repository.BlogRepo;
 import com.swd.pregnancycare.repository.UserRepo;
@@ -26,7 +27,7 @@ public class BlogServiceImp implements BlogServices {
   @Transactional
   @Override
   public void saveBlog(BlogRequest blog) {
-    try {
+
       Optional<UserEntity> user = userRepo.findByEmail(blog.getEmail());
       if (user.isPresent()) {
         UserEntity userEntity = user.get();
@@ -39,10 +40,8 @@ public class BlogServiceImp implements BlogServices {
         newBlog.setUser(userEntity);
         blogRepo.save(newBlog);
       }
-      else throw new InsertException("Save blog error: ");
-    } catch (Exception e) {
-      throw new InsertException("Save blog error: " + e.getMessage());
-    }
+      else throw new InsertException(ErrorCode.BLOG_SAVED_EXCEPTION);
+
   }
   @Transactional
   @Override
