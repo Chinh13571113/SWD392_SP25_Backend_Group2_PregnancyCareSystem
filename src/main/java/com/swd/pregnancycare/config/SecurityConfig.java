@@ -1,13 +1,16 @@
 package com.swd.pregnancycare.config;
 
+import com.swd.pregnancycare.filter.CustomSecurityFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -23,7 +26,9 @@ public class SecurityConfig {
             "/v3/api-docs/**",
             "/v3/api-docs.yaml",
             "/swagger-ui/**",
-            "/swagger-ui.html"
+            "/swagger-ui.html",
+            "/api/users/login"
+
     };
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -41,20 +46,22 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception{
+    public SecurityFilterChain filterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource, CustomSecurityFilter customSecurityFilter) throws Exception{
 
         return http.csrf(csrf-> csrf.disable())
                 .cors(cors->cors.configurationSource(corsConfigurationSource))
                 .sessionManagement(session-> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request->
                         {
-                            request.requestMatchers("/api/login").permitAll()
-                                    .requestMatchers("/api/package").permitAll()
-                            .requestMatchers(AUTH_WHITELIST).permitAll().anyRequest().authenticated();
+
+                            request.requestMatchers("/api/fetus").permitAll()
+                                    .requestMatchers(HttpMethod.GET,"/api/users").permitAll()
+                                    .requestMatchers("/api/blog/**").permitAll().requestMatchers(AUTH_WHITELIST).permitAll().anyRequest().authenticated();
+
                         }
 
                 )
-//                .addFilterBefore(customSecurityFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(customSecurityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 }

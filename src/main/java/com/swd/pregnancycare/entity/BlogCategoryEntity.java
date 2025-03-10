@@ -6,34 +6,25 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
-@Entity(name = "blog")
+@Entity(name = "blog_category")
 @Data
-public class BlogEntity {
+public class BlogCategoryEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
-  @Column(name = "title")
-  private String title;
   @Column(name = "description")
   private String description;
   @Column(name = "datePublish")
   private LocalDateTime datePublish;
-  @Column(name = "status")
-  private boolean status;
   // Blog comments
-  @OneToMany(mappedBy = "blog")
+  @OneToMany(mappedBy = "blogCategory")
   private List<BlogCommentEntity> blogComments;
-  // Blog categories
-  @OneToMany(mappedBy = "blog")
-  private List<BlogCategoryEntity> blogCategories;
   // User
   @ManyToOne
   @JoinColumn(name = "id_user")
   private UserEntity user;
-
-  public boolean getStatus() {
-    return status;
-  }
-
+  // Blog
+  @ManyToOne
+  @JoinColumn(name = "id_blog")
+  private BlogEntity blog;
 }
