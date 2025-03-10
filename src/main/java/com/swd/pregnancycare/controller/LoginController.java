@@ -183,8 +183,14 @@ public class LoginController {
             }
     )
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<?> deleteUser(@PathVariable int id) {
+        BaseResponse response = new BaseResponse();
 
-        return ResponseEntity.ok("deleted");
+        if(userServicesImp.deleteUserById(id)){
+            response.setCode(200);
+            response.setMessage("Deleted successfully");
+            response.setData("");
+        }
+        return ResponseEntity.ok(response);
     }
 }

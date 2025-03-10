@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface UserServices {
     List<UserDTO> getListUser();
+    Boolean deleteUserById(int id);
 }
