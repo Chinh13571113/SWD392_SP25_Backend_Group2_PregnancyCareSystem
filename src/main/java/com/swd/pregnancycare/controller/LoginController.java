@@ -1,5 +1,7 @@
 package com.swd.pregnancycare.controller;
 
+import com.swd.pregnancycare.exception.AppException;
+import com.swd.pregnancycare.exception.ErrorCode;
 import com.swd.pregnancycare.response.BaseResponse;
 import com.swd.pregnancycare.services.LoginServices;
 import com.swd.pregnancycare.services.UserServicesImp;
@@ -82,20 +84,15 @@ public class LoginController {
     @PostMapping("/login")
     public ResponseEntity<?> login(
             @Parameter(description = "User email", required = true, example = "mem@gmail.com")
-            @RequestParam String email,
+            @RequestParam /*@Valid*/ String email,
             @Parameter(description = "User password", required = true, example = "1234")
             @RequestParam String password){
         String token = loginServices.login(email, password);
         BaseResponse response =new BaseResponse();
-        if(!Objects.equals(token, "")) {
-            response.setData(token);
-            response.setMessage("Login successful");
-            response.setCode(200);
-        }else{
-            response.setData(token);
-            response.setMessage("Login failed");
-            response.setCode(403);
-        }
+        if(Objects.equals(token, "")) throw new AppException(ErrorCode.USER_NOT_EXIST);
+        response.setData(token);
+        response.setMessage("Login successful");
+        response.setCode(200);
 
         return ResponseEntity.ok(response);
     }

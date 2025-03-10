@@ -6,10 +6,10 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 
-public class InsertException extends RuntimeException {
+public class AppException extends RuntimeException {
     private ErrorCode errorCode;
 
-    public InsertException(ErrorCode errorCode) {
+    public AppException(ErrorCode errorCode) {
         super(errorCode.getMessage());
         this.errorCode=errorCode;
     }
