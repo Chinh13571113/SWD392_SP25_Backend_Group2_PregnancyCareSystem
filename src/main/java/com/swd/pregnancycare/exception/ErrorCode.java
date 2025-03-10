@@ -18,7 +18,7 @@ public enum ErrorCode {
    
 
     ROLE_NOT_FOUND(401,"Role does not exist" ),
-    REGISTER_FAILED(400,"register failed" );
+    REGISTER_FAILED(400,"register failed" ),
     BLOG_NOT_EXIST(401,"blog not found"),
     GROUP_NOT_EXIST(403, "group not existed"),
     GROUP_HAS_USER_ALREADY(999, "group has a user already"),
