@@ -26,7 +26,9 @@ public class SecurityConfig {
             "/v3/api-docs/**",
             "/v3/api-docs.yaml",
             "/swagger-ui/**",
-            "/swagger-ui.html"
+            "/swagger-ui.html",
+            "/api/users/login"
+
     };
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -52,8 +54,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request->
                         {
 
-                            request.requestMatchers("/api/users/login").permitAll()
-                                    .requestMatchers("/api/fetus").permitAll()
+                            request.requestMatchers("/api/fetus").permitAll()
                                     .requestMatchers(HttpMethod.GET,"/api/users").permitAll()
                                     .requestMatchers("/api/blogs/**").permitAll()
                                     .requestMatchers("/api/groups/**").permitAll()
