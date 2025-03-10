@@ -1,6 +1,7 @@
 package com.swd.pregnancycare.config;
 
 import com.swd.pregnancycare.filter.CustomSecurityFilter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -9,12 +10,16 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import javax.crypto.spec.SecretKeySpec;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,9 +32,12 @@ public class SecurityConfig {
             "/v3/api-docs.yaml",
             "/swagger-ui/**",
             "/swagger-ui.html",
-            "/api/users/login"
+            "/api/users/login",
+            "/api/users/register"
 
     };
+    @Value("${jwt.key}")
+    private String signerKey;
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
@@ -48,13 +56,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource, CustomSecurityFilter customSecurityFilter) throws Exception{
 
-        return http.csrf(csrf-> csrf.disable())
+         http.csrf(csrf-> csrf.disable())
                 .cors(cors->cors.configurationSource(corsConfigurationSource))
                 .sessionManagement(session-> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request->
                         {
 
+
                             request.requestMatchers("/api/fetus/**").permitAll()
+
                                     .requestMatchers(HttpMethod.GET,"/api/users").permitAll()
                                     .requestMatchers("/api/blogs/**").permitAll()
                                     .requestMatchers("/api/groups/**").permitAll()
@@ -62,8 +72,19 @@ public class SecurityConfig {
 
                         }
 
-                )
-                .addFilterBefore(customSecurityFilter, UsernamePasswordAuthenticationFilter.class)
+                );
+//                .addFilterBefore(customSecurityFilter, UsernamePasswordAuthenticationFilter.class);
+         http.oauth2ResourceServer(oauth2->
+                    oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()))
+                 );
+                return http.build();
+    }
+    @Bean
+    JwtDecoder jwtDecoder(){
+        SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(),"HS256");
+        return NimbusJwtDecoder
+                .withSecretKey(secretKeySpec)
+                .macAlgorithm(MacAlgorithm.HS256)
                 .build();
     }
 }
