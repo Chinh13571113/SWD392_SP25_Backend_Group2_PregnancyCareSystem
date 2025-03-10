@@ -7,7 +7,7 @@ import com.swd.pregnancycare.response.BaseResponse;
 import java.util.List;
 
 public interface BlogServices {
-  void saveBlog(BlogRequest blog);
-  List<BlogDTO> getAllBlogs();
+  BaseResponse saveBlog(BlogRequest blog);
+  BaseResponse getAllBlogs();
   BaseResponse deleteBlog(int blogId);
 }

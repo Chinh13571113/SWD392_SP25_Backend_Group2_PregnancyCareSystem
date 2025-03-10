@@ -8,6 +8,6 @@ public class PregrancycareApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(PregrancycareApplication.class, args);
-	}
 
+	}
 }

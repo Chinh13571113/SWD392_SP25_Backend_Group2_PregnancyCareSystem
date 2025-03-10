@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "api/blog")
+@RequestMapping(value = "api/blogs")
 @CrossOrigin
 @Tag(name = "Blog API", description = "API for Blog")
 @SecurityRequirement(name = "bearerAuth")
@@ -45,12 +45,9 @@ public class BlogController {
           }
 
   )
-  @PostMapping("/saveBlog")
+  @PostMapping
   public ResponseEntity<?> saveBlog(@RequestBody BlogRequest blog) {
-    blogServices.saveBlog(blog);
-    BaseResponse response = new BaseResponse();
-    response.setCode(200);
-    response.setMessage("Saved blog successfully");
+    BaseResponse response = blogServices.saveBlog(blog);
     return ResponseEntity.ok(response);
   }
 
@@ -75,11 +72,7 @@ public class BlogController {
   )
   @GetMapping
   public ResponseEntity<?> getAllBlogs() {
-    List<BlogDTO> blogs = blogServices.getAllBlogs();
-    BaseResponse response = new BaseResponse();
-    response.setCode(200);
-    response.setMessage("Got all blogs successfully");
-    response.setData(blogs);
+    BaseResponse response = blogServices.getAllBlogs();
     return ResponseEntity.ok(response);
   }
 
@@ -102,7 +95,7 @@ public class BlogController {
           }
 
   )
-  @DeleteMapping
+  @DeleteMapping("/{id}")
   public  ResponseEntity<?> deleteBlog(@RequestParam int blogId) {
     BaseResponse response = blogServices.deleteBlog(blogId);
     return ResponseEntity.ok(response);

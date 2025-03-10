@@ -54,8 +54,8 @@ public class SecurityConfig {
                             request.requestMatchers("/api/login").permitAll()
                             .requestMatchers(AUTH_WHITELIST).permitAll()
                                     .requestMatchers("/api/fetus").permitAll()
-
-                            .requestMatchers("/api/blog/**").permitAll()
+                                    .requestMatchers("/api/blogs/**").permitAll()
+                                    .requestMatchers("/api/groups/**").permitAll()
                             .requestMatchers(AUTH_WHITELIST).permitAll().anyRequest().authenticated();
 
                         }

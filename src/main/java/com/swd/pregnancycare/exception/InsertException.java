@@ -10,5 +10,4 @@ public class InsertException extends RuntimeException {
         super(message);
         this.message = message;
     }
-
 }

@@ -2,9 +2,9 @@ spring:
   application:
     name: jpa
   datasource:
-    url: ${MYSQL_URL:jdbc:mysql://localhost:3306/pregrancytracker}
-    username: ${MYSQL_ADMIN_USER:root}
-    password: ${MYSQL_ADMIN_PASS:yourpassword}
+    url: ${MYSQL_URL}
+    username: ${MYSQL_ADMIN_USER}
+    password: ${MYSQL_ADMIN_PASS}
   jpa:
     hibernate:
       ddl-auto: none
