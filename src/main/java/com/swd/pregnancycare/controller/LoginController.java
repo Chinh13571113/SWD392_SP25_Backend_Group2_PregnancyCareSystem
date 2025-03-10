@@ -4,7 +4,6 @@ import com.swd.pregnancycare.exception.AppException;
 import com.swd.pregnancycare.exception.ErrorCode;
 import com.swd.pregnancycare.response.BaseResponse;
 import com.swd.pregnancycare.services.LoginServices;
-import com.swd.pregnancycare.services.UserServicesImp;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -19,45 +18,16 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Objects;
 
 @RestController
-@RequestMapping(value = "/api/users")
+@RequestMapping(value = "/api/authentication")
 @CrossOrigin
-@Tag(name = "Login API", description = "API for user authentication")
+@Tag(name = "Authenticated API", description = "API for user authentication")
 
 public class LoginController {
     @Autowired
     private LoginServices loginServices;
-    @Autowired
-    private UserServicesImp userServicesImp;
-
-    @Operation(
-            summary = "Get All Users",
-            description = "Get list of user",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "get list successfully",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = BaseResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Success Response",
-                                            value = "{\n  \"code\": 200,\n  \"message\": \"Get List User successful\",\n  \"data\": {\n    \"id\": 1,\n    \"email\": \"user@example.com\",\n    \"password\": \"hashed_password\",\n    \"full_name\": \"John Doe\",\n    \"id_role\": 2\n  }\n}"
-                                    )
-                            )
-                    ),
 
 
-            }
 
-    )
-    @GetMapping
-    public ResponseEntity<?> findAll(){
-        BaseResponse response=new BaseResponse();
-        response.setMessage("");
-        response.setData(userServicesImp.getListUser());
-        response.setCode(200);
-        return ResponseEntity.ok(response);
-    }
 
 
     @Operation(
@@ -96,98 +66,11 @@ public class LoginController {
 
         return ResponseEntity.ok(response);
     }
-    @Operation(
-            summary = "Create a new User",
-            description = "User can create a new user",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "201",
-                            description = "User created successfully",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = BaseResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Invalid input"
-                    )
-            }
-    )
-    @PostMapping("/register")
-    public ResponseEntity<?> createUser(
-            @Parameter(description = "User name", required = true, example = "John Doe")
-            @RequestParam String name,
-            @Parameter(description = "User email", required = true, example = "john@example.com")
-            @RequestParam String email,
-            @Parameter(description = "User password", required = true, example = "password123")
-            @RequestParam String password) {
 
-
-        return ResponseEntity.ok("Create user successfully");
-    }
 
     // Update User API
-    @Operation(
-            summary = "Update User information",
-            description = "User can update their information by providing the user ID",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "User updated successfully",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = BaseResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "User not found"
-                    )
-            }
-    )
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateUser(
-            @PathVariable Long id,
-            @Parameter(description = "User name", required = false, example = "John Doe")
-            @RequestParam(required = false) String name,
-            @Parameter(description = "User email", required = false, example = "john@example.com")
-            @RequestParam(required = false) String email,
-            @Parameter(description = "User password", required = false, example = "newpassword123")
-            @RequestParam(required = false) String password) {
 
-
-        return ResponseEntity.ok("Registered user");
-    }
 
     // Delete User API
-    @Operation(
-            summary = "Delete User",
-            description = "User can delete their account by providing the user ID",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "User deleted successfully",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = BaseResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "User not found"
-                    )
-            }
-    )
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable int id) {
-        BaseResponse response = new BaseResponse();
 
-        if(userServicesImp.deleteUserById(id)){
-            response.setCode(200);
-            response.setMessage("Deleted successfully");
-            response.setData("");
-        }
-        return ResponseEntity.ok(response);
-    }
 }
