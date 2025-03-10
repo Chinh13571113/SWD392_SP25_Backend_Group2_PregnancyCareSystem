@@ -2,6 +2,7 @@ package com.swd.pregnancycare.controller;
 
 import com.swd.pregnancycare.dto.BlogDTO;
 import com.swd.pregnancycare.request.BlogRequest;
+import com.swd.pregnancycare.request.GroupRequest;
 import com.swd.pregnancycare.response.BaseResponse;
 import com.swd.pregnancycare.services.BlogServices;
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,7 +48,11 @@ public class BlogController {
   )
   @PostMapping
   public ResponseEntity<?> saveBlog(@RequestBody BlogRequest blog) {
-    BaseResponse response = blogServices.saveBlog(blog);
+    blogServices.saveBlog(blog);
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setMessage("Saved blog successfully");
+    response.setData("{}");
     return ResponseEntity.ok(response);
   }
 
@@ -72,13 +77,16 @@ public class BlogController {
   )
   @GetMapping
   public ResponseEntity<?> getAllBlogs() {
-    List<BlogDTO> blogs = blogServices.getAllBlogs();
-    return ResponseEntity.ok(blogs);
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setData(blogServices.getAllBlogs());
+    response.setMessage("Got all blogs successfully");
+    return ResponseEntity.ok(response);
   }
 
   @Operation(
           summary = "Delete a Blog",
-          description = "Allow to delete a blogs",
+          description = "Allow to delete a blog",
           responses = {
                   @ApiResponse(
                           responseCode = "200",
@@ -96,8 +104,43 @@ public class BlogController {
 
   )
   @DeleteMapping("/{id}")
-  public  ResponseEntity<?> deleteBlog(@RequestParam int blogId) {
-    BaseResponse response = blogServices.deleteBlog(blogId);
+  public  ResponseEntity<?> deleteBlog(@PathVariable int id) {
+    blogServices.deleteBlog(id);
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setMessage("Deleted blog successfully");
+    response.setData("{}");
+    return ResponseEntity.ok(response);
+  }
+
+  @Operation(
+          summary = "Update a blog",
+          description = "Allow to update a blog",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "Updated blog successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = BaseResponse.class),
+                                  examples = @ExampleObject(
+                                          name = "Success Response",
+                                          value = "{\n  \"code\": 200,\n  \"message\": \"Updated blog successfully\",\n  \"data\": \"null\"\n}"
+                                  )
+                          )
+                  ),
+          }
+
+  )
+  @PutMapping("/{id}")
+  public ResponseEntity<?> updateBlog(@PathVariable int id,
+                                       @RequestBody BlogRequest blogRequest) {
+    blogServices.updateBlog(blogRequest, id);
+
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setMessage("Updated blog successfully");
+    response.setData("{}");
     return ResponseEntity.ok(response);
   }
 }

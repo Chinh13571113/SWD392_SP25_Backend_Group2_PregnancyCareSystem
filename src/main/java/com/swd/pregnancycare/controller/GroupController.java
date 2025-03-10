@@ -35,7 +35,7 @@ public class GroupController {
                                   schema = @Schema(implementation = BaseResponse.class),
                                   examples = @ExampleObject(
                                           name = "Success Response",
-                                          value = "{\n  \"code\": 200,\n  \"message\": \"Saved group successfully\",\n  \"data\": {\n \"id\": 1, \n \"name\": \"Pregnancy\", \n \"description\": \"something\", \n \"date\": ,\n \"}\"\n}"
+                                          value = "{\n  \"code\": 200,\n  \"message\": \"Saved group successfully\",\n  \"data\": \"[{}, {}]\"\n}"
                                   )
                           )
                   ),
@@ -44,7 +44,99 @@ public class GroupController {
   )
   @PostMapping
   public ResponseEntity<?> saveGroup(@RequestBody GroupRequest group) {
-    BaseResponse baseResponse = groupServices.saveGroup(group);
-    return ResponseEntity.ok(baseResponse);
+    groupServices.saveGroup(group);
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setMessage("Saved group successfully");
+    response.setData("{}");
+    return ResponseEntity.ok(response);
+  }
+
+  @Operation(
+          summary = "Get all groups",
+          description = "Allow to get all groups",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "Got all groups successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = BaseResponse.class),
+                                  examples = @ExampleObject(
+                                          name = "Success Response",
+                                          value = "{\n  \"code\": 200,\n  \"message\": \"Got all groups successfully\",\n  \"data\": \"[{}, {}]\"\n}"
+                                  )
+                          )
+                  ),
+          }
+
+  )
+  @GetMapping
+  public ResponseEntity<?> getAllBlogs() {
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setData(groupServices.getAllGroups());
+    response.setMessage("Got all groups successfully");
+    return ResponseEntity.ok(response);
+  }
+
+  @Operation(
+          summary = "Delete a group",
+          description = "Allow to delete a group",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "Deleted group successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = BaseResponse.class),
+                                  examples = @ExampleObject(
+                                          name = "Success Response",
+                                          value = "{\n  \"code\": 200,\n  \"message\": \"Deleted group successfully\",\n  \"data\": \"null\"\n}"
+                                  )
+                          )
+                  ),
+          }
+
+  )
+  @DeleteMapping("/{id}")
+  public  ResponseEntity<?> deleteGroup(@PathVariable int id) {
+    groupServices.deleteGroup(id);
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setMessage("Deleted group successfully");
+    response.setData("{}");
+    return ResponseEntity.ok(response);
+  }
+
+  @Operation(
+          summary = "Update a group",
+          description = "Allow to update a group",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "Updated group successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = BaseResponse.class),
+                                  examples = @ExampleObject(
+                                          name = "Success Response",
+                                          value = "{\n  \"code\": 200,\n  \"message\": \"Updated group successfully\",\n  \"data\": \"null\"\n}"
+                                  )
+                          )
+                  ),
+          }
+
+  )
+  @PutMapping("/{id}")
+  public ResponseEntity<?> updateGroup(@PathVariable int id,
+                                                  @RequestBody GroupRequest groupRequest) {
+    groupServices.updateGroup(groupRequest, id);
+
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setMessage("Updated group successfully");
+    response.setData("{}");
+    return ResponseEntity.ok(response);
   }
 }
