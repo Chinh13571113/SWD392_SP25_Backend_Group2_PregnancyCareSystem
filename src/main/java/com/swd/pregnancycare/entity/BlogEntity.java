@@ -15,12 +15,16 @@ public class BlogEntity {
   private int id;
   @Column(name = "title")
   private String title;
+
   @Column(name = "description")
   private String description;
+
   @Column(name = "datePublish")
   private LocalDateTime datePublish;
+
   @Column(name = "status")
   private boolean status;
+
   // Blog comments
   @OneToMany(mappedBy = "blog")
   private List<BlogCommentEntity> blogComments;
@@ -31,6 +35,10 @@ public class BlogEntity {
   @ManyToOne
   @JoinColumn(name = "id_user")
   private UserEntity user;
+  //Group
+  @ManyToOne
+  @JoinColumn(name = "id_group")
+  private GroupEntity group;
 
   public boolean getStatus() {
     return status;
