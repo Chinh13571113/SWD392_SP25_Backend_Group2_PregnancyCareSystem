@@ -14,10 +14,18 @@ public enum ErrorCode {
     UNCATEGORIZED_EXCEPTION(999,"uncategorize exception"),
     BLOG_SAVED_EXCEPTION(999,"blog save error"),
     INVALID_PASSWORD(400,"password must be at least 8"),
+<<<<<<< HEAD
     BLOG_NOT_EXIST(401,"Blog not found"),
 
     ROLE_NOT_FOUND(401,"Role does not exist" ),
     REGISTER_FAILED(400,"register failed" );
+=======
+    BLOG_NOT_EXIST(401,"blog not found"),
+    GROUP_NOT_EXIST(403, "group not existed"),
+    GROUP_HAS_USER_ALREADY(999, "group has a user already"),
+    FETUS_NOT_EXIST(403, "fetus not existed"),
+    ;
+>>>>>>> 21a838509689b2821a291b4b50799a0b541c8ef3
 
     private int code;
     private String message;

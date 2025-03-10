@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "users")
@@ -43,5 +44,11 @@ public class UserEntity {
     // Blog comments
     @OneToMany(mappedBy = "user")
     private List<BlogCommentEntity> blogComments;
+
+    //Group
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private GroupEntity group;
+    @ManyToMany(mappedBy = "users")
+    private List<GroupEntity> groups;
 
 }

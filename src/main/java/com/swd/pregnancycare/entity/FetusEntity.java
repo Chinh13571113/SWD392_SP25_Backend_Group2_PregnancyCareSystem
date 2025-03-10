@@ -19,9 +19,8 @@ public class FetusEntity {
     private String gender;
     @Column(name = "status")
     private boolean status;
+
     @ManyToOne
     @JoinColumn(name = "id_user", nullable = false)
     private UserEntity user;
-
-
 }
