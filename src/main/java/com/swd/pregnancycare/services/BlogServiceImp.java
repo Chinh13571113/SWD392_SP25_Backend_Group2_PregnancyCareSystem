@@ -66,7 +66,6 @@ public class BlogServiceImp implements BlogServices {
   @Override
   public void deleteBlog(int id) {
     Optional<BlogEntity> blog = blogRepo.findById(id);
-    BaseResponse baseResponse = new BaseResponse();
     if (blog.isEmpty()) throw new AppException(ErrorCode.BLOG_NOT_EXIST);
     blogRepo.deleteById(blog.get().getId());
   }

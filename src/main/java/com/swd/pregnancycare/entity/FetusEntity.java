@@ -11,14 +11,13 @@ public class FetusEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
     private String name;
+    @Column(name = "due_date")
     private LocalDateTime dueDate;
     private String gender;
     private boolean status;
+
     @ManyToOne
     @JoinColumn(name = "id_user", nullable = false)
     private UserEntity user;
-
-
 }
