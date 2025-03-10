@@ -107,4 +107,9 @@ public class BlogController {
     BaseResponse response = blogServices.deleteBlog(blogId);
     return ResponseEntity.ok(response);
   }
+@GetMapping("approve/{id}")
+  public  ResponseEntity<?> approveBlog(@RequestParam int blogId) {
+        blogServices.approveBlog(blogId);
+        return ResponseEntity.ok("Approve succesfully !!! ");
+    }
 }

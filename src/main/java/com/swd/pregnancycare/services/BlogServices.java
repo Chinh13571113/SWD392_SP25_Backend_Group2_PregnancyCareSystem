@@ -10,4 +10,5 @@ public interface BlogServices {
   void saveBlog(BlogRequest blog);
   List<BlogDTO> getAllBlogs();
   BaseResponse deleteBlog(int blogId);
+  public void approveBlog(int blogId);
 }

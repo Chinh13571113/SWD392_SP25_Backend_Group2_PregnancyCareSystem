@@ -20,7 +20,7 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping(value = "/api/users")
-@CrossOrigin
+//@CrossOrigin
 @Tag(name = "Login API", description = "API for user authentication")
 
 public class LoginController {
