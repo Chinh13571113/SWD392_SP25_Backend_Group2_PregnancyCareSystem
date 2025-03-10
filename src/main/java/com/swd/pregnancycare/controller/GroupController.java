@@ -1,10 +1,8 @@
 package com.swd.pregnancycare.controller;
 
-import com.swd.pregnancycare.dto.BlogDTO;
-import com.swd.pregnancycare.request.BlogRequest;
 import com.swd.pregnancycare.request.GroupRequest;
 import com.swd.pregnancycare.response.BaseResponse;
-import com.swd.pregnancycare.services.BlogServices;
+import com.swd.pregnancycare.services.GroupServices;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -16,30 +14,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping(value = "api/blogs")
+@RequestMapping(value = "api/groups")
 @CrossOrigin
-@Tag(name = "Blog API", description = "API for Blog")
+@Tag(name = "Group API", description = "API for Groups")
 @SecurityRequirement(name = "bearerAuth")
-public class BlogController {
+public class GroupController {
   @Autowired
-  private BlogServices blogServices;
+  private GroupServices groupServices;
 
   @Operation(
-          summary = "Save Blog",
-          description = "Allow members to save blogs",
+          summary = "Save Group",
+          description = "Allow members to create group",
           responses = {
                   @ApiResponse(
                           responseCode = "200",
-                          description = "Save blog successfully",
+                          description = "Save group",
                           content = @Content(
                                   mediaType = "application/json",
                                   schema = @Schema(implementation = BaseResponse.class),
                                   examples = @ExampleObject(
                                           name = "Success Response",
-                                          value = "{\n  \"code\": 200,\n  \"message\": \"Saved blog successfully\",\n  \"data\": \"null\"\n}"
+                                          value = "{\n  \"code\": 200,\n  \"message\": \"Saved group successfully\",\n  \"data\": \"[{}, {}]\"\n}"
                                   )
                           )
                   ),
@@ -47,28 +43,28 @@ public class BlogController {
 
   )
   @PostMapping
-  public ResponseEntity<?> saveBlog(@RequestBody BlogRequest blog) {
-    blogServices.saveBlog(blog);
+  public ResponseEntity<?> saveGroup(@RequestBody GroupRequest group) {
+    groupServices.saveGroup(group);
     BaseResponse response = new BaseResponse();
     response.setCode(200);
-    response.setMessage("Saved blog successfully");
+    response.setMessage("Saved group successfully");
     response.setData("{}");
     return ResponseEntity.ok(response);
   }
 
   @Operation(
-          summary = "Get all Blogs",
-          description = "Allow to get all blogs",
+          summary = "Get all groups",
+          description = "Allow to get all groups",
           responses = {
                   @ApiResponse(
                           responseCode = "200",
-                          description = "Got all blog successfully",
+                          description = "Got all groups successfully",
                           content = @Content(
                                   mediaType = "application/json",
                                   schema = @Schema(implementation = BaseResponse.class),
                                   examples = @ExampleObject(
                                           name = "Success Response",
-                                          value = "{\n  \"code\": 200,\n  \"message\": \"Got all blogs successfully\",\n  \"data\": \"[{}, {}]\"\n}"
+                                          value = "{\n  \"code\": 200,\n  \"message\": \"Got all groups successfully\",\n  \"data\": \"[{}, {}]\"\n}"
                                   )
                           )
                   ),
@@ -79,24 +75,24 @@ public class BlogController {
   public ResponseEntity<?> getAllBlogs() {
     BaseResponse response = new BaseResponse();
     response.setCode(200);
-    response.setData(blogServices.getAllBlogs());
-    response.setMessage("Got all blogs successfully");
+    response.setData(groupServices.getAllGroups());
+    response.setMessage("Got all groups successfully");
     return ResponseEntity.ok(response);
   }
 
   @Operation(
-          summary = "Delete a Blog",
-          description = "Allow to delete a blog",
+          summary = "Delete a group",
+          description = "Allow to delete a group",
           responses = {
                   @ApiResponse(
                           responseCode = "200",
-                          description = "Deleted blog successfully",
+                          description = "Deleted group successfully",
                           content = @Content(
                                   mediaType = "application/json",
                                   schema = @Schema(implementation = BaseResponse.class),
                                   examples = @ExampleObject(
                                           name = "Success Response",
-                                          value = "{\n  \"code\": 200,\n  \"message\": \"Deleted blog successfully\",\n  \"data\": \"null\"\n}"
+                                          value = "{\n  \"code\": 200,\n  \"message\": \"Deleted group successfully\",\n  \"data\": \"null\"\n}"
                                   )
                           )
                   ),
@@ -104,28 +100,28 @@ public class BlogController {
 
   )
   @DeleteMapping("/{id}")
-  public  ResponseEntity<?> deleteBlog(@PathVariable int id) {
-    blogServices.deleteBlog(id);
+  public  ResponseEntity<?> deleteGroup(@PathVariable int id) {
+    groupServices.deleteGroup(id);
     BaseResponse response = new BaseResponse();
     response.setCode(200);
-    response.setMessage("Deleted blog successfully");
+    response.setMessage("Deleted group successfully");
     response.setData("{}");
     return ResponseEntity.ok(response);
   }
 
   @Operation(
-          summary = "Update a blog",
-          description = "Allow to update a blog",
+          summary = "Update a group",
+          description = "Allow to update a group",
           responses = {
                   @ApiResponse(
                           responseCode = "200",
-                          description = "Updated blog successfully",
+                          description = "Updated group successfully",
                           content = @Content(
                                   mediaType = "application/json",
                                   schema = @Schema(implementation = BaseResponse.class),
                                   examples = @ExampleObject(
                                           name = "Success Response",
-                                          value = "{\n  \"code\": 200,\n  \"message\": \"Updated blog successfully\",\n  \"data\": \"null\"\n}"
+                                          value = "{\n  \"code\": 200,\n  \"message\": \"Updated group successfully\",\n  \"data\": \"null\"\n}"
                                   )
                           )
                   ),
@@ -133,19 +129,14 @@ public class BlogController {
 
   )
   @PutMapping("/{id}")
-  public ResponseEntity<?> updateBlog(@PathVariable int id,
-                                       @RequestBody BlogRequest blogRequest) {
-    blogServices.updateBlog(blogRequest, id);
+  public ResponseEntity<?> updateGroup(@PathVariable int id,
+                                                  @RequestBody GroupRequest groupRequest) {
+    groupServices.updateGroup(groupRequest, id);
 
     BaseResponse response = new BaseResponse();
     response.setCode(200);
-    response.setMessage("Updated blog successfully");
+    response.setMessage("Updated group successfully");
     response.setData("{}");
     return ResponseEntity.ok(response);
   }
-@GetMapping("approve/{id}")
-  public  ResponseEntity<?> approveBlog(@RequestParam int blogId) {
-        blogServices.approveBlog(blogId);
-        return ResponseEntity.ok("Approve succesfully !!! ");
-    }
 }
