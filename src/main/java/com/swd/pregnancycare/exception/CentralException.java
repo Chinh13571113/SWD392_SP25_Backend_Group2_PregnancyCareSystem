@@ -18,24 +18,23 @@ public class CentralException {
         response.setCode(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode());
         return ResponseEntity.internalServerError().body(response);
     }
-    @ExceptionHandler({InsertException.class})
-    public ResponseEntity<?> centralLog(InsertException e){
+    @ExceptionHandler({AppException.class})
+    public ResponseEntity<?> centralLog(AppException e){
         BaseResponse response = new BaseResponse();
         ErrorCode errorCode= e.getErrorCode();
-        response.setMessage(e.getMessage());
-        response.setCode(e.hashCode());
+        response.setMessage(errorCode.getMessage());
+        response.setCode(errorCode.getCode());
         return ResponseEntity.internalServerError().body(response);
     }
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity<?> handleValidation(MethodArgumentNotValidException e){
         BaseResponse response = new BaseResponse();
-
-        response.setMessage(Objects.requireNonNull(e.getFieldError()).getDefaultMessage());
-        response.setCode(400);
+        String enumkey = Objects.requireNonNull(e.getFieldError()).getDefaultMessage();
+        ErrorCode errorCode = ErrorCode.valueOf(enumkey);
+        response.setMessage(errorCode.getMessage());
+        response.setCode(errorCode.getCode());
         return ResponseEntity.internalServerError().body(response);
     }
-    @ExceptionHandler({FileUploadException.class})
-    public ResponseEntity<?> centralFileUpload(Exception e){
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
+
+
 }

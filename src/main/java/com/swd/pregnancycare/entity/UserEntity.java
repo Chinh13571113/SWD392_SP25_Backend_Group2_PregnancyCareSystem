@@ -19,7 +19,7 @@ public class UserEntity {
     @Size(max = 255, message = "Email không được dài quá 255 ký tự.")
     @Column(name = "email")
     private String email;
-    @Size(min = 8,message = "password must be at least 8")
+    @Size(min = 8,message = "INVALID_PASSWORD")
     @Column(name = "password")
     private String password;
     @Column(name = "full_name")
