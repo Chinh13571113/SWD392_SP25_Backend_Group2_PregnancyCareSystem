@@ -28,9 +28,7 @@ public class GroupServicesImpl implements GroupServices {
   @Transactional
   @Override
   public void saveGroup(GroupRequest group) {
-    BaseResponse baseResponse = new BaseResponse();
     Optional<UserEntity> user = userRepo.findByEmail(group.getOwner_email());
-
     // Is user exist
     if (user.isEmpty()) throw new AppException(ErrorCode.USER_NOT_EXIST);
 
