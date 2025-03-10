@@ -65,14 +65,10 @@ public class BlogServiceImp implements BlogServices {
   public BaseResponse deleteBlog(int blogId) {
       Optional<BlogEntity> blog = blogRepo.findById(blogId);
       BaseResponse baseResponse = new BaseResponse();
-      if(blog.isPresent()) {
-        blogRepo.deleteById(blog.get().getId());
-        baseResponse.setCode(200);
-        baseResponse.setMessage("Deleted blog successfully");
-      } else {
-        baseResponse.setCode(404);
-        baseResponse.setMessage("Blog not found");
-      }
+      if(blog.isEmpty()) throw new AppException(ErrorCode.BLOG_NOT_EXIST);
+      blogRepo.deleteById(blog.get().getId());
+      baseResponse.setCode(200);
+      baseResponse.setMessage("Deleted blog successfully");
       return baseResponse;
   }
 }
