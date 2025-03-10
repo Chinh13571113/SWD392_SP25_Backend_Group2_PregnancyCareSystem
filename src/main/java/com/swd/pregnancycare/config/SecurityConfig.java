@@ -62,9 +62,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request->
                         {
 
-                            request/*.requestMatchers("/api/fetus").permitAll()*/
+
+                            request.requestMatchers("/api/fetus/**").permitAll()
+
                                     .requestMatchers(HttpMethod.GET,"/api/users").permitAll()
-                                    .requestMatchers("/api/blog/**").permitAll().requestMatchers(AUTH_WHITELIST).permitAll().anyRequest().authenticated();
+                                    .requestMatchers("/api/blogs/**").permitAll()
+                                    .requestMatchers("/api/groups/**").permitAll()
+                                    .requestMatchers(AUTH_WHITELIST).permitAll().anyRequest().authenticated();
 
                         }
 

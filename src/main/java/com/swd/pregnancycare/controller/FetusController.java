@@ -1,5 +1,6 @@
 package com.swd.pregnancycare.controller;
 
+import com.swd.pregnancycare.request.FetusRequest;
 import com.swd.pregnancycare.response.BaseResponse;
 import com.swd.pregnancycare.services.FetusServicesImp;
 import io.swagger.v3.oas.annotations.Operation;
@@ -95,10 +96,9 @@ public class FetusController {
             }
     )
     @PostMapping()
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> createFetus() {
-        // Implement the logic to create a fetus
-        // For now, the method body is empty
+    @PreAuthorize("hasAuthority('ROLE_MEMBER')")
+    public ResponseEntity<?> createFetus(@RequestBody FetusRequest fetusRequest) {
+        fetusServicesImp.saveFetus(fetusRequest);
         BaseResponse response = new BaseResponse();
         response.setCode(201);
         response.setMessage("Successfully created fetus.");
@@ -125,10 +125,9 @@ public class FetusController {
             }
     )
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> updateFetus(@PathVariable Long id) {
-        // Implement the logic to update a fetus
-        // For now, the method body is empty
+    @PreAuthorize("hasAuthority('ROLE_MEMBER')")
+    public ResponseEntity<?> updateFetus(@RequestBody FetusRequest fetusRequest, @PathVariable int id) {
+        fetusServicesImp.updateFetus(fetusRequest, id);
         BaseResponse response = new BaseResponse();
         response.setCode(200);
         response.setMessage("Successfully updated fetus with ID " + id);
@@ -155,10 +154,9 @@ public class FetusController {
             }
     )
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> deleteFetus(@PathVariable Long id) {
-        // Implement the logic to delete a fetus
-        // For now, the method body is empty
+    @PreAuthorize("hasAuthority('ROLE_MEMBER')")
+    public ResponseEntity<?> deleteFetus(@PathVariable int id) {
+        fetusServicesImp.deleteFetus(id);
         BaseResponse response = new BaseResponse();
         response.setCode(200);
         response.setMessage("Successfully deleted fetus with ID " + id);
