@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatusCode;
 @AllArgsConstructor
 @NoArgsConstructor
 public enum ErrorCode {
+
     USER_EXIST(400,"user existed",HttpStatus.BAD_REQUEST),
     USER_NOT_EXIST(403,"user not existed",HttpStatus.BAD_REQUEST),
     UNCATEGORIZED_EXCEPTION(1001,"uncategorize exception", HttpStatus.INTERNAL_SERVER_ERROR),
@@ -26,6 +27,7 @@ public enum ErrorCode {
     GROUP_NOT_EXIST(403, "group not existed",HttpStatus.NOT_FOUND),
     GROUP_HAS_USER_ALREADY(999, "group has a user already",HttpStatus.CONFLICT),
     FETUS_NOT_EXIST(403, "fetus not existed",HttpStatus.BAD_REQUEST),
+
 
     ;
 

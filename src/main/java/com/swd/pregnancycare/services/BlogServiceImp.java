@@ -13,6 +13,7 @@ import com.swd.pregnancycare.request.GroupRequest;
 import com.swd.pregnancycare.response.BaseResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -47,6 +48,7 @@ public class BlogServiceImp implements BlogServices {
 
   @Transactional
   @Override
+  @PreAuthorize("hasAnyRole('ADMIN', 'MEMBER')")
   public List<BlogDTO> getAllBlogs() {
     return blogRepo.findAll().stream().map(data -> {
       BlogDTO blogDTO = new BlogDTO();
