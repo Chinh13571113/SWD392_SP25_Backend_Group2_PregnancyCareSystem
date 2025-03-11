@@ -31,72 +31,71 @@ import java.util.List;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    private static final String[] AUTH_WHITELIST = {
-            "/api/v1/auth/**",
-            "/v3/api-docs/**",
-            "/v3/api-docs.yaml",
-            "/swagger-ui/**",
-            "/swagger-ui.html",
-            "/api/authentication/login",
-            "/api/users/register"
+  private static final String[] AUTH_WHITELIST = {
+          "/api/v1/auth/**",
+          "/v3/api-docs/**",
+          "/v3/api-docs.yaml",
+          "/swagger-ui/**",
+          "/swagger-ui.html",
+          "/api/authentication/login",
+          "/api/users/register"
 
-    };
-    @Value("${jwt.key}")
-    private String signerKey;
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
-    }
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource(){
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("*")); // Allow specific origin
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+  };
+  @Value("${jwt.key}")
+  private String signerKey;
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource, CustomSecurityFilter customSecurityFilter) throws Exception{
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
-         http.csrf(csrf-> csrf.disable())
-                .cors(cors->cors.configurationSource(corsConfigurationSource))
-                .sessionManagement(session-> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(request->
-                        {
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowedOriginPatterns(List.of("*")); // Allow specific origin
+    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    configuration.setAllowedHeaders(List.of("*"));
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
+  }
 
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource, CustomSecurityFilter customSecurityFilter) throws Exception {
 
-                            request
+    http.csrf(csrf -> csrf.disable())
+            .cors(cors -> cors.configurationSource(corsConfigurationSource))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(request ->
+                    {
+                      request
+                              .requestMatchers("/api/groups/**").permitAll()
+                              .requestMatchers(AUTH_WHITELIST).permitAll().anyRequest().authenticated();
 
-                                    .requestMatchers("/api/groups/**").permitAll()
-                                    .requestMatchers(AUTH_WHITELIST).permitAll().anyRequest().authenticated();
+                    }
+            );
+    http.oauth2ResourceServer(oauth2 ->
+            oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
+                    .jwtAuthenticationConverter(jwtAuthenticationConverter()))
+    );
+    return http.build();
+  }
 
-                        }
+  @Bean
+  JwtDecoder jwtDecoder() {
+    SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS256");
+    return NimbusJwtDecoder
+            .withSecretKey(secretKeySpec)
+            .macAlgorithm(MacAlgorithm.HS256)
+            .build();
+  }
 
-                );
-
-         http.oauth2ResourceServer(oauth2->
-                    oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
-                            .jwtAuthenticationConverter(jwtAuthenticationConverter()))
-                 );
-                return http.build();
-    }
-    @Bean
-    JwtDecoder jwtDecoder(){
-        SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(),"HS256");
-        return NimbusJwtDecoder
-                .withSecretKey(secretKeySpec)
-                .macAlgorithm(MacAlgorithm.HS256)
-                .build();
-    }
-    @Bean
-    JwtAuthenticationConverter jwtAuthenticationConverter(){
-        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
-        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
-        return  jwtAuthenticationConverter;
-    }
+  @Bean
+  JwtAuthenticationConverter jwtAuthenticationConverter() {
+    JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+    jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
+    JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+    jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+    return jwtAuthenticationConverter;
+  }
 }

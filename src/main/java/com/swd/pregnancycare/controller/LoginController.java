@@ -26,10 +26,6 @@ public class LoginController {
     @Autowired
     private LoginServices loginServices;
 
-
-
-
-
     @Operation(
             summary = "User Login",
             description = "Authenticate user with email and password to receive a JWT token",
@@ -46,10 +42,7 @@ public class LoginController {
                                 )
                             )
                     ),
-
-
             }
-
     )
     @PostMapping("/login")
     public ResponseEntity<?> login(

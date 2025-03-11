@@ -37,7 +37,6 @@ public class LoginServices  {
 
             if(passwordEncoder.matches(password, userEntity.getPassword()))
                 token = generateToken(userEntity);
-
         }
         return token;
     }
