@@ -6,11 +6,12 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.swd.pregnancycare.entity.UserEntity;
 import com.swd.pregnancycare.repository.RoleRepo;
 import com.swd.pregnancycare.repository.UserRepo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
+
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -20,6 +21,7 @@ import java.util.Optional;
 import java.util.StringJoiner;
 
 @Service
+@Slf4j
 public class LoginServices  {
     @Autowired
     private UserRepo userRepo;
@@ -29,6 +31,7 @@ public class LoginServices  {
     private RoleRepo roleRepo;
     @Value("${jwt.key}")
     private String keyjwt;
+
     public String login(String email, String password){
         String token="";
         Optional<UserEntity> user = userRepo.findByEmail(email);
@@ -56,6 +59,7 @@ public class LoginServices  {
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
         JWSObject jwsObject = new JWSObject(header,payload);
         try {
+            log.info("key: "+keyjwt);
             jwsObject.sign(new MACSigner(keyjwt.getBytes()));
             return jwsObject.serialize();
         } catch (JOSEException e) {
