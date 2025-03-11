@@ -11,4 +11,5 @@ public interface FetusServices {
     FetusDTO saveFetus(FetusRequest fetusRequest);
     void deleteFetus(int id);
     void updateFetus(FetusRequest fetusRequest, int id);
+
 }

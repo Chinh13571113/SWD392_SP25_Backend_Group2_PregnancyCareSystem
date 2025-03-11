@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity(name = "fetus")
 @Data
@@ -23,4 +24,7 @@ public class FetusEntity {
     @ManyToOne
     @JoinColumn(name = "id_user", nullable = false)
     private UserEntity user;
+    @OneToMany(mappedBy = "fetus")
+    Set<FetusRecordEntity> fetuses;
+
 }
