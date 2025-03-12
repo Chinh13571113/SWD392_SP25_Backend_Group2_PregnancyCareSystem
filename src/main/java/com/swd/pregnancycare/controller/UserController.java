@@ -82,6 +82,7 @@ public class UserController {
         response.setCode(200);
         return ResponseEntity.ok(response);
     }
+
     @Operation(
             summary = "Create a new User",
             description = "User can create a new user",

@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface FetusServices {
     List<FetusDTO> getAllFetus();
-    void saveFetus(FetusRequest fetusRequest);
+    FetusDTO saveFetus(FetusRequest fetusRequest);
     void deleteFetus(int id);
     void updateFetus(FetusRequest fetusRequest, int id);
 
