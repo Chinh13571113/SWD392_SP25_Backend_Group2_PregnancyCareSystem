@@ -1,7 +1,6 @@
 package com.swd.pregnancycare.config;
 
 import com.swd.pregnancycare.enums.Role;
-import com.swd.pregnancycare.filter.CustomSecurityFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -61,7 +60,7 @@ public class SecurityConfig {
   }
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource, CustomSecurityFilter customSecurityFilter) throws Exception {
+  public SecurityFilterChain filterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
 
     http.csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource))
@@ -83,7 +82,7 @@ public class SecurityConfig {
 
   @Bean
   JwtDecoder jwtDecoder() {
-    SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS256");
+    SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HmacSHA256");
     return NimbusJwtDecoder
             .withSecretKey(secretKeySpec)
             .macAlgorithm(MacAlgorithm.HS256)

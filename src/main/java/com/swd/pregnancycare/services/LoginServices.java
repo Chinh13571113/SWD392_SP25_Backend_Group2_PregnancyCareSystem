@@ -9,6 +9,7 @@ import com.swd.pregnancycare.repository.UserRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,7 @@ public class LoginServices  {
     private String keyjwt;
 
     public String login(String email, String password){
+        SecurityContextHolder.clearContext();
         String token="";
         Optional<UserEntity> user = userRepo.findByEmail(email);
         if(user.isPresent()){
@@ -58,7 +60,8 @@ public class LoginServices  {
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
         JWSObject jwsObject = new JWSObject(header,payload);
         try {
-            log.info("key: "+keyjwt);
+//            log.info("key: "+keyjwt);
+//            log.info("Secret key length: " + keyjwt.getBytes().length);
             jwsObject.sign(new MACSigner(keyjwt.getBytes()));
             return jwsObject.serialize();
         } catch (JOSEException e) {

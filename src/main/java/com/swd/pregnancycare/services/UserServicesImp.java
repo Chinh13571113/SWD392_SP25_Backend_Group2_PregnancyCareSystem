@@ -34,7 +34,6 @@ public class UserServicesImp implements UserServices{
     @PreAuthorize("hasRole('ADMIN')")
     public List<UserDTO> getListUser() {
 
-
         return userRepo.findAll().stream().map(data->{
             UserDTO userDTO = new UserDTO();
             userDTO.setId(data.getId());
@@ -65,7 +64,6 @@ public class UserServicesImp implements UserServices{
         setDefaultRole(user);
         userRepo.save(user);
         return true;
-
     }
 
     @Override
@@ -79,7 +77,7 @@ public class UserServicesImp implements UserServices{
     private void setDefaultRole(UserEntity user) {
         if (user.getRole() == null) {
             // Truy vấn RoleEntity với tên "ROLE_USER"
-            RoleEntity defaultRole = roleRepo.findByName("ROLE_MEMBER")
+            RoleEntity defaultRole = roleRepo.findByName("MEMBER")
                     .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));  // Nếu không tìm thấy role "ROLE_USER"
             user.setRole(defaultRole);
         }
