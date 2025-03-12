@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 
 @Data
 public class FetusDTO {
-    private int idFetus;
-    private String nameFetus;
-    private LocalDateTime dateFetus;
-    private String genderFetus;
+    private int id;
+    private String name;
+    private LocalDateTime dueDate;
+    private String gender;
 }
