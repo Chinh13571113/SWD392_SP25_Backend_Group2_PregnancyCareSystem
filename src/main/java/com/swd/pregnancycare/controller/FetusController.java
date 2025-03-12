@@ -77,6 +77,61 @@ public class FetusController {
         response.setMessage("");
         return ResponseEntity.ok(response);
     }
+    @Operation(
+            summary = "Get My list Fetus",
+            description = "User can get all List Fetus",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "get list successful",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = BaseResponse.class),
+                                    examples = @ExampleObject(
+                                            name = "Success Response",
+                                            value = """
+    {
+      "code": 200,
+      "message": "Lấy danh sách thai nhi thành công",
+      "data": [
+        {
+          "id": 1,
+          "name": "Baby A",
+          "dueDate": "2025-07-10",
+          "gender": "Male",
+          "user": {
+            "id": 1,
+            "email": "user@example.com"
+          }
+        },
+        {
+          "id": 2,
+          "name": "Baby B",
+          "dueDate": "2025-08-15",
+          "gender": "Female",
+          "user": {
+            "id": 2,
+            "email": "user2@example.com"
+          }
+        }
+      ]
+    }
+    """
+                                    )
+                            )
+                    ),
+
+
+            }
+
+    )
+    @GetMapping("/MyFetus")
+    public ResponseEntity<?> getMyFetus(){
+        BaseResponse response = new BaseResponse();
+        response.setData(fetusServicesImp.getMyFetus());
+        response.setMessage("Success");
+        return ResponseEntity.ok(response);
+    }
 
     @Operation(
             summary = "Create a new Fetus",

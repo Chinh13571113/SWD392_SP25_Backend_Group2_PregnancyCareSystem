@@ -22,7 +22,7 @@ public class FetusEntity {
     private boolean status;
 
     @ManyToOne
-    @JoinColumn(name = "id_user", nullable = false)
+    @JoinColumn(name = "id_user")
     private UserEntity user;
     @OneToMany(mappedBy = "fetus")
     Set<FetusRecordEntity> fetuses;
