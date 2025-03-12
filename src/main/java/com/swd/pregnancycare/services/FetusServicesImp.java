@@ -1,6 +1,7 @@
 package com.swd.pregnancycare.services;
 
 import com.swd.pregnancycare.dto.FetusDTO;
+import com.swd.pregnancycare.dto.FetusRecodDTO;
 import com.swd.pregnancycare.entity.FetusEntity;
 import com.swd.pregnancycare.entity.UserEntity;
 import com.swd.pregnancycare.exception.AppException;
@@ -37,7 +38,6 @@ public class FetusServicesImp implements FetusServices {
     }).toList();
   }
 
-  @Transactional
   @Override
   @PreAuthorize("hasRole('MEMBER')")
   public FetusDTO saveFetus(FetusRequest fetusRequest) {
@@ -64,7 +64,6 @@ public class FetusServicesImp implements FetusServices {
     return fetusDTO;
   }
 
-  @Transactional
   @Override
   @PreAuthorize("hasRole('MEMBER')")
   public void deleteFetus(int id) {
@@ -73,7 +72,6 @@ public class FetusServicesImp implements FetusServices {
       fetusRepo.deleteById(fetus.get().getId());
   }
 
-  @Transactional
   @Override
   @PreAuthorize("hasRole('MEMBER')")
   public void updateFetus(FetusRequest fetusRequest, int id) {
@@ -82,6 +80,11 @@ public class FetusServicesImp implements FetusServices {
     fetusEntity.setName(fetusRequest.getName());
     fetusEntity.setGender(fetusRequest.getGender());
     fetusRepo.save(fetusEntity);
+  }
+
+  @Override
+  public List<FetusRecodDTO> getAllFetusRecord() {
+    return List.of();
   }
 
 }

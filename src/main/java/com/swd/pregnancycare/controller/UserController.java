@@ -132,16 +132,18 @@ public class UserController {
     )
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(
-            @PathVariable Long id,
+            @PathVariable int id,
             @Parameter(description = "User name", required = false, example = "John Doe")
             @RequestParam(required = false) String name,
             @Parameter(description = "User email", required = false, example = "john@example.com")
             @RequestParam(required = false) String email,
-            @Parameter(description = "User password", required = false, example = "newpassword123")
+            @Parameter(description = "User password", required = false, example = "new password")
             @RequestParam(required = false) String password) {
-
-
-        return ResponseEntity.ok("Registered user");
+      BaseResponse response = new BaseResponse();
+      userServicesImp.updateUser(id, name, email, password);
+      response.setCode(200);
+      response.setMessage("Updated user successfully");
+      return ResponseEntity.ok(response);
     }
 
     @Operation(

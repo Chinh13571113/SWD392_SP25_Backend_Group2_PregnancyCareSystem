@@ -1,7 +1,6 @@
 package com.swd.pregnancycare.exception;
 
 import com.swd.pregnancycare.response.BaseResponse;
-import org.springframework.expression.AccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;

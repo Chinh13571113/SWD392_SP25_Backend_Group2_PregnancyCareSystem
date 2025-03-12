@@ -27,7 +27,6 @@ public class BlogServiceImp implements BlogServices {
   @Autowired
   private UserRepo userRepo;
 
-  @Transactional
   @Override
   public void saveBlog(BlogRequest blog) {
     Optional<UserEntity> user = userRepo.findByEmail(blog.getEmail());
@@ -46,7 +45,6 @@ public class BlogServiceImp implements BlogServices {
   }
 
 
-  @Transactional
   @Override
   @PreAuthorize("hasAnyRole('ADMIN', 'MEMBER')")
   public List<BlogDTO> getAllBlogs() {
@@ -64,7 +62,6 @@ public class BlogServiceImp implements BlogServices {
     }).toList();
   }
 
-  @Transactional
   @Override
   public void deleteBlog(int id) {
     Optional<BlogEntity> blog = blogRepo.findById(id);
@@ -72,7 +69,6 @@ public class BlogServiceImp implements BlogServices {
     blogRepo.deleteById(blog.get().getId());
   }
 
-  @Transactional
   @Override
   public void updateBlog(BlogRequest blogRequest, int id) {
     BlogEntity blogEntity = blogRepo.findById(id)
