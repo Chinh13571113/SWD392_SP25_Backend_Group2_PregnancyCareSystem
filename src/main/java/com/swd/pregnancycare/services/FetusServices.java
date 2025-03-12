@@ -1,6 +1,7 @@
 package com.swd.pregnancycare.services;
 
 import com.swd.pregnancycare.dto.FetusDTO;
+import com.swd.pregnancycare.dto.FetusRecodDTO;
 import com.swd.pregnancycare.request.FetusRequest;
 import com.swd.pregnancycare.request.GroupRequest;
 
@@ -11,5 +12,6 @@ public interface FetusServices {
     FetusDTO saveFetus(FetusRequest fetusRequest);
     void deleteFetus(int id);
     void updateFetus(FetusRequest fetusRequest, int id);
+    List<FetusRecodDTO> getAllFetusRecord();
 
 }

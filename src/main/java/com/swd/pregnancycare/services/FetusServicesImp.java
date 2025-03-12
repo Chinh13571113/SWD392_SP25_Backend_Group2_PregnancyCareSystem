@@ -83,4 +83,5 @@ public class FetusServicesImp implements FetusServices {
     fetusEntity.setGender(fetusRequest.getGender());
     fetusRepo.save(fetusEntity);
   }
+
 }
