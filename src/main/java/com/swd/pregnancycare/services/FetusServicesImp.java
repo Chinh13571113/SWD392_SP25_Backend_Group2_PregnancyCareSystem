@@ -99,7 +99,7 @@ public class FetusServicesImp implements FetusServices {
     String name = context.getAuthentication().getName();
 
     UserEntity user =userRepo.findByEmail(name).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXIST));
-      log.info("{}", user.getId());
+
 
     return FetusMapper.INSTANCE.toListFetusDTO(fetusRepo.findByUserId(user.getId()));
   }

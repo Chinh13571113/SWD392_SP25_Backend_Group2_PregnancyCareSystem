@@ -131,12 +131,10 @@ public class UserController {
             }
     )
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateUser(
-            @PathVariable Long id,
-            @Parameter(description = "User name", required = false, example = "John Doe")
-            @RequestParam(required = false) String name,
-            @Parameter(description = "User email", required = false, example = "john@example.com")
-            @RequestParam(required = false) String email,
+    public ResponseEntity<?> changePassword(
+            @PathVariable int id,
+
+
             @Parameter(description = "User password", required = false, example = "newpassword123")
             @RequestParam(required = false) String password) {
 
