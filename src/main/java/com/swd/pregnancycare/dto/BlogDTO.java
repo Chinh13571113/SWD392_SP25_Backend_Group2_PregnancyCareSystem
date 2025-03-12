@@ -11,5 +11,5 @@ public class BlogDTO {
   private String description;
   private LocalDateTime datePublish;
   private boolean status;
-  private int userId;
+  private UserDTO user;
 }

@@ -3,6 +3,7 @@ package com.swd.pregnancycare.controller;
 import com.swd.pregnancycare.request.GroupRequest;
 import com.swd.pregnancycare.response.BaseResponse;
 import com.swd.pregnancycare.services.GroupServices;
+import com.swd.pregnancycare.services.GroupServicesImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -21,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @SecurityRequirement(name = "bearerAuth")
 public class GroupController {
   @Autowired
-  private GroupServices groupServices;
+  private GroupServicesImpl groupServicesImpl;
 
   @Operation(
           summary = "Save Group",
@@ -44,7 +45,7 @@ public class GroupController {
   )
   @PostMapping
   public ResponseEntity<?> saveGroup(@RequestBody GroupRequest group) {
-    groupServices.saveGroup(group);
+    groupServicesImpl.saveGroup(group);
     BaseResponse response = new BaseResponse();
     response.setCode(200);
     response.setMessage("Saved group successfully");
@@ -75,7 +76,7 @@ public class GroupController {
   public ResponseEntity<?> getAllBlogs() {
     BaseResponse response = new BaseResponse();
     response.setCode(200);
-    response.setData(groupServices.getAllGroups());
+    response.setData(groupServicesImpl.getAllGroups());
     response.setMessage("Got all groups successfully");
     return ResponseEntity.ok(response);
   }
@@ -101,7 +102,7 @@ public class GroupController {
   )
   @DeleteMapping("/{id}")
   public  ResponseEntity<?> deleteGroup(@PathVariable int id) {
-    groupServices.deleteGroup(id);
+    groupServicesImpl.deleteGroup(id);
     BaseResponse response = new BaseResponse();
     response.setCode(200);
     response.setMessage("Deleted group successfully");
@@ -131,7 +132,7 @@ public class GroupController {
   @PutMapping("/{id}")
   public ResponseEntity<?> updateGroup(@PathVariable int id,
                                                   @RequestBody GroupRequest groupRequest) {
-    groupServices.updateGroup(groupRequest, id);
+    groupServicesImpl.updateGroup(groupRequest, id);
 
     BaseResponse response = new BaseResponse();
     response.setCode(200);
