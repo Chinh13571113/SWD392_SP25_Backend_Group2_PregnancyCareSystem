@@ -1,9 +1,11 @@
 package com.swd.pregnancycare.controller;
 
+import com.swd.pregnancycare.dto.FetusRecodDTO;
 import com.swd.pregnancycare.request.FetusRequest;
 import com.swd.pregnancycare.response.BaseResponse;
 import com.swd.pregnancycare.services.FetusServicesImp;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -68,22 +70,22 @@ public class FetusRecordController {
             }
 
     )
-    @GetMapping()
-    public ResponseEntity<?> getAllFetusRecord(){
+    @GetMapping("/findById")
+    public ResponseEntity<?> getAllFetusRecord(@Parameter(description = "Id Fetus", required = true, example = "1") @RequestParam int fetusId){
         BaseResponse response = new BaseResponse();
-        response.setData(fetusServicesImp.getAllFetus());
+        response.setData(fetusServicesImp.getFetusRecordById(fetusId));
         response.setCode(200);
         response.setMessage("");
         return ResponseEntity.ok(response);
     }
 
     @Operation(
-            summary = "Create a new Fetus",
+            summary = "Save Fetus Record",
             description = "User can create a new Fetus",
             responses = {
                     @ApiResponse(
                             responseCode = "201",
-                            description = "Create fetus successful",
+                            description = "Save Fetus record successful",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = BaseResponse.class)
@@ -95,49 +97,24 @@ public class FetusRecordController {
                     )
             }
     )
-    @PostMapping()
+    @PostMapping("/save-fetus-record")
     @PreAuthorize("hasAuthority('ROLE_MEMBER')")
-    public ResponseEntity<?> createFetusRecord(@RequestBody FetusRequest fetusRequest) {
-        fetusServicesImp.saveFetus(fetusRequest);
+    public ResponseEntity<?> saveFetusRecord(@Parameter(description = "fetus Id is required", example = "1") @RequestParam int id,
+                                                @RequestBody FetusRecodDTO fetusRecordDto) {
+        fetusServicesImp.saveFetusRecord(id,fetusRecordDto);
         BaseResponse response = new BaseResponse();
         response.setCode(201);
-        response.setMessage("Successfully created fetus.");
+        response.setMessage("Successfully Saved fetus record.");
         return ResponseEntity.status(201).body(response);
     }
 
     // Operation to update a fetus
-    @Operation(
-            summary = "Update an existing Fetus Record",
-            description = "User can update an existing Fetus by providing the fetus ID",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Update fetus successful",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = BaseResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Fetus not found"
-                    )
-            }
-    )
-    @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_MEMBER')")
-    public ResponseEntity<?> updateFetusRecord(@RequestBody FetusRequest fetusRequest, @PathVariable int id) {
-        fetusServicesImp.updateFetus(fetusRequest, id);
-        BaseResponse response = new BaseResponse();
-        response.setCode(200);
-        response.setMessage("Successfully updated fetus with ID " + id);
-        return ResponseEntity.ok(response);
-    }
+
 
     // Operation to delete a fetus
     @Operation(
-            summary = "Delete an  Fetus Record",
-            description = "User can delete a fetus by providing the fetus ID",
+            summary = "Delete a Fetus Record",
+            description = "User can delete a fetus by providing the fetus record ID",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -156,9 +133,8 @@ public class FetusRecordController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ROLE_MEMBER')")
     public ResponseEntity<?> deleteFetusRecord(@PathVariable int id) {
-        fetusServicesImp.deleteFetus(id);
+        fetusServicesImp.deleteFetusRecord(id);
         BaseResponse response = new BaseResponse();
-        response.setCode(200);
         response.setMessage("Successfully deleted fetus with ID " + id);
         return ResponseEntity.ok(response);
     }

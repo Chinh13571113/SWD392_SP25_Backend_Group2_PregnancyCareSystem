@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity(name = "fetus_record")
 @Data
@@ -20,8 +21,13 @@ public class FetusRecordEntity {
     int id;
     BigDecimal weight;
     BigDecimal height;
+    @Column(name = "date_record")
+    LocalDateTime dateRecord;
+    @Column(name = "warning")
+    String warningMess;
     @ManyToOne
     @JoinColumn(name = "id_fetus")
     FetusEntity fetus;
+
 
 }
