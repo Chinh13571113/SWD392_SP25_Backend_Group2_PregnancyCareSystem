@@ -1,5 +1,6 @@
 package com.swd.pregnancycare.controller;
 
+import com.swd.pregnancycare.dto.FetusDTO;
 import com.swd.pregnancycare.request.FetusRequest;
 import com.swd.pregnancycare.response.BaseResponse;
 import com.swd.pregnancycare.services.FetusServicesImp;
@@ -96,12 +97,13 @@ public class FetusController {
             }
     )
     @PostMapping()
-    @PreAuthorize("hasAuthority('ROLE_MEMBER')")
+    @PreAuthorize("hasAuthority('MEMBER')")
     public ResponseEntity<?> createFetus(@RequestBody FetusRequest fetusRequest) {
-        fetusServicesImp.saveFetus(fetusRequest);
+        FetusDTO fetusDTO = fetusServicesImp.saveFetus(fetusRequest);
         BaseResponse response = new BaseResponse();
         response.setCode(201);
         response.setMessage("Successfully created fetus.");
+        response.setData(fetusDTO);
         return ResponseEntity.status(201).body(response);
     }
 
@@ -125,7 +127,7 @@ public class FetusController {
             }
     )
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_MEMBER')")
+    @PreAuthorize("hasAuthority('MEMBER')")
     public ResponseEntity<?> updateFetus(@RequestBody FetusRequest fetusRequest, @PathVariable int id) {
         fetusServicesImp.updateFetus(fetusRequest, id);
         BaseResponse response = new BaseResponse();
@@ -154,7 +156,7 @@ public class FetusController {
             }
     )
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_MEMBER')")
+    @PreAuthorize("hasAuthority('MEMBER')")
     public ResponseEntity<?> deleteFetus(@PathVariable int id) {
         fetusServicesImp.deleteFetus(id);
         BaseResponse response = new BaseResponse();

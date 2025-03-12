@@ -25,7 +25,7 @@ public class FetusServicesImp implements FetusServices {
   private FetusRepo fetusRepo;
 
   @Override
-  @PreAuthorize("hasRole('ADMIN')")
+  @PreAuthorize("hasRole('MEMBER')")
   public List<FetusDTO> getAllFetus() {
     return fetusRepo.findAll().stream().map(data -> {
       FetusDTO fetusDTO = new FetusDTO();
@@ -39,7 +39,8 @@ public class FetusServicesImp implements FetusServices {
 
   @Transactional
   @Override
-  public void saveFetus(FetusRequest fetusRequest) {
+  @PreAuthorize("hasRole('MEMBER')")
+  public FetusDTO saveFetus(FetusRequest fetusRequest) {
     Optional<UserEntity> user = userRepo.findByEmail(fetusRequest.getEmail());
     // Is user exist
     if (user.isEmpty()) throw new AppException(ErrorCode.USER_NOT_EXIST);
@@ -49,14 +50,23 @@ public class FetusServicesImp implements FetusServices {
 
     newFetus.setName(fetusRequest.getName());
     newFetus.setGender(fetusRequest.getGender());
-    newFetus.setDueDate(LocalDateTime.now());
+    newFetus.setDueDate(fetusRequest.getDueDate());
     newFetus.setStatus(false);
     newFetus.setUser(userEntity);
-    fetusRepo.save(newFetus);
+    FetusEntity savedFetus = fetusRepo.save(newFetus);
+
+    FetusDTO fetusDTO = new FetusDTO();
+    fetusDTO.setIdFetus(savedFetus.getId());
+    fetusDTO.setNameFetus(savedFetus.getName());
+    fetusDTO.setGenderFetus(savedFetus.getGender());
+    fetusDTO.setDateFetus(savedFetus.getDueDate());
+
+    return fetusDTO;
   }
 
   @Transactional
   @Override
+  @PreAuthorize("hasRole('MEMBER')")
   public void deleteFetus(int id) {
       Optional<FetusEntity> fetus = fetusRepo.findById(id);
       if (fetus.isEmpty()) throw new AppException(ErrorCode.FETUS_NOT_EXIST);
@@ -65,6 +75,7 @@ public class FetusServicesImp implements FetusServices {
 
   @Transactional
   @Override
+  @PreAuthorize("hasRole('MEMBER')")
   public void updateFetus(FetusRequest fetusRequest, int id) {
     FetusEntity fetusEntity = fetusRepo.findById(id).orElseThrow(() -> new AppException(ErrorCode.FETUS_NOT_EXIST));
     fetusEntity.setDueDate(fetusRequest.getDueDate());

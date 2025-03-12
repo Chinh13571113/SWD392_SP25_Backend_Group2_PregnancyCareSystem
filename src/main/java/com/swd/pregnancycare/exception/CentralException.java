@@ -3,6 +3,7 @@ package com.swd.pregnancycare.exception;
 import com.swd.pregnancycare.response.BaseResponse;
 import org.springframework.expression.AccessException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -37,8 +38,8 @@ public class CentralException {
         response.setCode(errorCode.getCode());
         return ResponseEntity.internalServerError().body(response);
     }
-    @ExceptionHandler({AccessException.class})
-    public ResponseEntity<?> handleAccess(AccessException e){
+    @ExceptionHandler({AccessDeniedException.class})
+    public ResponseEntity<?> handleAccess(AccessDeniedException e){
         BaseResponse response = new BaseResponse();
         ErrorCode errorCode= ErrorCode.UNAUTHORIZED_EXCEPTION;
         response.setMessage(errorCode.getMessage());
