@@ -38,7 +38,14 @@ public enum ErrorCode {
 
 
 
+
     RECORD_NOT_EXIST(404, "record does not exist",HttpStatus.NOT_FOUND), DATA_NOT_FOUND(404,"Data not found" ,HttpStatus.NOT_FOUND ), APPOINTMENT_NOT_EXIST(404,"appointment not exist" ,HttpStatus.NOT_FOUND );
+
+
+
+
+    RECORD_NOT_EXIST(404, "record does not exist",HttpStatus.NOT_FOUND);
+
 
 
 
