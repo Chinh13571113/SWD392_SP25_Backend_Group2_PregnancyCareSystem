@@ -22,21 +22,34 @@ public class BlogEntity {
   @Column(name = "datePublish")
   private LocalDateTime datePublish;
   private boolean status;
+  @Column(name = "is_delete")
+  private Boolean deleted;
 
-  // Blog comments
-  @OneToMany(mappedBy = "blog")
-  private List<BlogCommentEntity> blogComments;
-  // Blog categories
-  @OneToMany(mappedBy = "blog")
-  private List<BlogCategoryEntity> blogCategories;
+
+
   // User
   @ManyToOne
   @JoinColumn(name = "id_user")
   private UserEntity user;
+
+
   //Group
   @ManyToOne
   @JoinColumn(name = "id_group")
   private GroupEntity group;
+
+
+  // Blog categories
+  @ManyToOne
+  @JoinColumn(name = "id_category")
+  private BlogCategoryEntity blogCategory;
+
+
+  // Blog comments
+  @OneToMany(mappedBy = "blog")
+  private List<BlogCommentEntity> blogComments;
+
+
 
   public boolean getStatus() {
     return status;

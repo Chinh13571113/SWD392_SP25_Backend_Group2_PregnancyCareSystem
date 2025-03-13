@@ -41,9 +41,12 @@ public class UserEntity {
     // Blogs
     @OneToMany(mappedBy ="user")
     private List<BlogEntity> blogs;
+
+
     // Blog comments
     @OneToMany(mappedBy = "user")
     private List<BlogCommentEntity> blogComments;
+
 
     //Group
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)

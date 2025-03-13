@@ -26,6 +26,7 @@ public enum ErrorCode {
     REGISTER_FAILED(400,"register failed",HttpStatus.BAD_REQUEST ),
     BLOG_NOT_EXIST(404,"blog not found",HttpStatus.NOT_FOUND),
     GROUP_NOT_EXIST(404, "group not existed",HttpStatus.NOT_FOUND),
+    GROUP_EXIST(400,"group existed",HttpStatus.BAD_REQUEST),
     GROUP_HAS_USER_ALREADY(999, "group has a user already",HttpStatus.CONFLICT),
     FETUS_NOT_EXIST(403, "fetus not existed",HttpStatus.BAD_REQUEST),
 
@@ -35,6 +36,12 @@ public enum ErrorCode {
     ADVICE_NOT_EXIST(404, "advice not existed", HttpStatus.NOT_FOUND),
     ADVICE_DELETE_FAILED(500, "delete advice error", HttpStatus.INTERNAL_SERVER_ERROR),
     ADVICE_UPDATE_FAILED(500, "update advice error", HttpStatus.INTERNAL_SERVER_ERROR),
+
+
+    BLOG_CATEGORY_EXIST(400, "blog category existed", HttpStatus.BAD_REQUEST),
+    BLOG_CATEGORY_NOT_EXIST(404,"blog category not existed",HttpStatus.NOT_FOUND),
+    BLOG_CATEGORY_DELETE_FAILED(500, "delete blog category error", HttpStatus.INTERNAL_SERVER_ERROR),
+    BLOG_CATEGORY_UPDATE_FAILED(500, "update blog category error", HttpStatus.INTERNAL_SERVER_ERROR),
 
 
 

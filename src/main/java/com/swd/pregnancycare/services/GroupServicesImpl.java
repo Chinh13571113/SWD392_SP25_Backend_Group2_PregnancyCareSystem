@@ -23,17 +23,19 @@ public class GroupServicesImpl implements GroupServices {
   private UserRepo userRepo;
 
   @Override
-  public void saveGroup(GroupRequest group) {
-    Optional<UserEntity> user = userRepo.findByEmail(group.getOwner_email());
-    // Is user exist
-    if (user.isEmpty()) throw new AppException(ErrorCode.USER_NOT_EXIST);
+  public void saveGroup(GroupRequest groupRequest) {
+    Optional<UserEntity> user = userRepo.findByEmail(groupRequest.getOwner_email());
+    Optional<GroupEntity> group = groupRepo.findByName(groupRequest.getName());
+
+    if(user.isEmpty()) throw new AppException(ErrorCode.USER_NOT_EXIST);
+    if(group.isPresent()) throw new AppException(ErrorCode.GROUP_EXIST);
 
     try {
       UserEntity userEntity = user.get();
       GroupEntity newGroup = new GroupEntity();
 
-      newGroup.setName(group.getName());
-      newGroup.setDescription(group.getDescription());
+      newGroup.setName(groupRequest.getName());
+      newGroup.setDescription(groupRequest.getDescription());
       newGroup.setUser(userEntity);
       newGroup.setDate(LocalDateTime.now());
       groupRepo.save(newGroup);

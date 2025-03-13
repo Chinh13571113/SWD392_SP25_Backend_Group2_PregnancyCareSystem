@@ -60,8 +60,6 @@ public class LoginServices  {
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
         JWSObject jwsObject = new JWSObject(header,payload);
         try {
-//            log.info("key: "+keyjwt);
-//            log.info("Secret key length: " + keyjwt.getBytes().length);
             jwsObject.sign(new MACSigner(keyjwt.getBytes()));
             return jwsObject.serialize();
         } catch (JOSEException e) {

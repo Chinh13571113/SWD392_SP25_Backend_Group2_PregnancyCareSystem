@@ -1,11 +1,8 @@
 package com.swd.pregnancycare.controller;
 
-import com.swd.pregnancycare.dto.FetusDTO;
-import com.swd.pregnancycare.request.FetusRequest;
 import com.swd.pregnancycare.response.BaseResponse;
-import com.swd.pregnancycare.services.AdviceServiceImpl;
+import com.swd.pregnancycare.services.BlogCategoryServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -13,53 +10,24 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(value = "/api/advices")
+@RequestMapping(value = "/api/blog-categories")
 @CrossOrigin
-@Tag(name = "Advice API", description = "API for Advices")
-public class AdviceController {
+@Tag(name = "Blog category API", description = "API for Blog category")
+public class BlogCategoryController {
   @Autowired
-  private AdviceServiceImpl adviceServiceImpl;
+  private BlogCategoryServiceImpl blogCategoryServiceImpl;
+
 
   @Operation(
-          summary = "Create a new advice",
-          description = "Member can create a new advice",
+          summary = "Create a new blog category",
+          description = "ADMIN can Create a new blog category",
           responses = {
                   @ApiResponse(
                           responseCode = "200",
-                          description = "Created advice successful",
-                          content = @Content(
-                                  mediaType = "application/json",
-                                  schema = @Schema(implementation = BaseResponse.class)
-                          )
-                  ),
-                  @ApiResponse(
-                          responseCode = "400",
-                          description = "Invalid input provided"
-                  )
-          }
-  )
-  @PostMapping()
-  public ResponseEntity<?> createAdvice(@RequestParam int id,
-                                        @RequestParam String title,
-                                        @RequestParam String description) {
-    adviceServiceImpl.saveAdvice(id, title, description);
-    BaseResponse response = new BaseResponse();
-    response.setCode(200);
-    response.setMessage("Created advice successfully");
-    return ResponseEntity.ok(response);
-  }
-
-  @Operation(
-          summary = "Get all advices",
-          description = "Member can get all advices",
-          responses = {
-                  @ApiResponse(
-                          responseCode = "200",
-                          description = "got advice list successfully",
+                          description = "Created blog category successfully",
                           content = @Content(
                                   mediaType = "application/json",
                                   schema = @Schema(implementation = BaseResponse.class),
@@ -68,33 +36,66 @@ public class AdviceController {
                                           value = """
 {
   "code": 200,
-  "message": "got advice list successfully",
+  "message": "Created blog category successfully"
+}
+"""
+                                  )
+                          )
+                  )
+          }
+  )
+  @PostMapping()
+  public ResponseEntity<?> createBlogCategory(@RequestParam String name,
+                                              @RequestParam String description) {
+    blogCategoryServiceImpl.saveBlogCategory(name, description);
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setMessage("Created blog category successfully");
+    return ResponseEntity.ok(response);
+  }
+
+
+  @Operation(
+          summary = "Get all blog categories",
+          description = "MEMBER or EXPERT or ADMIN can get all blog categories",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "got blog categories list successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = BaseResponse.class),
+                                  examples = @ExampleObject(
+                                          name = "Success Response",
+                                          value = """
+{
+  "code": 200,
+  "message": "got blog categories list successfully",
   "data": [
     {
       "id": 1,
-      "title": "Something",
+      "name": "Something",
+      "slug": "something",
       "description": "Something",
-      "status": "false",
-      "answer": "answered",
-      "fetus": {
-        "id": 2,
-        "name": "Baby B",
-        "dueDate": "2025-08-15",
-        "gender": "girl"
-      }
-    },
-    {
-      "id": 2,
-      "title": "Something 2",
-      "description": "Something 2",
-      "status": "true",
-      "answer": "answered 2",
-      "fetus": {
-        "id": 3,
-        "name": "Baby A",
-        "dueDate": "2025-08-15",
-        "gender": "boy"
-      }
+      "datePublish": "2025-03-13T10:15:30",
+      "blogs": [
+         {
+            "id": 2,
+            "title": "Baby B",
+            "description": "Something",
+            "datePublish": "2025-03-13T11:00:00",
+            "status": false,
+            "user": "mem@gmail.com"
+         },
+         {
+            "id": 3,
+            "title": "Baby C",
+            "description": "Something else",
+            "datePublish": "2025-03-13T11:30:00",
+            "status": false,
+            "user": "mem@gmail.com"
+         }
+      ]
     }
   ]
 }
@@ -104,23 +105,24 @@ public class AdviceController {
                   )
           }
   )
-
   @GetMapping()
-  public ResponseEntity<?> getAllAdvices(){
+  public ResponseEntity<?> getAllBlogCategories(){
     BaseResponse response = new BaseResponse();
     response.setCode(200);
-    response.setMessage("got advice list successfully");
-    response.setData(adviceServiceImpl.getAllAdvices());
+    response.setMessage("got blog category list successfully");
+    response.setData(blogCategoryServiceImpl.getAllBlogCategories());
     return ResponseEntity.ok(response);
   }
 
+
+
   @Operation(
-          summary = "Delete advice",
-          description = "Expert delete advice",
+          summary = "Delete blog category",
+          description = "ADMIN can delete blog category",
           responses = {
                   @ApiResponse(
                           responseCode = "200",
-                          description = "Deleted advice successfully",
+                          description = "Deleted blog category successfully",
                           content = @Content(
                                   mediaType = "application/json",
                                   schema = @Schema(implementation = BaseResponse.class),
@@ -129,7 +131,7 @@ public class AdviceController {
                                           value = """
 {
   "code": 200,
-  "message": "Deleted advice successfully"
+  "message": "Deleted blog category successfully"
 }
 """
                                   )
@@ -139,21 +141,23 @@ public class AdviceController {
   )
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<?> deleteAdvice(@PathVariable int id){
+  public ResponseEntity<?> deleteBlogCategory(@PathVariable int id){
     BaseResponse response = new BaseResponse();
-    adviceServiceImpl.deleteAdvice(id);
+    blogCategoryServiceImpl.deleteBlogCategory(id);
     response.setCode(200);
-    response.setMessage("Deleted advice successfully");
+    response.setMessage("Deleted blog category successfully");
     return ResponseEntity.ok(response);
   }
 
+
+
   @Operation(
-                  summary = "Update advice",
-                  description = "Expert update advice",
-                  responses = {
-                          @ApiResponse(
+          summary = "Update blog category",
+          description = "ADMIN update blog category",
+          responses = {
+                  @ApiResponse(
                           responseCode = "200",
-                          description = "Updated advice successfully",
+                          description = "Updated blog category successfully",
                           content = @Content(
                                   mediaType = "application/json",
                                   schema = @Schema(implementation = BaseResponse.class),
@@ -162,7 +166,7 @@ public class AdviceController {
                                           value = """
 {
   "code": 200,
-  "message": "Updated advice successfully"
+  "message": "Updated blog category successfully"
 }
 """
                                   )
@@ -172,11 +176,11 @@ public class AdviceController {
   )
 
   @PutMapping("/{id}")
-  public ResponseEntity<?> updateAdvice(@PathVariable int id, @RequestParam String answer, @RequestParam boolean status){
+  public ResponseEntity<?> updateAdvice(@PathVariable int id, @RequestParam String name, @RequestParam String description){
     BaseResponse response = new BaseResponse();
-    adviceServiceImpl.updateAdvice(id, answer, status);
+    blogCategoryServiceImpl.updateBlogCategory(id, name, description);
     response.setCode(200);
-    response.setMessage("Updated advice successfully");
+    response.setMessage("Updated blog category successfully");
     return ResponseEntity.ok(response);
   }
 }
