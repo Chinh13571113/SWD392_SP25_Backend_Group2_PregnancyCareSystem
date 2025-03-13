@@ -30,7 +30,12 @@ public class FetusEntity {
     @JoinColumn(name = "id_user")
     private UserEntity user;
     @OneToMany(mappedBy = "fetus")
-    Set<FetusRecordEntity> fetuses;
+    private Set<FetusRecordEntity> fetuses;
+
+
+    @OneToMany(mappedBy = "fetus")
+    List<AppointmentEntity> appointmentList;
+
 
     // Advice
     @OneToMany(mappedBy = "fetus")

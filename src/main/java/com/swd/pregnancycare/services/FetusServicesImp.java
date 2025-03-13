@@ -19,6 +19,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +34,8 @@ public class FetusServicesImp implements FetusServices {
   private FetusRepo fetusRepo;
   @Autowired
   private FetusRecordRepo fetusRecordRepo;
+  @Autowired
+  private LoginServices loginServices;
 
   @Override
   @PreAuthorize("hasRole('MEMBER')")
@@ -94,13 +99,9 @@ public class FetusServicesImp implements FetusServices {
   }
 
   @Override
+  @PreAuthorize("hasRole('MEMBER')")
   public List<FetusDTO> getMyFetus() {
-    var context = SecurityContextHolder.getContext();
-    String name = context.getAuthentication().getName();
-
-    UserEntity user =userRepo.findByEmail(name).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXIST));
-      log.info("{}", user.getId());
-
+    UserEntity user = loginServices.getUser();
     return FetusMapper.INSTANCE.toListFetusDTO(fetusRepo.findByUserId(user.getId()));
   }
 
@@ -132,6 +133,22 @@ public class FetusServicesImp implements FetusServices {
     Optional<FetusRecordEntity> fetusRecord = fetusRecordRepo.findById(id);
     if (fetusRecord.isEmpty()) throw new AppException(ErrorCode.RECORD_NOT_EXIST);
     fetusRecordRepo.deleteById(fetusRecord.get().getId());
+  }
+
+  @Override
+  public int getFetusWeek(int id) {
+    FetusEntity fetusEntity = fetusRepo.findById(id).orElseThrow(()->new AppException(ErrorCode.FETUS_NOT_EXIST));
+    LocalDate dueDate  = fetusEntity.getDueDate().toLocalDate();
+    LocalDate today = LocalDate.now();
+    long daysUntilDueDate = ChronoUnit.DAYS.between(today, dueDate);
+
+    // Tính số tuần còn lại
+    int weeksUntilDueDate = (int) (daysUntilDueDate / 7);
+
+    // Tính tuần thai hiện tại
+    int currentWeek = 40 - weeksUntilDueDate;
+
+    return Math.max(1, Math.min(40, currentWeek));
   }
 
 }

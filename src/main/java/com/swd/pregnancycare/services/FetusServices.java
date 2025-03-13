@@ -15,5 +15,7 @@ public interface FetusServices {
     List<FetusRecodDTO> getFetusRecordById(int id);
     void saveFetusRecord(int id, FetusRecodDTO fetusRecodDTO);
     void deleteFetusRecord(int id);
+    int getFetusWeek(int id);
+
 
 }
