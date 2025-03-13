@@ -75,6 +75,28 @@ public class UserServicesImp implements UserServices{
         return UserMapper.INSTANCE.toUserResponse(user);
     }
 
+    @Override
+    @PreAuthorize("hasRole('MEMBER')")
+    public void updateUser(int id, String fullName, String email, String password) {
+        // Update user
+        if(password == null) {
+            if(userRepo.existsByEmail(email) && !userRepo.findById(id).map(UserEntity::getEmail).orElse("").equals(email)) {
+                throw new AppException(ErrorCode.USER_EXIST);
+            }
+            Optional<UserEntity> user = userRepo.findById(id);
+            UserEntity newUser = user.get();
+            newUser.setEmail(email);
+            newUser.setFullName(fullName);
+            userRepo.save(newUser);
+        }
+        // Change password
+        else {
+            UserEntity user = userRepo.findById(id).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXIST));
+            user.setPassword(passwordEncoder.encode(password)); // Mã hóa mật khẩu
+            userRepo.save(user);
+        }
+    }
+
     private void setDefaultRole(UserEntity user) {
         if (user.getRole() == null) {
             // Truy vấn RoleEntity với tên "ROLE_USER"
