@@ -1,6 +1,5 @@
 package com.swd.pregnancycare.services;
 
-import com.swd.pregnancycare.dto.BlogDTO;
 import com.swd.pregnancycare.dto.GroupDTO;
 import com.swd.pregnancycare.entity.GroupEntity;
 import com.swd.pregnancycare.entity.UserEntity;
@@ -9,8 +8,6 @@ import com.swd.pregnancycare.exception.ErrorCode;
 import com.swd.pregnancycare.repository.GroupRepo;
 import com.swd.pregnancycare.repository.UserRepo;
 import com.swd.pregnancycare.request.GroupRequest;
-import com.swd.pregnancycare.response.BaseResponse;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +22,6 @@ public class GroupServicesImpl implements GroupServices {
   @Autowired
   private UserRepo userRepo;
 
-  @Transactional
   @Override
   public void saveGroup(GroupRequest group) {
     Optional<UserEntity> user = userRepo.findByEmail(group.getOwner_email());
@@ -46,7 +42,6 @@ public class GroupServicesImpl implements GroupServices {
     }
   }
 
-  @Transactional
   @Override
   public List<GroupDTO> getAllGroups() {
     return groupRepo.findAll().stream().map(data -> {
@@ -62,7 +57,6 @@ public class GroupServicesImpl implements GroupServices {
     }).toList();
   }
 
-  @Transactional
   @Override
   public void deleteGroup(int id) {
     GroupEntity groupEntity = groupRepo.findById(id)
@@ -78,7 +72,6 @@ public class GroupServicesImpl implements GroupServices {
     groupRepo.delete(groupEntity);
   }
 
-  @Transactional
   @Override
   public void updateGroup(GroupRequest groupRequest, int id) {
     GroupEntity groupEntity = groupRepo.findById(id)

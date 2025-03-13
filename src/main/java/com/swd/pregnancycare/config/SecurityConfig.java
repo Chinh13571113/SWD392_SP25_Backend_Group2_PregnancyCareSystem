@@ -67,9 +67,7 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(request ->
                     {
-                      request
-                              .requestMatchers("/api/groups/**").permitAll()
-                              .requestMatchers(AUTH_WHITELIST).permitAll().anyRequest().authenticated();
+                      request.requestMatchers(AUTH_WHITELIST).permitAll().anyRequest().authenticated();
 
                     }
             );

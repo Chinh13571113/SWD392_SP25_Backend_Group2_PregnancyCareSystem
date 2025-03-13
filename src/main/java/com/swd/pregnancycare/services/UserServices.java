@@ -12,5 +12,5 @@ public interface UserServices {
     Boolean deleteUserById(int id);
     Boolean createUser(UserRequest request);
     UserResponse getMyInfo();
-
+    void updateUser(int id, String fullName, String email, String password);
 }
