@@ -1,7 +1,9 @@
 package com.swd.pregnancycare.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -9,20 +11,16 @@ import java.util.List;
 
 @Entity(name = "blog")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class BlogEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
-  @Column(name = "title")
   private String title;
-
-  @Column(name = "description")
   private String description;
-
   @Column(name = "datePublish")
   private LocalDateTime datePublish;
-
-  @Column(name = "status")
   private boolean status;
 
   // Blog comments

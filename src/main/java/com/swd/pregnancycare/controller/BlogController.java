@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/api/blogs")
 @CrossOrigin
 @Tag(name = "Blog API", description = "API for Blog")
-
 public class BlogController {
   @Autowired
   private BlogServiceImp blogServiceImp;

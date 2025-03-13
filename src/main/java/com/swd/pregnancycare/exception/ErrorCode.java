@@ -30,7 +30,18 @@ public enum ErrorCode {
     FETUS_NOT_EXIST(403, "fetus not existed",HttpStatus.BAD_REQUEST),
 
 
+
+    ADVICE_SAVED_EXCEPTION(500, "save advice error", HttpStatus.INTERNAL_SERVER_ERROR),
+    ADVICE_NOT_EXIST(404, "advice not existed", HttpStatus.NOT_FOUND),
+    ADVICE_DELETE_FAILED(500, "delete advice error", HttpStatus.INTERNAL_SERVER_ERROR),
+    ADVICE_UPDATE_FAILED(500, "update advice error", HttpStatus.INTERNAL_SERVER_ERROR),
+
+
+
     RECORD_NOT_EXIST(404, "record does not exist",HttpStatus.NOT_FOUND);
+
+
+
 
 
     private int code;
