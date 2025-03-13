@@ -112,25 +112,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(
-            summary = "Update User information",
-            description = "User can update their information by providing the user ID",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "User updated successfully",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = BaseResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "User not found"
-                    )
-            }
-    )
-    @PutMapping("/{id}")
+
     public ResponseEntity<?> updateUser(
             @PathVariable int id,
             @Parameter(description = "User name", required = false, example = "John Doe")
@@ -138,6 +120,7 @@ public class UserController {
             @Parameter(description = "User email", required = false, example = "john@example.com")
             @RequestParam(required = false) String email,
             @Parameter(description = "User password", required = false, example = "new password")
+
             @RequestParam(required = false) String password) {
       BaseResponse response = new BaseResponse();
       userServicesImp.updateUser(id, name, email, password);

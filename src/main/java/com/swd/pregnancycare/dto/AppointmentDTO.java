@@ -1,21 +1,17 @@
 package com.swd.pregnancycare.dto;
 
-import com.swd.pregnancycare.entity.RoleEntity;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserDTO {
+public class AppointmentDTO {
 
-     int id;
-     String email;
-     String fullName;
-     String roles;
+    String event;
+    LocalDateTime dateIssue;
 
-     boolean status;
-
-
+    int idFetus;
 }
