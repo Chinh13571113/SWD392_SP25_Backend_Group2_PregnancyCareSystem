@@ -33,6 +33,9 @@ public class UserEntity {
     @JoinColumn(name = "id_role")
     private RoleEntity role;
 
+    @Column(name = "status")
+    private boolean status;
+
     @OneToMany(mappedBy = "user")
     private List<FetusEntity> fetus;
 
@@ -51,4 +54,6 @@ public class UserEntity {
     @ManyToMany(mappedBy = "users")
     private List<GroupEntity> groups;
 
+    @OneToMany(mappedBy = "users")
+    private List<AppointmentEntity> appointments;
 }

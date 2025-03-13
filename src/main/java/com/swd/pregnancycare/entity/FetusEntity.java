@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Entity(name = "fetus")
@@ -25,6 +26,9 @@ public class FetusEntity {
     @JoinColumn(name = "id_user")
     private UserEntity user;
     @OneToMany(mappedBy = "fetus")
-    Set<FetusRecordEntity> fetuses;
+    private Set<FetusRecordEntity> fetuses;
+
+    @OneToMany(mappedBy = "fetus")
+    List<AppointmentEntity> appointmentList;
 
 }

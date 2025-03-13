@@ -4,6 +4,8 @@ import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.swd.pregnancycare.entity.UserEntity;
+import com.swd.pregnancycare.exception.AppException;
+import com.swd.pregnancycare.exception.ErrorCode;
 import com.swd.pregnancycare.repository.RoleRepo;
 import com.swd.pregnancycare.repository.UserRepo;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Optional;
 import java.util.StringJoiner;
@@ -74,6 +75,12 @@ public class LoginServices  {
             stringJoiner.add(user.getRole().getName()); // Thêm tên role của user vào chuỗi
         }
         return stringJoiner.toString();
+    }
+
+    public  UserEntity getUser(){
+        var context = SecurityContextHolder.getContext();
+        String name = context.getAuthentication().getName();
+        return userRepo.findByEmail(name).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXIST));
     }
 
 }
