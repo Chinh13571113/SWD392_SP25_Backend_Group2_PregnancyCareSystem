@@ -1,6 +1,7 @@
 package com.swd.pregnancycare.services;
 
 import com.swd.pregnancycare.dto.BlogDTO;
+import com.swd.pregnancycare.dto.UserDTO;
 import com.swd.pregnancycare.entity.BlogEntity;
 import com.swd.pregnancycare.entity.GroupEntity;
 import com.swd.pregnancycare.entity.UserEntity;
@@ -14,6 +15,7 @@ import com.swd.pregnancycare.response.BaseResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,8 +29,8 @@ public class BlogServiceImp implements BlogServices {
     @Autowired
     private UserRepo userRepo;
 
-  @Transactional
   @Override
+  @PreAuthorize("hasAnyRole( 'MEMBER', 'EXPERT')")
   public void saveBlog(BlogRequest blog) {
     Optional<UserEntity> user = userRepo.findByEmail(blog.getEmail());
     if (user.isEmpty()) throw new AppException(ErrorCode.USER_NOT_EXIST);
@@ -46,8 +48,8 @@ public class BlogServiceImp implements BlogServices {
   }
 
 
-  @Transactional
   @Override
+  @PreAuthorize("hasAnyRole('ADMIN', 'MEMBER', 'EXPERT')")
   public List<BlogDTO> getAllBlogs() {
     return blogRepo.findAll().stream().map(data -> {
       BlogDTO blogDTO = new BlogDTO();
@@ -56,24 +58,28 @@ public class BlogServiceImp implements BlogServices {
       blogDTO.setDescription(data.getDescription());
       blogDTO.setDatePublish(data.getDatePublish());
       blogDTO.setStatus(data.getStatus());
-      if (data.getUser() != null) {
-        blogDTO.setUserId(data.getUser().getId());
-      }
+
+      UserDTO userDTO = new UserDTO();
+      userDTO.setId(data.getUser().getId());
+      userDTO.setEmail(data.getUser().getEmail());
+      userDTO.setFullName(data.getUser().getFullName());
+      userDTO.setRoles(data.getUser().getRole().getName());
+
+      blogDTO.setUser(userDTO);
       return blogDTO;
     }).toList();
   }
 
-  @Transactional
   @Override
+  @PreAuthorize("hasAnyRole( 'MEMBER', 'EXPERT')")
   public void deleteBlog(int id) {
     Optional<BlogEntity> blog = blogRepo.findById(id);
-    BaseResponse baseResponse = new BaseResponse();
     if (blog.isEmpty()) throw new AppException(ErrorCode.BLOG_NOT_EXIST);
     blogRepo.deleteById(blog.get().getId());
   }
 
-  @Transactional
   @Override
+  @PreAuthorize("hasAnyRole( 'MEMBER', 'EXPERT')")
   public void updateBlog(BlogRequest blogRequest, int id) {
     BlogEntity blogEntity = blogRepo.findById(id)
             .orElseThrow(() -> new AppException(ErrorCode.BLOG_NOT_EXIST));

@@ -1,5 +1,7 @@
 package com.swd.pregnancycare.controller;
 
+import com.swd.pregnancycare.dto.FetusDTO;
+import com.swd.pregnancycare.request.FetusRequest;
 import com.swd.pregnancycare.response.BaseResponse;
 import com.swd.pregnancycare.services.FetusServicesImp;
 import io.swagger.v3.oas.annotations.Operation;
@@ -68,12 +70,67 @@ public class FetusController {
 
     )
     @GetMapping()
-    @PreAuthorize("hasAuthority('ROLE_MEMBER)")
     public ResponseEntity<?> getAllFetus(){
         BaseResponse response = new BaseResponse();
         response.setData(fetusServicesImp.getAllFetus());
         response.setCode(200);
         response.setMessage("");
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "Get My list Fetus",
+            description = "User can get all List Fetus",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "get list successful",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = BaseResponse.class),
+                                    examples = @ExampleObject(
+                                            name = "Success Response",
+                                            value = """
+    {
+      "code": 200,
+      "message": "Lấy danh sách thai nhi thành công",
+      "data": [
+        {
+          "id": 1,
+          "name": "Baby A",
+          "dueDate": "2025-07-10",
+          "gender": "Male",
+          "user": {
+            "id": 1,
+            "email": "user@example.com"
+          }
+        },
+        {
+          "id": 2,
+          "name": "Baby B",
+          "dueDate": "2025-08-15",
+          "gender": "Female",
+          "user": {
+            "id": 2,
+            "email": "user2@example.com"
+          }
+        }
+      ]
+    }
+    """
+                                    )
+                            )
+                    ),
+
+
+            }
+
+    )
+    @GetMapping("/MyFetus")
+    public ResponseEntity<?> getMyFetus(){
+        BaseResponse response = new BaseResponse();
+        response.setData(fetusServicesImp.getMyFetus());
+        response.setMessage("Success");
         return ResponseEntity.ok(response);
     }
 
@@ -96,13 +153,13 @@ public class FetusController {
             }
     )
     @PostMapping()
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> createFetus() {
-        // Implement the logic to create a fetus
-        // For now, the method body is empty
+    @PreAuthorize("hasAuthority('MEMBER')")
+    public ResponseEntity<?> createFetus(@RequestBody FetusRequest fetusRequest) {
+        FetusDTO fetusDTO = fetusServicesImp.saveFetus(fetusRequest);
         BaseResponse response = new BaseResponse();
         response.setCode(201);
         response.setMessage("Successfully created fetus.");
+        response.setData(fetusDTO);
         return ResponseEntity.status(201).body(response);
     }
 
@@ -126,10 +183,9 @@ public class FetusController {
             }
     )
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> updateFetus(@PathVariable Long id) {
-        // Implement the logic to update a fetus
-        // For now, the method body is empty
+    @PreAuthorize("hasAuthority('MEMBER')")
+    public ResponseEntity<?> updateFetus(@RequestBody FetusRequest fetusRequest, @PathVariable int id) {
+        fetusServicesImp.updateFetus(fetusRequest, id);
         BaseResponse response = new BaseResponse();
         response.setCode(200);
         response.setMessage("Successfully updated fetus with ID " + id);
@@ -156,13 +212,68 @@ public class FetusController {
             }
     )
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> deleteFetus(@PathVariable Long id) {
-        // Implement the logic to delete a fetus
-        // For now, the method body is empty
+    @PreAuthorize("hasAuthority('MEMBER')")
+    public ResponseEntity<?> deleteFetus(@PathVariable int id) {
+        fetusServicesImp.deleteFetus(id);
         BaseResponse response = new BaseResponse();
         response.setCode(200);
         response.setMessage("Successfully deleted fetus with ID " + id);
+        return ResponseEntity.ok(response);
+    }
+    @Operation(
+            summary = "Get Fetus week",
+            description = "User can get Fetus week",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "get list successful",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = BaseResponse.class),
+                                    examples = @ExampleObject(
+                                            name = "Success Response",
+                                            value = """
+    {
+      "code": 200,
+      "message": "Lấy danh sách thai nhi thành công",
+      "data": [
+        {
+          "id": 1,
+          "name": "Baby A",
+          "dueDate": "2025-07-10",
+          "gender": "Male",
+          "user": {
+            "id": 1,
+            "email": "user@example.com"
+          }
+        },
+        {
+          "id": 2,
+          "name": "Baby B",
+          "dueDate": "2025-08-15",
+          "gender": "Female",
+          "user": {
+            "id": 2,
+            "email": "user2@example.com"
+          }
+        }
+      ]
+    }
+    """
+                                    )
+                            )
+                    ),
+
+
+            }
+
+    )
+    @GetMapping("/My-Fetus-Week/{id}")
+    @PreAuthorize("hasRole('MEMBER')")
+    public ResponseEntity<?> getFetusWeek(@PathVariable int id){
+        BaseResponse response = new BaseResponse();
+        response.setData(fetusServicesImp.getFetusWeek(id));
+        response.setMessage("Success");
         return ResponseEntity.ok(response);
     }
 }

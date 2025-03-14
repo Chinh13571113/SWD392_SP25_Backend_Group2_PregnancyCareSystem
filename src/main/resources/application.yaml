@@ -23,7 +23,7 @@ custom:
     port: ${REDIS_PORT:6379}
 
 jwt:
-  key: pYL/bFa3qdmZC52COcG3UO/Xd+vjJgpo42ucD7WRJRQ=
+  key: N3XlRl/GXHuZo2oepmSjKopRTYGGZAX7NhMEyrE3LxQYUbep/6cxK4siBnKwLUL5
 
 upload:
   path: C:\Users\DELL\Desktop\images

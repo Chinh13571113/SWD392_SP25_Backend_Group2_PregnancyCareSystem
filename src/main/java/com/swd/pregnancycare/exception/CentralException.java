@@ -2,9 +2,12 @@ package com.swd.pregnancycare.exception;
 
 import com.swd.pregnancycare.response.BaseResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
 
 import java.util.Objects;
 
@@ -24,7 +27,7 @@ public class CentralException {
         ErrorCode errorCode= e.getErrorCode();
         response.setMessage(errorCode.getMessage());
         response.setCode(errorCode.getCode());
-        return ResponseEntity.internalServerError().body(response);
+        return ResponseEntity.status(errorCode.getHttpStatusCode()).body(response);
     }
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity<?> handleValidation(MethodArgumentNotValidException e){
@@ -34,6 +37,22 @@ public class CentralException {
         response.setMessage(errorCode.getMessage());
         response.setCode(errorCode.getCode());
         return ResponseEntity.internalServerError().body(response);
+    }
+    @ExceptionHandler({AccessDeniedException.class})
+    public ResponseEntity<?> handleAccess(AccessDeniedException e){
+        BaseResponse response = new BaseResponse();
+        ErrorCode errorCode= ErrorCode.UNAUTHORIZED_EXCEPTION;
+        response.setMessage(errorCode.getMessage());
+        response.setCode(errorCode.getCode());
+        return ResponseEntity.status(errorCode.getHttpStatusCode()).body(response);
+    }
+    @ExceptionHandler({AuthenticationException.class})
+    public ResponseEntity<?> handleAuthenticate(AuthenticationException e){
+        BaseResponse response = new BaseResponse();
+        ErrorCode errorCode= ErrorCode.UNAUTHORIZED_EXCEPTION;
+        response.setMessage(errorCode.getMessage());
+        response.setCode(errorCode.getCode());
+        return ResponseEntity.status(errorCode.getHttpStatusCode()).body(response);
     }
 
 

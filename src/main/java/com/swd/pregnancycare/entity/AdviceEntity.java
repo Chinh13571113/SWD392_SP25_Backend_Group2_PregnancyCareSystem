@@ -1,24 +1,24 @@
 package com.swd.pregnancycare.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity(name = "advices")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class AdviceEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
-
-  @Column(name = "title")
   private String title;
-
-  @Column(name = "description")
   private String description;
-
-  @Column(name = "status")
   private boolean status;
-
-  @Column(name = "answer")
   private String answer;
+
+  @ManyToOne
+  @JoinColumn(name = "fetus_id")
+  private FetusEntity fetus;
 }
