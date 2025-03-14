@@ -21,7 +21,7 @@ public class ScheduleEntity {
     @Column(name = "date_remind")
     LocalDateTime dateRemind;
     @Column(name = "is_notified")
-    Boolean isNotify;
+    boolean isNotice;
     @Column(name = "type")
     String type;
     @ManyToOne
