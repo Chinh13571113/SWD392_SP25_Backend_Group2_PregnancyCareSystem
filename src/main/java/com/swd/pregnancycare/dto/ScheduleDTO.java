@@ -2,19 +2,22 @@ package com.swd.pregnancycare.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 
-public class AppointmentDTO {
-
-    String event;
-    LocalDateTime dateIssue;
-
-    int idFetus;
+public class ScheduleDTO {
+    int appointmentId;
+    String notify;
+    boolean isNotice;
+    String type;
 }
