@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity(name = "appointment")
 @Data
@@ -25,4 +26,6 @@ public class AppointmentEntity {
     @ManyToOne
     @JoinColumn(name = "id_fetus")
     FetusEntity fetus;
+    @OneToMany(mappedBy = "appointment")
+    List<ScheduleEntity> schedules;
 }
