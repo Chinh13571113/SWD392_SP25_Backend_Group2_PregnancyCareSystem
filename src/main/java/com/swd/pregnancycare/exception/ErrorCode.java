@@ -45,6 +45,9 @@ public enum ErrorCode {
     BLOG_CATEGORY_UPDATE_FAILED(500, "update blog category error", HttpStatus.INTERNAL_SERVER_ERROR),
 
 
+    BLOG_COMMENT_SAVED_EXCEPTION(500, "save blog comment error", HttpStatus.INTERNAL_SERVER_ERROR),
+    BLOG_COMMENT_NOT_EXIST(404,"blog comment not existed",HttpStatus.NOT_FOUND),
+
 
     RECORD_NOT_EXIST(404, "record does not exist",HttpStatus.NOT_FOUND),
     DATA_NOT_FOUND(404,"Data not found" ,HttpStatus.NOT_FOUND ),

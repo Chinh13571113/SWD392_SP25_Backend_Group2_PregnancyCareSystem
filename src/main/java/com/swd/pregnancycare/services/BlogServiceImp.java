@@ -1,5 +1,6 @@
 package com.swd.pregnancycare.services;
 
+import com.swd.pregnancycare.dto.BlogCommentDTO;
 import com.swd.pregnancycare.dto.BlogDTO;
 import com.swd.pregnancycare.dto.UserDTO;
 import com.swd.pregnancycare.entity.BlogEntity;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BlogServiceImp implements BlogServices {
@@ -65,8 +67,30 @@ public class BlogServiceImp implements BlogServices {
               userDTO.setEmail(data.getUser().getEmail());
               userDTO.setFullName(data.getUser().getFullName());
               userDTO.setRoles(data.getUser().getRole().getName());
-
               blogDTO.setUser(userDTO);
+
+              if(data.getBlogComments() != null) {
+                List<BlogCommentDTO> blogCommentDTOS = data.getBlogComments().stream().map(blogCommentEntity->{
+                  BlogCommentDTO blogCommentDTO = new BlogCommentDTO();
+
+                  blogCommentDTO.setId(blogCommentEntity.getId());
+                  blogCommentDTO.setDescription(blogCommentEntity.getDescription());
+                  blogCommentDTO.setDatePublish(blogCommentEntity.getDatePublish());
+
+                  UserDTO userCommentDTO = new UserDTO();
+                  userCommentDTO.setId(blogCommentEntity.getUser().getId());
+                  userCommentDTO.setEmail(blogCommentEntity.getUser().getEmail());
+                  userCommentDTO.setFullName(blogCommentEntity.getUser().getFullName());
+                  userCommentDTO.setRoles(blogCommentEntity.getUser().getRole().getName());
+                  userCommentDTO.setStatus(blogCommentEntity.getUser().isStatus());
+
+                  blogCommentDTO.setUser(userCommentDTO);
+
+                  return blogCommentDTO;
+                }).collect(Collectors.toList());
+                blogDTO.setBlogComments(blogCommentDTOS);
+              }
+
               return blogDTO;
             })
             .toList();

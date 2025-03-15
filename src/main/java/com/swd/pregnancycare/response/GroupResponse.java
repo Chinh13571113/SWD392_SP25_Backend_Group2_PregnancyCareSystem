@@ -1,21 +1,17 @@
-package com.swd.pregnancycare.dto;
+package com.swd.pregnancycare.response;
 
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BlogDTO {
+public class GroupResponse {
    int id;
-   String title;
+   String name;
    String description;
+   UserResponse owner;
    LocalDateTime datePublish;
-   boolean status;
-   Boolean deleted;
-   UserDTO user;
-   List<BlogCommentDTO> blogComments;
 }

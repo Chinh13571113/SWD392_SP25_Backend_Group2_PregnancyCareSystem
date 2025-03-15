@@ -1,5 +1,6 @@
 package com.swd.pregnancycare.dto;
 
+
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -9,13 +10,10 @@ import java.util.List;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BlogDTO {
-   int id;
-   String title;
-   String description;
-   LocalDateTime datePublish;
-   boolean status;
-   Boolean deleted;
-   UserDTO user;
-   List<BlogCommentDTO> blogComments;
+public class BlogCommentDTO {
+  int id;
+  String description;
+  LocalDateTime datePublish;
+  UserDTO user;
+  BlogDTO blog;
 }
