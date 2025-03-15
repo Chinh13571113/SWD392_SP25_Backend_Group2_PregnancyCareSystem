@@ -2,6 +2,7 @@ package com.swd.pregnancycare.controller;
 
 import com.swd.pregnancycare.request.GroupRequest;
 import com.swd.pregnancycare.response.BaseResponse;
+import com.swd.pregnancycare.response.GroupResponse;
 import com.swd.pregnancycare.services.GroupServicesImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -160,6 +161,31 @@ public class GroupController {
     BaseResponse response = new BaseResponse();
     response.setCode(200);
     response.setMessage("User registered to group successfully");
+    return ResponseEntity.ok(response);
+  }
+
+
+
+  @Operation(
+          summary = "Get Group Details",
+          description = "MEMBER or EXPERT can get a group",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "Got a group successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = GroupResponse.class)
+                          )
+                  )
+          }
+  )
+  @GetMapping("/{groupId}")
+  public ResponseEntity<?> getAllBlogsOfGroup(@PathVariable int groupId) {
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setMessage("Got a group successfully");
+    response.setData(groupServicesImpl.getAllBlogsOfGroup(groupId));
     return ResponseEntity.ok(response);
   }
 }

@@ -3,6 +3,7 @@ package com.swd.pregnancycare.services;
 import com.swd.pregnancycare.dto.BlogDTO;
 import com.swd.pregnancycare.dto.GroupDTO;
 import com.swd.pregnancycare.dto.UserDTO;
+import com.swd.pregnancycare.entity.BlogEntity;
 import com.swd.pregnancycare.entity.GroupEntity;
 import com.swd.pregnancycare.entity.UserEntity;
 import com.swd.pregnancycare.entity.UserGroupEntity;
@@ -154,6 +155,63 @@ public class GroupServicesImpl implements GroupServices {
     userGroup.setDeleted(false);
 
     userGroupRepo.save(userGroup);
+  }
+
+  @Override
+  @PreAuthorize("hasAnyRole('ADMIN', 'MEMBER')")
+  public GroupResponse getAllBlogsOfGroup(int groupId) {
+    GroupEntity groupEntity = groupRepo.findByIdAndDeletedFalse(groupId).orElseThrow(() -> new AppException(ErrorCode.GROUP_NOT_EXIST));
+    GroupResponse groupResponse = new GroupResponse();
+
+    groupResponse.setId(groupEntity.getId());
+    groupResponse.setName(groupEntity.getName());
+    groupResponse.setDescription(groupEntity.getDescription());
+    groupResponse.setDate(groupEntity.getDate());
+
+    // Owner
+    UserDTO ownerDTO = new UserDTO();
+    ownerDTO.setId(groupEntity.getOwner().getId());
+    ownerDTO.setEmail(groupEntity.getOwner().getEmail());
+    ownerDTO.setFullName(groupEntity.getOwner().getFullName());
+    ownerDTO.setRoles(groupEntity.getOwner().getRole().getName());
+    ownerDTO.setStatus(groupEntity.getOwner().isStatus());
+    groupResponse.setOwner(ownerDTO);
+
+    // Memeber thuộc group
+    List<UserDTO> userDTOs = groupEntity.getUsers().stream().map(group -> {
+      UserEntity userEntity = group.getUser();
+      UserDTO userDTO = new UserDTO();
+      userDTO.setId(userEntity.getId());
+      userDTO.setEmail(userEntity.getEmail());
+      userDTO.setFullName(userEntity.getFullName());
+      userDTO.setRoles(userEntity.getRole().getName());
+      userDTO.setStatus(userEntity.isStatus());
+      return userDTO;
+    }).toList();
+    groupResponse.setUsers(userDTOs);
+
+    // Map danh sách blog của group
+    List<BlogDTO> blogDTOs = groupEntity.getBlogs().stream().map(blogEntity -> {
+      BlogDTO blogDTO = new BlogDTO();
+      blogDTO.setId(blogEntity.getId());
+      blogDTO.setTitle(blogEntity.getTitle());
+      blogDTO.setDescription(blogEntity.getDescription());
+      blogDTO.setDatePublish(blogEntity.getDatePublish());
+
+      // Nếu BlogDTO có thông tin Owner, map lại thông tin owner của blog
+      UserDTO blogOwnerDTO = new UserDTO();
+      blogOwnerDTO.setId(blogEntity.getUser().getId());
+      blogOwnerDTO.setEmail(blogEntity.getUser().getEmail());
+      blogOwnerDTO.setFullName(blogEntity.getUser().getFullName());
+      blogOwnerDTO.setRoles(blogEntity.getUser().getRole().getName());
+      blogOwnerDTO.setStatus(blogEntity.getUser().isStatus());
+      blogDTO.setUser(blogOwnerDTO);
+
+      return blogDTO;
+    }).toList();
+    groupResponse.setBlogs(blogDTOs);
+
+    return groupResponse;
   }
 
 

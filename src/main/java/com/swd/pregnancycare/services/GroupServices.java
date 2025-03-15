@@ -14,4 +14,5 @@ public interface GroupServices {
   void deleteGroup(int id);
   void updateGroup(String name, String description, int id);
   void addMemberToGroup(int groupId, String email);
+  GroupResponse getAllBlogsOfGroup(int groupId);
 }
