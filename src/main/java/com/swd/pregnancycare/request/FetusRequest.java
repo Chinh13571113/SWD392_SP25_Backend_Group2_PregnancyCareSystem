@@ -9,5 +9,4 @@ public class FetusRequest {
   private LocalDateTime dueDate;
   private String name;
   private String gender;
-  private String email;
 }
