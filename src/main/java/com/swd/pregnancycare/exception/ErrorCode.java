@@ -27,7 +27,8 @@ public enum ErrorCode {
     BLOG_NOT_EXIST(404,"blog not found",HttpStatus.NOT_FOUND),
     GROUP_NOT_EXIST(404, "group not existed",HttpStatus.NOT_FOUND),
     GROUP_EXIST(400,"group existed",HttpStatus.BAD_REQUEST),
-    GROUP_HAS_USER_ALREADY(999, "group has a user already",HttpStatus.CONFLICT),
+    GROUP_SAVED_EXCEPTION(500, "group save error",HttpStatus.INTERNAL_SERVER_ERROR),
+    USER_ALREADY_IN_GROUP(400, "User already in group", HttpStatus.BAD_REQUEST),
     FETUS_NOT_EXIST(403, "fetus not existed",HttpStatus.BAD_REQUEST),
 
 
@@ -45,13 +46,14 @@ public enum ErrorCode {
 
 
 
+    RECORD_NOT_EXIST(404, "record does not exist",HttpStatus.NOT_FOUND),
+    DATA_NOT_FOUND(404,"Data not found" ,HttpStatus.NOT_FOUND ),
+    APPOINTMENT_NOT_EXIST(404,"appointment not exist" ,HttpStatus.NOT_FOUND );
 
-    RECORD_NOT_EXIST(404, "record does not exist",HttpStatus.NOT_FOUND), DATA_NOT_FOUND(404,"Data not found" ,HttpStatus.NOT_FOUND ), APPOINTMENT_NOT_EXIST(404,"appointment not exist" ,HttpStatus.NOT_FOUND );
 
 
 
-
-    RECORD_NOT_EXIST(404, "record does not exist",HttpStatus.NOT_FOUND);
+    ;
 
 
 

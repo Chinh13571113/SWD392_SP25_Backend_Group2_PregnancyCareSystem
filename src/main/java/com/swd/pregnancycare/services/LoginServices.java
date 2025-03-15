@@ -37,7 +37,7 @@ public class LoginServices  {
     public String login(String email, String password){
         SecurityContextHolder.clearContext();
         String token="";
-        Optional<UserEntity> user = userRepo.findByEmail(email);
+        Optional<UserEntity> user = userRepo.findByEmailAndStatusTrue(email);
         if(user.isPresent()){
             UserEntity userEntity = user.get();
 
@@ -78,7 +78,7 @@ public class LoginServices  {
     public  UserEntity getUser(){
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
-        return userRepo.findByEmail(name).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXIST));
+        return userRepo.findByEmailAndStatusTrue(name).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXIST));
     }
 
 }

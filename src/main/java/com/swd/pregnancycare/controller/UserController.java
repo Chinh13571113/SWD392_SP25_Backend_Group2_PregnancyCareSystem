@@ -131,7 +131,7 @@ public class UserController {
 
     @Operation(
             summary = "Delete User",
-            description = "User can delete their account by providing the user ID",
+            description = "MEMBER or ADMIN can delete account by providing the ID",
             responses = {
                     @ApiResponse(
                             responseCode = "200",

@@ -45,9 +45,15 @@ public class UserServicesImp implements UserServices{
     }
 
     @Override
+    @PreAuthorize("hasAnyRole( 'MEMBER', 'ADMIN')")
     public Boolean deleteUserById(int id) {
+        Optional<UserEntity> user = userRepo.findByIdAndStatusTrue(id);
+        if(user.isEmpty()) throw new AppException(ErrorCode.USER_NOT_EXIST);
+
         try {
-            userRepo.deleteById(id);
+            UserEntity userEntity = user.get();
+            userEntity.setStatus(false);
+            userRepo.save(userEntity);
         }catch (Exception e){
             System.out.println(e);
         }
@@ -55,23 +61,27 @@ public class UserServicesImp implements UserServices{
     }
 
     @Override
+    @PreAuthorize("hasAnyRole( 'MEMBER', 'ADMIN')")
     public Boolean createUser(UserRequest request) {
-        if(userRepo.existsByEmail(request.getEmail())) throw new AppException(ErrorCode.USER_EXIST);
+        System.out.println("List: "+userRepo.existsByEmailAndStatusTrue(request.getEmail()));
+        if(userRepo.existsByEmailAndStatusTrue(request.getEmail())) throw new AppException(ErrorCode.USER_EXIST);
         UserEntity user = new UserEntity();
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword())); // Mã hóa mật khẩu
         user.setFullName(request.getFullName());
+        user.setStatus(true);
         setDefaultRole(user);
         userRepo.save(user);
         return true;
     }
 
     @Override
+    @PreAuthorize("hasRole('MEMBER')")
     public UserResponse getMyInfo() {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
 
-        UserEntity user =userRepo.findByEmail(name).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXIST));
+        UserEntity user =userRepo.findByEmailAndStatusTrue(name).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXIST));
         return UserMapper.INSTANCE.toUserResponse(user);
     }
 
@@ -80,7 +90,7 @@ public class UserServicesImp implements UserServices{
     public void updateUser(int id, String fullName, String email, String password) {
         // Update user
         if(password == null) {
-            if(userRepo.existsByEmail(email) && !userRepo.findById(id).map(UserEntity::getEmail).orElse("").equals(email)) {
+            if(userRepo.existsByEmailAndStatusTrue(email) && !userRepo.findById(id).map(UserEntity::getEmail).orElse("").equals(email)) {
                 throw new AppException(ErrorCode.USER_EXIST);
             }
             Optional<UserEntity> user = userRepo.findById(id);

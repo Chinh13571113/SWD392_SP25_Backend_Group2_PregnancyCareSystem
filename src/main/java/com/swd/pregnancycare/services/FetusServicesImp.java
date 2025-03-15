@@ -55,7 +55,7 @@ public class FetusServicesImp implements FetusServices {
   @Override
   @PreAuthorize("hasRole('MEMBER')")
   public FetusDTO saveFetus(FetusRequest fetusRequest) {
-    Optional<UserEntity> user = userRepo.findByEmail(fetusRequest.getEmail());
+    Optional<UserEntity> user = userRepo.findByEmailAndStatusTrue(fetusRequest.getEmail());
     // Is user exist
     if (user.isEmpty()) throw new AppException(ErrorCode.USER_NOT_EXIST);
 

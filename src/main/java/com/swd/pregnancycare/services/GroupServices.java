@@ -11,5 +11,6 @@ public interface GroupServices {
   void saveGroup(GroupRequest group);
   List<GroupDTO> getAllGroups();
   void deleteGroup(int id);
-  void updateGroup(GroupRequest groupRequest, int id);
+  void updateGroup(String name, String description, int id);
+  void addMemberToGroup(int groupId, String email);
 }

@@ -1,14 +1,19 @@
 package com.swd.pregnancycare.services;
 
+import com.swd.pregnancycare.dto.BlogDTO;
 import com.swd.pregnancycare.dto.GroupDTO;
+import com.swd.pregnancycare.dto.UserDTO;
 import com.swd.pregnancycare.entity.GroupEntity;
 import com.swd.pregnancycare.entity.UserEntity;
+import com.swd.pregnancycare.entity.UserGroupEntity;
 import com.swd.pregnancycare.exception.AppException;
 import com.swd.pregnancycare.exception.ErrorCode;
 import com.swd.pregnancycare.repository.GroupRepo;
+import com.swd.pregnancycare.repository.UserGroupRepo;
 import com.swd.pregnancycare.repository.UserRepo;
 import com.swd.pregnancycare.request.GroupRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,11 +26,16 @@ public class GroupServicesImpl implements GroupServices {
   private GroupRepo groupRepo;
   @Autowired
   private UserRepo userRepo;
+  @Autowired
+  private UserGroupRepo userGroupRepo;
+
+
 
   @Override
+  @PreAuthorize("hasRole('MEMBER')")
   public void saveGroup(GroupRequest groupRequest) {
-    Optional<UserEntity> user = userRepo.findByEmail(groupRequest.getOwner_email());
-    Optional<GroupEntity> group = groupRepo.findByName(groupRequest.getName());
+    Optional<UserEntity> user = userRepo.findByEmailAndStatusTrue(groupRequest.getOwner_email());
+    Optional<GroupEntity> group = groupRepo.findByNameAndDeletedFalse(groupRequest.getName());
 
     if(user.isEmpty()) throw new AppException(ErrorCode.USER_NOT_EXIST);
     if(group.isPresent()) throw new AppException(ErrorCode.GROUP_EXIST);
@@ -36,54 +46,114 @@ public class GroupServicesImpl implements GroupServices {
 
       newGroup.setName(groupRequest.getName());
       newGroup.setDescription(groupRequest.getDescription());
-      newGroup.setUser(userEntity);
+      newGroup.setOwner(userEntity);
       newGroup.setDate(LocalDateTime.now());
+      newGroup.setDeleted(false);
       groupRepo.save(newGroup);
     } catch (Exception e) {
-      throw new AppException(ErrorCode.GROUP_HAS_USER_ALREADY);
+      throw new AppException(ErrorCode.GROUP_SAVED_EXCEPTION);
     }
   }
 
+
+
   @Override
+  @PreAuthorize("hasAnyRole('ADMIN', 'MEMBER')")
   public List<GroupDTO> getAllGroups() {
-    return groupRepo.findAll().stream().map(data -> {
-      GroupDTO groupDTO = new GroupDTO();
-      groupDTO.setId(data.getId());
-      groupDTO.setName(data.getName());
-      groupDTO.setDescription(data.getDescription());
-      groupDTO.setDate(data.getDate());
-      if (data.getUser() != null) {
-        groupDTO.setUserId(data.getUser().getId());
-      }
-      return groupDTO;
-    }).toList();
+    return groupRepo.findAll().stream()
+            .filter(group -> Boolean.FALSE.equals(group.getDeleted()))
+            .map(data -> {
+              GroupDTO groupDTO = new GroupDTO();
+              groupDTO.setId(data.getId());
+              groupDTO.setName(data.getName());
+              groupDTO.setDescription(data.getDescription());
+              groupDTO.setDate(data.getDate());
+              groupDTO.setDeleted(data.getDeleted());
+
+              // Chuyển đổi owner
+              UserDTO ownerDTO = new UserDTO();
+              ownerDTO.setId(data.getOwner().getId());
+              ownerDTO.setEmail(data.getOwner().getEmail());
+              ownerDTO.setFullName(data.getOwner().getFullName());
+              ownerDTO.setRoles(data.getOwner().getRole().getName());
+              ownerDTO.setStatus(data.getOwner().isStatus());
+              groupDTO.setOwner(ownerDTO);
+
+              // Chuyển đổi danh sách user thuộc user_group
+              if (data.getUsers() != null) {
+                List<UserDTO> userDTOs = data.getUsers().stream().map(userGroup -> {
+                  UserEntity userEntity = userGroup.getUser();
+                  UserDTO userDTO = new UserDTO();
+                  userDTO.setId(userEntity.getId());
+                  userDTO.setEmail(userEntity.getEmail());
+                  userDTO.setFullName(userEntity.getFullName());
+                  userDTO.setRoles(userEntity.getRole().getName());
+                  userDTO.setStatus(userEntity.isStatus());
+                  return userDTO;
+                }).toList();
+                groupDTO.setUsers(userDTOs);
+              }
+              return groupDTO;
+            })
+            .toList();
   }
 
+
+
+
   @Override
+  @PreAuthorize("hasAnyRole('ADMIN', 'MEMBER')")
   public void deleteGroup(int id) {
-    GroupEntity groupEntity = groupRepo.findById(id)
+    GroupEntity groupEntity = groupRepo.findByIdAndDeletedFalse(id)
             .orElseThrow(() -> new AppException(ErrorCode.GROUP_NOT_EXIST));
 
-    // Hủy liên kết từ phía User (vì User là inverse side)
-    if (groupEntity.getUser() != null) {
-      UserEntity owner = groupEntity.getUser();
-      owner.setGroup(null);      // Hủy liên kết từ phía User
-      groupEntity.setUser(null); // hủy liên kết từ phía Group (để rõ ràng)
-    } else throw new AppException(ErrorCode.USER_NOT_EXIST);
+//    // Hủy liên kết từ phía User (vì User là inverse side)
+//    if (groupEntity.getUser() != null) {
+//      UserEntity owner = groupEntity.getUser();
+//      owner.setGroup(null);      // Hủy liên kết từ phía User
+//      groupEntity.setUser(null); // hủy liên kết từ phía Group (để rõ ràng)
+//    } else throw new AppException(ErrorCode.USER_NOT_EXIST);
+    // groupRepo.delete(groupEntity);
 
-    groupRepo.delete(groupEntity);
+    groupEntity.setDeleted(true);
+    groupRepo.save(groupEntity);
   }
 
+
+
   @Override
-  public void updateGroup(GroupRequest groupRequest, int id) {
-    GroupEntity groupEntity = groupRepo.findById(id)
+  @PreAuthorize("hasAnyRole('ADMIN', 'MEMBER')")
+  public void updateGroup(String name, String description, int id) {
+    GroupEntity groupEntity = groupRepo.findByIdAndDeletedFalse(id)
             .orElseThrow(() -> new AppException(ErrorCode.GROUP_NOT_EXIST));
 
-    groupEntity.setName(groupRequest.getName());
-    groupEntity.setDescription(groupRequest.getDescription());
+    groupEntity.setName(name);
+    groupEntity.setDescription(description);
     groupEntity.setDate(LocalDateTime.now());
 
     groupRepo.save(groupEntity);
   }
+
+  @Override
+  @PreAuthorize("hasRole('MEMBER')")
+  public void addMemberToGroup(int groupId, String email) {
+    UserEntity user = userRepo.findByEmailAndStatusTrue(email)
+            .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
+    GroupEntity group = groupRepo.findByIdAndDeletedFalse(groupId)
+            .orElseThrow(() -> new AppException(ErrorCode.GROUP_NOT_EXIST));
+
+    Optional<UserGroupEntity> existingMembership = userGroupRepo.findByUserIdAndGroupId(user.getId(), groupId);
+    if (existingMembership.isPresent()) {
+      throw new AppException(ErrorCode.USER_ALREADY_IN_GROUP);
+    }
+
+    UserGroupEntity userGroup = new UserGroupEntity();
+    userGroup.setUser(user);
+    userGroup.setGroup(group);
+    userGroup.setDeleted(false);
+
+    userGroupRepo.save(userGroup);
+  }
+
 
 }

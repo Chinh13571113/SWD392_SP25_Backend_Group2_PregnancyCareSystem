@@ -31,8 +31,7 @@ public class BlogServiceImp implements BlogServices {
   @Override
   @PreAuthorize("hasAnyRole( 'MEMBER', 'EXPERT')")
   public void saveBlog(BlogRequest blog) {
-    Optional<UserEntity> user = userRepo.findByEmail(blog.getEmail());
-    if (user.isEmpty()) throw new AppException(ErrorCode.USER_NOT_EXIST);
+    Optional<UserEntity> user = userRepo.findByEmailAndStatusTrue(blog.getEmail());
     if (user.isPresent()) {
       UserEntity userEntity = user.get();
       BlogEntity newBlog = new BlogEntity();
@@ -43,44 +42,55 @@ public class BlogServiceImp implements BlogServices {
       newBlog.setDatePublish(LocalDateTime.now());
       newBlog.setUser(userEntity);
       blogRepo.save(newBlog);
-    } else throw new AppException(ErrorCode.BLOG_SAVED_EXCEPTION);
+    } else throw new AppException(ErrorCode.USER_NOT_EXIST);
   }
 
 
   @Override
   @PreAuthorize("hasAnyRole('ADMIN', 'MEMBER', 'EXPERT')")
   public List<BlogDTO> getAllBlogs() {
-    return blogRepo.findAll().stream().map(data -> {
-      BlogDTO blogDTO = new BlogDTO();
-      blogDTO.setId(data.getId());
-      blogDTO.setTitle(data.getTitle());
-      blogDTO.setDescription(data.getDescription());
-      blogDTO.setDatePublish(data.getDatePublish());
-      blogDTO.setStatus(data.getStatus());
+    return blogRepo.findAll().stream()
+            .filter(blog -> Boolean.FALSE.equals(blog.getDeleted())) // Chỉ lấy những blog chưa bị xóa
+            .map(data -> {
+              BlogDTO blogDTO = new BlogDTO();
+              blogDTO.setId(data.getId());
+              blogDTO.setTitle(data.getTitle());
+              blogDTO.setDescription(data.getDescription());
+              blogDTO.setDatePublish(data.getDatePublish());
+              blogDTO.setStatus(data.getStatus());
+              blogDTO.setDeleted(data.getDeleted());
 
-      UserDTO userDTO = new UserDTO();
-      userDTO.setId(data.getUser().getId());
-      userDTO.setEmail(data.getUser().getEmail());
-      userDTO.setFullName(data.getUser().getFullName());
-      userDTO.setRoles(data.getUser().getRole().getName());
+              UserDTO userDTO = new UserDTO();
+              userDTO.setId(data.getUser().getId());
+              userDTO.setEmail(data.getUser().getEmail());
+              userDTO.setFullName(data.getUser().getFullName());
+              userDTO.setRoles(data.getUser().getRole().getName());
 
-      blogDTO.setUser(userDTO);
-      return blogDTO;
-    }).toList();
+              blogDTO.setUser(userDTO);
+              return blogDTO;
+            })
+            .toList();
   }
+
+
+
 
   @Override
   @PreAuthorize("hasAnyRole( 'MEMBER', 'EXPERT')")
   public void deleteBlog(int id) {
-    Optional<BlogEntity> blog = blogRepo.findById(id);
+    Optional<BlogEntity> blog = blogRepo.findByIdAndDeletedFalse(id);
     if (blog.isEmpty()) throw new AppException(ErrorCode.BLOG_NOT_EXIST);
-    blogRepo.deleteById(blog.get().getId());
+    BlogEntity blogEntity = blog.get();
+    blogEntity.setStatus(true);
+    blogRepo.save(blogEntity);
   }
+
+
 
   @Override
   @PreAuthorize("hasAnyRole( 'MEMBER', 'EXPERT')")
   public void updateBlog(BlogRequest blogRequest, int id) {
-    BlogEntity blogEntity = blogRepo.findById(id)
+    BlogEntity blogEntity = blogRepo.findByIdAndDeletedFalse(id)
             .orElseThrow(() -> new AppException(ErrorCode.BLOG_NOT_EXIST));
 
     blogEntity.setTitle(blogRequest.getTitle());

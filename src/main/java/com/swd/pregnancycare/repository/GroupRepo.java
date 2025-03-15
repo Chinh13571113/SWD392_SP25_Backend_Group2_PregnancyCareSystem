@@ -8,5 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface GroupRepo extends JpaRepository<GroupEntity, Integer> {
-  Optional<GroupEntity> findByName(String name);
+  Optional<GroupEntity> findByNameAndDeletedFalse(String name);
+  Optional<GroupEntity> findByIdAndDeletedFalse(int id);
 }
