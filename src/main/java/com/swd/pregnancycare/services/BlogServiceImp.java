@@ -3,16 +3,14 @@ package com.swd.pregnancycare.services;
 import com.swd.pregnancycare.dto.BlogCommentDTO;
 import com.swd.pregnancycare.dto.BlogDTO;
 import com.swd.pregnancycare.dto.UserDTO;
-import com.swd.pregnancycare.entity.BlogEntity;
-import com.swd.pregnancycare.entity.GroupEntity;
-import com.swd.pregnancycare.entity.UserEntity;
+import com.swd.pregnancycare.entity.*;
 import com.swd.pregnancycare.exception.ErrorCode;
 import com.swd.pregnancycare.exception.AppException;
-import com.swd.pregnancycare.repository.BlogRepo;
-import com.swd.pregnancycare.repository.UserRepo;
+import com.swd.pregnancycare.repository.*;
 import com.swd.pregnancycare.request.BlogRequest;
 import com.swd.pregnancycare.request.GroupRequest;
 import com.swd.pregnancycare.response.BaseResponse;
+import com.swd.pregnancycare.response.UserResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,22 +27,36 @@ public class BlogServiceImp implements BlogServices {
   private BlogRepo blogRepo;
   @Autowired
   private UserRepo userRepo;
+  @Autowired
+  private UserServicesImp userServicesImp;
+  @Autowired
+  private GroupRepo groupRepo;
+  @Autowired
+  private BlogCategoryRepo blogCategoryRepo;
 
   @Override
   @PreAuthorize("hasAnyRole( 'MEMBER', 'EXPERT')")
-  public void saveBlog(BlogRequest blog) {
-    Optional<UserEntity> user = userRepo.findByEmailAndStatusTrue(blog.getEmail());
-    if (user.isPresent()) {
-      UserEntity userEntity = user.get();
-      BlogEntity newBlog = new BlogEntity();
+  public void saveBlog(BlogRequest blogRequest) {
+    UserResponse userResponse = userServicesImp.getMyInfo();
+    Optional<UserEntity> user = userRepo.findByIdAndStatusTrue(userResponse.getId());
+    UserEntity userEntity = user.get();
 
-      newBlog.setTitle(blog.getTitle());
-      newBlog.setDescription(blog.getDescription());
-      newBlog.setStatus(false);
-      newBlog.setDatePublish(LocalDateTime.now());
-      newBlog.setUser(userEntity);
-      blogRepo.save(newBlog);
-    } else throw new AppException(ErrorCode.USER_NOT_EXIST);
+    GroupEntity groupEntity = groupRepo.findByIdAndDeletedFalse(blogRequest.getGroupId()).orElseThrow(()-> new AppException(ErrorCode.GROUP_NOT_EXIST));
+
+    Optional<BlogCategoryEntity> blogCategory = blogCategoryRepo.findByIdAndDeletedFalse(blogRequest.getBlogCategoryId());
+    BlogCategoryEntity blogCategoryEntity = blogCategory.get();
+
+    BlogEntity newBlog = new BlogEntity();
+
+    newBlog.setTitle(blogRequest.getTitle());
+    newBlog.setDescription(blogRequest.getDescription());
+    newBlog.setStatus(false);
+    newBlog.setDatePublish(LocalDateTime.now());
+    newBlog.setDeleted(false);
+    newBlog.setGroup(groupEntity);
+    newBlog.setUser(userEntity);
+    newBlog.setBlogCategory(blogCategoryEntity);
+    blogRepo.save(newBlog);
   }
 
 

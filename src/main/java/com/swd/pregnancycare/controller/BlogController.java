@@ -2,6 +2,7 @@ package com.swd.pregnancycare.controller;
 
 import com.swd.pregnancycare.request.BlogRequest;
 import com.swd.pregnancycare.response.BaseResponse;
+import com.swd.pregnancycare.response.BlogResponse;
 import com.swd.pregnancycare.services.BlogServiceImp;
 import com.swd.pregnancycare.services.BlogServices;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,11 +33,8 @@ public class BlogController {
                           description = "Created blog successfully",
                           content = @Content(
                                   mediaType = "application/json",
-                                  schema = @Schema(implementation = BaseResponse.class),
-                                  examples = @ExampleObject(
-                                          name = "Success Response",
-                                          value = "{\n  \"code\": 200,\n  \"message\": \"Created blog successfully\",\n  \"data\": \"null\"\n}"
-                                  )
+                                  schema = @Schema(implementation = BaseResponse.class)
+
                           )
                   ),
           }
@@ -61,46 +59,7 @@ public class BlogController {
                           description = "got list blogs successfully",
                           content = @Content(
                                   mediaType = "application/json",
-                                  schema = @Schema(implementation = BaseResponse.class),
-                                  examples = @ExampleObject(
-                                          name = "Success Response",
-                                          value = """
-{
-  "code": 200,
-  "message": "got list blogs successfully",
-  "data": [
-    {
-      "id": 1,
-      "title": "Baby A",
-      "description": "5",
-      "datePublish": "2025-07-10",
-      "status": false,
-      "user": {
-        "id": 1,
-        "email": "user@example.com",
-        "fullName": "user",
-        "roles": "MEMBER",
-        "status": true
-      }
-    },
-    {
-      "id": 2,
-      "title": "Baby B",
-      "description": "6",
-      "datePublish": "2025-07-10",
-      "status": false,
-      "user": {
-        "id": 2,
-        "email": "expert@example.com",
-        "fullName": "expert",
-        "roles": "EXPERT",
-        "status": false
-      }
-    }
-  ]
-}
-"""
-                                  )
+                                  schema = @Schema(implementation = BlogResponse.class)
                           )
                   )
           }

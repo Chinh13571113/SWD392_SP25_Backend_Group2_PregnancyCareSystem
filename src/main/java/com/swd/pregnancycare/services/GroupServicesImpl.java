@@ -1,5 +1,6 @@
 package com.swd.pregnancycare.services;
 
+import com.swd.pregnancycare.dto.BlogCommentDTO;
 import com.swd.pregnancycare.dto.BlogDTO;
 import com.swd.pregnancycare.dto.GroupDTO;
 import com.swd.pregnancycare.dto.UserDTO;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class GroupServicesImpl implements GroupServices {
@@ -207,9 +209,22 @@ public class GroupServicesImpl implements GroupServices {
       blogOwnerDTO.setStatus(blogEntity.getUser().isStatus());
       blogDTO.setUser(blogOwnerDTO);
 
+      // Map comments
+      List<BlogCommentDTO> blogCommentDTOS = blogEntity.getBlogComments().stream()
+              .map(blogCommentEntity -> {
+                BlogCommentDTO blogCommentDTO = new BlogCommentDTO();
+                blogCommentDTO.setId(blogCommentEntity.getId());
+                blogCommentDTO.setDescription(blogCommentEntity.getDescription());
+                blogCommentDTO.setDatePublish(blogCommentEntity.getDatePublish());
+                return blogCommentDTO;
+              })
+              .collect(Collectors.toList());
+      blogDTO.setBlogComments(blogCommentDTOS);
+
       return blogDTO;
     }).toList();
     groupResponse.setBlogs(blogDTOs);
+
 
     return groupResponse;
   }

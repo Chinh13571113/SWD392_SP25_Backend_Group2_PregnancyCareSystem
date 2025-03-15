@@ -8,5 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface BlogCategoryRepo extends JpaRepository<BlogCategoryEntity,Integer> {
-  Optional<BlogCategoryEntity> findByName(String name);
+  Optional<BlogCategoryEntity> findByNameAndDeletedFalse(String name);
+  Optional<BlogCategoryEntity> findByIdAndDeletedFalse(int id);
 }
