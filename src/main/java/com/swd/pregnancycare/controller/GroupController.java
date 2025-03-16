@@ -168,7 +168,7 @@ public class GroupController {
 
   @Operation(
           summary = "Get Group Details",
-          description = "MEMBER or EXPERT can get a group",
+          description = "MEMBER or ADMIN can get a group",
           responses = {
                   @ApiResponse(
                           responseCode = "200",

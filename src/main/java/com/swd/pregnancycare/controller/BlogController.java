@@ -51,12 +51,12 @@ public class BlogController {
 
 
   @Operation(
-          summary = "Get all List Blogs",
+          summary = "Get post list",
           description = "MEMBER or EXPERT or ADMIN can get all blogs",
           responses = {
                   @ApiResponse(
                           responseCode = "200",
-                          description = "got list blogs successfully",
+                          description = "got post list successfully",
                           content = @Content(
                                   mediaType = "application/json",
                                   schema = @Schema(implementation = BlogResponse.class)
@@ -65,14 +65,41 @@ public class BlogController {
           }
   )
 
-  @GetMapping
-  public ResponseEntity<?> getAllBlogs() {
+  @GetMapping("/posts")
+  public ResponseEntity<?> getAllBlogsByMember() {
     BaseResponse response = new BaseResponse();
     response.setCode(200);
-    response.setData(blogServiceImp.getAllBlogs());
-    response.setMessage("Got all blogs successfully");
+    response.setData(blogServiceImp.getAllBlogsByMember());
+    response.setMessage("Got  post list successfully");
     return ResponseEntity.ok(response);
   }
+
+
+  @Operation(
+          summary = "Get article list",
+          description = "MEMBER or EXPERT or ADMIN can get article list",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "got article list successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = BlogResponse.class)
+                          )
+                  )
+          }
+  )
+
+  @GetMapping("/articles")
+  public ResponseEntity<?> getAllBlogsByExpert() {
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setData(blogServiceImp.getAllBlogsByExpert());
+    response.setMessage("Got article list successfully");
+    return ResponseEntity.ok(response);
+  }
+
+
 
   @Operation(
           summary = "Delete a Blog",

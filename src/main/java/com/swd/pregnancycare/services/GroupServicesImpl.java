@@ -193,7 +193,9 @@ public class GroupServicesImpl implements GroupServices {
     groupResponse.setUsers(userDTOs);
 
     // Map danh sách blog của group
-    List<BlogDTO> blogDTOs = groupEntity.getBlogs().stream().map(blogEntity -> {
+    List<BlogDTO> blogDTOs = groupEntity.getBlogs().stream()
+            .filter(blogEntity -> blogEntity.getUser().getRole().getName().equals("MEMBER"))
+            .map(blogEntity -> {
       BlogDTO blogDTO = new BlogDTO();
       blogDTO.setId(blogEntity.getId());
       blogDTO.setTitle(blogEntity.getTitle());
