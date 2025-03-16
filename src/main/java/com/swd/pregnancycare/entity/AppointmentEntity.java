@@ -8,6 +8,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity(name = "appointment")
+@Table(
+        name = "appointment",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"date", "id_user"})
+        }
+)
 @Data
 @Builder
 @NoArgsConstructor

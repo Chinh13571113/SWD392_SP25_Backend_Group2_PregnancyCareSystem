@@ -1,6 +1,7 @@
 package com.swd.pregnancycare.exception;
 
 import com.swd.pregnancycare.response.BaseResponse;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
@@ -50,6 +51,14 @@ public class CentralException {
     public ResponseEntity<?> handleAuthenticate(AuthenticationException e){
         BaseResponse response = new BaseResponse();
         ErrorCode errorCode= ErrorCode.UNAUTHORIZED_EXCEPTION;
+        response.setMessage(errorCode.getMessage());
+        response.setCode(errorCode.getCode());
+        return ResponseEntity.status(errorCode.getHttpStatusCode()).body(response);
+    }
+    @ExceptionHandler({ConstraintViolationException.class})
+    public ResponseEntity<?> handleUnique(AccessDeniedException e){
+        BaseResponse response = new BaseResponse();
+        ErrorCode errorCode= ErrorCode.AVAILABLE_WRITER;
         response.setMessage(errorCode.getMessage());
         response.setCode(errorCode.getCode());
         return ResponseEntity.status(errorCode.getHttpStatusCode()).body(response);
