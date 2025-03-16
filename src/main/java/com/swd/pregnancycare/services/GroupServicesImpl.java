@@ -4,7 +4,6 @@ import com.swd.pregnancycare.dto.BlogCommentDTO;
 import com.swd.pregnancycare.dto.BlogDTO;
 import com.swd.pregnancycare.dto.GroupDTO;
 import com.swd.pregnancycare.dto.UserDTO;
-import com.swd.pregnancycare.entity.BlogEntity;
 import com.swd.pregnancycare.entity.GroupEntity;
 import com.swd.pregnancycare.entity.UserEntity;
 import com.swd.pregnancycare.entity.UserGroupEntity;
@@ -57,7 +56,10 @@ public class GroupServicesImpl implements GroupServices {
       newGroup.setOwner(userEntity);
       newGroup.setDate(LocalDateTime.now());
       newGroup.setDeleted(false);
-      groupRepo.save(newGroup);
+      GroupEntity savedGroup = groupRepo.save(newGroup);
+
+      // Add owner to group automatically
+      addMemberToGroup(savedGroup.getId());
     } catch (Exception e) {
       throw new AppException(ErrorCode.GROUP_SAVED_EXCEPTION);
     }
@@ -70,41 +72,59 @@ public class GroupServicesImpl implements GroupServices {
   public List<GroupDTO> getAllGroups() {
     return groupRepo.findAll().stream()
             .filter(group -> Boolean.FALSE.equals(group.getDeleted()))
-            .map(data -> {
-              GroupDTO groupDTO = new GroupDTO();
-              groupDTO.setId(data.getId());
-              groupDTO.setName(data.getName());
-              groupDTO.setDescription(data.getDescription());
-              groupDTO.setDate(data.getDate());
-              groupDTO.setDeleted(data.getDeleted());
-
-              // Chuyển đổi owner
-              UserDTO ownerDTO = new UserDTO();
-              ownerDTO.setId(data.getOwner().getId());
-              ownerDTO.setEmail(data.getOwner().getEmail());
-              ownerDTO.setFullName(data.getOwner().getFullName());
-              ownerDTO.setRoles(data.getOwner().getRole().getName());
-              ownerDTO.setStatus(data.getOwner().isStatus());
-              groupDTO.setOwner(ownerDTO);
-
-              // Chuyển đổi danh sách user thuộc user_group
-              if (data.getUsers() != null) {
-                List<UserDTO> userDTOs = data.getUsers().stream().map(userGroup -> {
-                  UserEntity userEntity = userGroup.getUser();
-                  UserDTO userDTO = new UserDTO();
-                  userDTO.setId(userEntity.getId());
-                  userDTO.setEmail(userEntity.getEmail());
-                  userDTO.setFullName(userEntity.getFullName());
-                  userDTO.setRoles(userEntity.getRole().getName());
-                  userDTO.setStatus(userEntity.isStatus());
-                  return userDTO;
-                }).toList();
-                groupDTO.setUsers(userDTOs);
-              }
-              return groupDTO;
-            })
-            .toList();
+            .map(this::mapToGroupDTO)
+            .collect(Collectors.toList());
   }
+
+  private GroupDTO mapToGroupDTO(GroupEntity group) {
+    GroupDTO groupDTO = new GroupDTO();
+    groupDTO.setId(group.getId());
+    groupDTO.setName(group.getName());
+    groupDTO.setDescription(group.getDescription());
+    groupDTO.setDate(group.getDate());
+    groupDTO.setDeleted(group.getDeleted());
+
+    // Chuyển đổi owner
+    UserDTO ownerDTO = new UserDTO();
+    ownerDTO.setId(group.getOwner().getId());
+    ownerDTO.setEmail(group.getOwner().getEmail());
+    ownerDTO.setFullName(group.getOwner().getFullName());
+    ownerDTO.setRoles(group.getOwner().getRole().getName());
+    ownerDTO.setStatus(group.getOwner().isStatus());
+    groupDTO.setOwner(ownerDTO);
+
+    // Chuyển đổi danh sách thành viên (user_group)
+    if (group.getUsers() != null) {
+      List<UserDTO> userDTOs = group.getUsers().stream().map(userGroup -> {
+        UserEntity userEntity = userGroup.getUser();
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(userEntity.getId());
+        userDTO.setEmail(userEntity.getEmail());
+        userDTO.setFullName(userEntity.getFullName());
+        userDTO.setRoles(userEntity.getRole().getName());
+        userDTO.setStatus(userEntity.isStatus());
+        return userDTO;
+      }).collect(Collectors.toList());
+      groupDTO.setUsers(userDTOs);
+    }
+    return groupDTO;
+  }
+
+  @Override
+  @PreAuthorize("hasRole('MEMBER')")
+  public List<GroupDTO> getAllMyGroups() {
+    // Lấy thông tin user hiện tại
+    UserResponse userResponse = userServicesImp.getMyInfo();
+    int currentUserId = userResponse.getId();
+
+    // Tái sử dụng getAllGroups() và lọc ra những group mà user hiện tại tham gia
+    return getAllGroups().stream()
+            .filter(groupDTO -> groupDTO.getUsers() != null &&
+                    groupDTO.getUsers().stream()
+                            .anyMatch(userDTO -> userDTO.getId() == currentUserId))
+            .collect(Collectors.toList());
+  }
+
 
 
 
@@ -144,8 +164,9 @@ public class GroupServicesImpl implements GroupServices {
 
   @Override
   @PreAuthorize("hasRole('MEMBER')")
-  public void addMemberToGroup(int groupId, String email) {
-    UserEntity user = userRepo.findByEmailAndStatusTrue(email)
+  public void addMemberToGroup(int groupId) {
+    UserResponse userResponse = userServicesImp.getMyInfo();
+    UserEntity user = userRepo.findByEmailAndStatusTrue(userResponse.getEmail())
             .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
     GroupEntity group = groupRepo.findByIdAndDeletedFalse(groupId)
             .orElseThrow(() -> new AppException(ErrorCode.GROUP_NOT_EXIST));

@@ -1,5 +1,6 @@
 package com.swd.pregnancycare.controller;
 
+import com.swd.pregnancycare.dto.GroupDTO;
 import com.swd.pregnancycare.request.GroupRequest;
 import com.swd.pregnancycare.response.BaseResponse;
 import com.swd.pregnancycare.response.GroupResponse;
@@ -55,11 +56,7 @@ public class GroupController {
                           description = "Got all groups successfully",
                           content = @Content(
                                   mediaType = "application/json",
-                                  schema = @Schema(implementation = BaseResponse.class),
-                                  examples = @ExampleObject(
-                                          name = "Success Response",
-                                          value = "{\n  \"code\": 200,\n  \"message\": \"Got all groups successfully\",\n  \"data\": \"[{}, {}]\"\n}"
-                                  )
+                                  schema = @Schema(implementation = GroupDTO.class)
                           )
                   ),
           }
@@ -73,6 +70,35 @@ public class GroupController {
     response.setMessage("Got all groups successfully");
     return ResponseEntity.ok(response);
   }
+
+
+
+  @Operation(
+          summary = "Get all my groups",
+          description = "MEMBER can get all my groups",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "Got all my groups successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = GroupDTO.class)
+                          )
+                  ),
+          }
+
+  )
+  @GetMapping("/my-groups")
+  public ResponseEntity<?> getAllMyBlogs() {
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setData(groupServicesImpl.getAllMyGroups());
+    response.setMessage("Got all my groups successfully");
+    return ResponseEntity.ok(response);
+  }
+
+
+
 
   @Operation(
           summary = "Delete a group",
@@ -150,10 +176,9 @@ public class GroupController {
                   )
           }
   )
-  @PostMapping("/{groupId}/members")
-  public ResponseEntity<?> addMemberToGroup(@PathVariable int groupId,
-                                       @RequestParam String email) {
-    groupServicesImpl.addMemberToGroup(groupId, email);
+  @PostMapping("/register/{groupId}")
+  public ResponseEntity<?> addMemberToGroup(@PathVariable int groupId) {
+    groupServicesImpl.addMemberToGroup(groupId);
     BaseResponse response = new BaseResponse();
     response.setCode(200);
     response.setMessage("User registered to group successfully");

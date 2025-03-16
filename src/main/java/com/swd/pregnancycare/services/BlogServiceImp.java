@@ -2,6 +2,7 @@ package com.swd.pregnancycare.services;
 
 import com.swd.pregnancycare.dto.BlogCommentDTO;
 import com.swd.pregnancycare.dto.BlogDTO;
+import com.swd.pregnancycare.dto.GroupDTO;
 import com.swd.pregnancycare.dto.UserDTO;
 import com.swd.pregnancycare.entity.*;
 import com.swd.pregnancycare.exception.ErrorCode;
@@ -81,6 +82,7 @@ public class BlogServiceImp implements BlogServices {
             .filter(blog -> "MEMBER".equals(blog.getUser().getRole().getName()))
             .filter(blog -> blog.getGroup() != null &&
                     joinedGroupIds.contains(blog.getGroup().getId()))
+            .filter(blog -> Boolean.FALSE.equals(blog.getGroup().getDeleted()))
             .map(blog -> {
               BlogDTO blogDTO = new BlogDTO();
               blogDTO.setId(blog.getId());
@@ -96,6 +98,14 @@ public class BlogServiceImp implements BlogServices {
               userDTO.setFullName(blog.getUser().getFullName());
               userDTO.setRoles(blog.getUser().getRole().getName());
               blogDTO.setUser(userDTO);
+
+              GroupDTO groupDTO = new GroupDTO();
+              groupDTO.setId(blog.getGroup().getId());
+              groupDTO.setName(blog.getGroup().getName());
+              groupDTO.setDescription(blog.getGroup().getDescription());
+              groupDTO.setDate(blog.getGroup().getDate());
+              groupDTO.setDeleted(blog.getGroup().getDeleted());
+              blogDTO.setGroup(groupDTO);
 
               if (blog.getBlogComments() != null) {
                 List<BlogCommentDTO> blogCommentDTOS = blog.getBlogComments().stream()

@@ -17,5 +17,6 @@ public class BlogDTO {
    boolean status;
    Boolean deleted;
    UserDTO user;
+   GroupDTO group;
    List<BlogCommentDTO> blogComments;
 }
