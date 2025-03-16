@@ -31,11 +31,7 @@ public class GroupController {
                           description = "Create a new group",
                           content = @Content(
                                   mediaType = "application/json",
-                                  schema = @Schema(implementation = BaseResponse.class),
-                                  examples = @ExampleObject(
-                                          name = "Success Response",
-                                          value = "{\n  \"code\": 200,\n  \"message\": \"Created group successfully\",\n  \"data\": \"[{}, {}]\"\n}"
-                                  )
+                                  schema = @Schema(implementation = BaseResponse.class)
                           )
                   ),
           }

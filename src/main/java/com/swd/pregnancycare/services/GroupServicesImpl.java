@@ -15,6 +15,7 @@ import com.swd.pregnancycare.repository.UserGroupRepo;
 import com.swd.pregnancycare.repository.UserRepo;
 import com.swd.pregnancycare.request.GroupRequest;
 import com.swd.pregnancycare.response.GroupResponse;
+import com.swd.pregnancycare.response.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -32,13 +33,16 @@ public class GroupServicesImpl implements GroupServices {
   private UserRepo userRepo;
   @Autowired
   private UserGroupRepo userGroupRepo;
+  @Autowired
+  private UserServicesImp userServicesImp;
 
 
 
   @Override
   @PreAuthorize("hasRole('MEMBER')")
   public void saveGroup(GroupRequest groupRequest) {
-    Optional<UserEntity> user = userRepo.findByEmailAndStatusTrue(groupRequest.getOwner_email());
+    UserResponse userResponse = userServicesImp.getMyInfo();
+    Optional<UserEntity> user = userRepo.findByEmailAndStatusTrue(userResponse.getEmail());
     Optional<GroupEntity> group = groupRepo.findByNameAndDeletedFalse(groupRequest.getName());
 
     if(user.isEmpty()) throw new AppException(ErrorCode.USER_NOT_EXIST);

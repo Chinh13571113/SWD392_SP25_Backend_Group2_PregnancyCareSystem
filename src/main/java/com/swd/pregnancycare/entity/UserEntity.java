@@ -54,8 +54,8 @@ public class UserEntity {
 
 
     // Owner of Group
-    @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL)
-    private GroupEntity group;
+    @OneToMany(mappedBy = "owner")
+    private List<GroupEntity> groupOfOwners;
 
 
 

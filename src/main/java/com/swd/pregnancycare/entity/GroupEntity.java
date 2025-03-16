@@ -25,8 +25,8 @@ public class GroupEntity {
 
 
 
-  @OneToOne
-  @JoinColumn(name = "id_owner", unique = true)
+  @ManyToOne
+  @JoinColumn(name = "id_owner")
   private UserEntity owner;
 
 
