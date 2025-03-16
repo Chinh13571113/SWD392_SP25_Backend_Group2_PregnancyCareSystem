@@ -4,6 +4,7 @@ import com.swd.pregnancycare.exception.AppException;
 import com.swd.pregnancycare.exception.ErrorCode;
 import com.swd.pregnancycare.response.BaseResponse;
 import com.swd.pregnancycare.services.LoginServices;
+import com.swd.pregnancycare.services.UserServicesImp;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -25,6 +26,8 @@ import java.util.Objects;
 public class LoginController {
     @Autowired
     private LoginServices loginServices;
+    @Autowired
+    private UserServicesImp userServicesImp;
 
     @Operation(
             summary = "User Login",
@@ -61,8 +64,32 @@ public class LoginController {
     }
 
 
-    // Update User API
-
+    // Forgot Password User API
+    @Operation(
+            summary = "User Fogot Password",
+            description = "Reset Password",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "login successful",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = BaseResponse.class),
+                                    examples = @ExampleObject(
+                                            name = "Success Response",
+                                            value = "{\n  \"code\": 200,\n  \"message\": \"Login successful\",\n  \"data\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n}"
+                                    )
+                            )
+                    ),
+            }
+    )
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestParam String email){
+        userServicesImp.forgotPassword(email);
+        BaseResponse response = new BaseResponse();
+        response.setMessage("Your Password is reset Check your mail");
+        return ResponseEntity.ok(response);
+    }
 
     // Delete User API
 

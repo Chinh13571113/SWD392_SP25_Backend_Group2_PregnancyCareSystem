@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 
 public class ScheduleDTO {
     int appointmentId;
+    LocalDateTime dateRemind;
     String notify;
     boolean isNotice;
     String type;
