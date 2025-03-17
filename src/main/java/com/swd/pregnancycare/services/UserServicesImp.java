@@ -1,5 +1,6 @@
 package com.swd.pregnancycare.services;
 
+import com.swd.pregnancycare.dto.DataMailDTO;
 import com.swd.pregnancycare.dto.UserDTO;
 import com.swd.pregnancycare.entity.RoleEntity;
 import com.swd.pregnancycare.entity.UserEntity;
@@ -10,15 +11,16 @@ import com.swd.pregnancycare.repository.RoleRepo;
 import com.swd.pregnancycare.repository.UserRepo;
 import com.swd.pregnancycare.request.UserRequest;
 import com.swd.pregnancycare.response.UserResponse;
+import com.swd.pregnancycare.utils.DataUtils;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UserServicesImp implements UserServices{
@@ -29,6 +31,8 @@ public class UserServicesImp implements UserServices{
     private RoleRepo roleRepo;
     @Autowired
     PasswordEncoder passwordEncoder;
+    @Autowired
+    MailServices mailServices;
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
@@ -105,6 +109,33 @@ public class UserServicesImp implements UserServices{
             user.setPassword(passwordEncoder.encode(password)); // Mã hóa mật khẩu
             userRepo.save(user);
         }
+    }
+
+    @Override
+    public Boolean forgotPassword(String email) {
+        UserEntity user = userRepo.findByEmail(email).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXIST));
+        String rawPassword = DataUtils.generateAndHashPassword(8); // Tạo mật khẩu 8 ký tự
+
+        // 2. Băm mật khẩu trước khi lưu vào DB
+        String hashedPassword = BCrypt.hashpw(rawPassword, BCrypt.gensalt(10));
+        user.setPassword(hashedPassword);
+        userRepo.save(user);
+        try{
+            DataMailDTO dataMailDTO = new DataMailDTO();
+            dataMailDTO.setTo(user.getEmail());
+            dataMailDTO.setSubject("Forgot password");
+            Map<String,Object> props = new HashMap<>();
+            props.put("name", user.getFullName());
+            props.put("username",user.getEmail());
+            props.put("password",rawPassword);
+            dataMailDTO.setProps(props);
+            mailServices.sendHtmlMail(dataMailDTO,"client");
+            return true;
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
     }
 
     private void setDefaultRole(UserEntity user) {

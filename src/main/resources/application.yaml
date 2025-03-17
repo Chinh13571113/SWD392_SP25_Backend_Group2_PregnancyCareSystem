@@ -17,6 +17,7 @@ spring:
       max-file-size: 3MB
       max-request-size: 10MB
 
+
 custom:
   redis:
     host: ${REDIS_URL:localhost}
@@ -35,4 +36,11 @@ openapi:
     title: API Service
     version: 1.0.0
 
+mailServer:
+  host: smtp.gmail.com
+  port: 587
+  email: superanhziggy@gmail.com
+  password: nhvx myku cczo nyao
+  protocol: smtp
+  isSSL: true
 

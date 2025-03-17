@@ -10,13 +10,19 @@ import com.swd.pregnancycare.mapper.AppointmentMapper;
 import com.swd.pregnancycare.repository.AppointmentRepo;
 import com.swd.pregnancycare.repository.FetusRepo;
 import com.swd.pregnancycare.repository.UserRepo;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class AppointmentServicesImp implements AppointmentServices {
@@ -28,6 +34,8 @@ public class AppointmentServicesImp implements AppointmentServices {
     private FetusRepo fetusRepo;
     @Autowired
     private  LoginServices loginServices;
+    @Autowired
+    private Validator validator;
     @Override
     @PreAuthorize("hasRole('MEMBER')")
     public void makeAppointment(AppointmentDTO appointment) {
@@ -35,18 +43,21 @@ public class AppointmentServicesImp implements AppointmentServices {
         String name = context.getAuthentication().getName();
         UserEntity userEntity =userRepo.findByEmailAndStatusTrue(name).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXIST));
         FetusEntity fetusEntity;
-        if(fetusRepo.existsByIdAndUserId(appointment.getIdFetus(),userEntity.getId())){
+
+         if(fetusRepo.existsByIdAndUserId(appointment.getIdFetus(),userEntity.getId())){
 
              fetusEntity =fetusRepo.findById(appointment.getIdFetus())
                     .orElseThrow(()->new AppException(ErrorCode.FETUS_NOT_EXIST));
         }
         else throw new AppException(ErrorCode.DATA_NOT_FOUND);
+
         AppointmentEntity appointmentEntity = AppointmentEntity.builder()
                 .users(userEntity)
                 .fetus(fetusEntity)
                 .event(appointment.getEvent())
                 .dateIssue(appointment.getDateIssue())
                 .build();
+
         appointmentRepo.save(appointmentEntity);
 
 

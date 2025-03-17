@@ -5,8 +5,15 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity(name = "appointment")
+@Table(
+        name = "appointment",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"date", "id_user"})
+        }
+)
 @Data
 @Builder
 @NoArgsConstructor
@@ -25,4 +32,6 @@ public class AppointmentEntity {
     @ManyToOne
     @JoinColumn(name = "id_fetus")
     FetusEntity fetus;
+    @OneToMany(mappedBy = "appointment")
+    List<ScheduleEntity> schedules;
 }
