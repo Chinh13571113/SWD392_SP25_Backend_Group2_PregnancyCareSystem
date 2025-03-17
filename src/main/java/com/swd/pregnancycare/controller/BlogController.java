@@ -175,7 +175,7 @@ public class BlogController {
   }
 @GetMapping("approve/{id}")
   public  ResponseEntity<?> approveBlog(@RequestParam int blogId) {
-        blogServices.approveBlog(blogId);
+        blogServiceImp.approveBlog(blogId);
         return ResponseEntity.ok("Approve succesfully !!! ");
     }
 }

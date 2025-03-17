@@ -37,7 +37,8 @@ public class SecurityConfig {
           "/swagger-ui/**",
           "/swagger-ui.html",
           "/api/authentication/login",
-          "/api/users/register"
+          "/api/users/register",
+          "/api/duedate/**"
 
   };
   @Value("${jwt.key}")
