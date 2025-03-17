@@ -153,14 +153,13 @@ public class FetusController {
             }
     )
     @PostMapping()
-    @PreAuthorize("hasAuthority('MEMBER')")
     public ResponseEntity<?> createFetus(@RequestBody FetusRequest fetusRequest) {
         FetusDTO fetusDTO = fetusServicesImp.saveFetus(fetusRequest);
         BaseResponse response = new BaseResponse();
-        response.setCode(201);
+        response.setCode(200);
         response.setMessage("Successfully created fetus.");
         response.setData(fetusDTO);
-        return ResponseEntity.status(201).body(response);
+        return ResponseEntity.status(200).body(response);
     }
 
     // Operation to update a fetus
@@ -183,7 +182,6 @@ public class FetusController {
             }
     )
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('MEMBER')")
     public ResponseEntity<?> updateFetus(@RequestBody FetusRequest fetusRequest, @PathVariable int id) {
         fetusServicesImp.updateFetus(fetusRequest, id);
         BaseResponse response = new BaseResponse();
@@ -212,7 +210,6 @@ public class FetusController {
             }
     )
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('MEMBER')")
     public ResponseEntity<?> deleteFetus(@PathVariable int id) {
         fetusServicesImp.deleteFetus(id);
         BaseResponse response = new BaseResponse();
@@ -269,7 +266,6 @@ public class FetusController {
 
     )
     @GetMapping("/My-Fetus-Week/{id}")
-    @PreAuthorize("hasRole('MEMBER')")
     public ResponseEntity<?> getFetusWeek(@PathVariable int id){
         BaseResponse response = new BaseResponse();
         response.setData(fetusServicesImp.getFetusWeek(id));

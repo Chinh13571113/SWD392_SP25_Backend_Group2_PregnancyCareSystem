@@ -25,19 +25,15 @@ public class GroupEntity {
 
 
 
-  @OneToOne
-  @JoinColumn(name = "id_owner", unique = true)
-  private UserEntity user;
+  @ManyToOne
+  @JoinColumn(name = "id_owner")
+  private UserEntity owner;
 
 
 
-  @ManyToMany
-  @JoinTable(
-          name = "user_group",
-          joinColumns = @JoinColumn(name = "id_group"),
-          inverseJoinColumns = @JoinColumn(name = "id_user")
-  )
-  private List<UserEntity> users = new ArrayList<>();
+  // User lists
+  @OneToMany(mappedBy = "group")
+  private List<UserGroupEntity> users;
 
 
 

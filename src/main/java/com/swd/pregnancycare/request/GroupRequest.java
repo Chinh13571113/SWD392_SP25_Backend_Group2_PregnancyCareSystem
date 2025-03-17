@@ -6,5 +6,4 @@ import lombok.Data;
 public class GroupRequest {
   private String name;
   private String description;
-  private String owner_email;
 }

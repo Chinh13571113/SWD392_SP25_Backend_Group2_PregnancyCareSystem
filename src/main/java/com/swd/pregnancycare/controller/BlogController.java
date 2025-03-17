@@ -1,7 +1,9 @@
 package com.swd.pregnancycare.controller;
 
+import com.swd.pregnancycare.dto.BlogDTO;
 import com.swd.pregnancycare.request.BlogRequest;
 import com.swd.pregnancycare.response.BaseResponse;
+import com.swd.pregnancycare.response.BlogResponse;
 import com.swd.pregnancycare.services.BlogServiceImp;
 import com.swd.pregnancycare.services.BlogServices;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,57 +24,20 @@ public class BlogController {
   @Autowired
   private BlogServiceImp blogServiceImp;
 
+
   @Operation(
-          summary = "Get all List Blogs",
-          description = "User or expert can get all List Blogs",
+          summary = "Create a new Blog",
+          description = "MEMBER or EXPERT can create a blog",
           responses = {
                   @ApiResponse(
                           responseCode = "200",
-                          description = "got list blogs successfully",
+                          description = "Created blog successfully",
                           content = @Content(
                                   mediaType = "application/json",
-                                  schema = @Schema(implementation = BaseResponse.class),
-                                  examples = @ExampleObject(
-                                          name = "Success Response",
-                                          value = """
-    {
-      "code": 200,
-      "message": "got list blogs successfully",
-      "data": [
-        {
-          "id": 1,
-          "title": "Baby A",
-          "description": "5",
-          "datePublish": "2025-07-10",
-          "status": false,
-          "user": {
-            "id": 1,
-            "email": "user@example.com",
-            "fullName": "user",
-            "roles": "MEMBER",
-          }
-        },
-        {
-          "id": 2,
-          "title": "Baby B",
-          "description": "6",
-          "datePublish": "2025-07-10",
-          "status": false,
-          "user": {
-            "id": 2,
-            "email": "expert@example.com",
-            "fullName": "expert",
-            "roles": "EXPERT",
-          }
-        }
-      ]
-    }
-    """
-                                  )
+                                  schema = @Schema(implementation = BaseResponse.class)
+
                           )
                   ),
-
-
           }
 
   )
@@ -81,42 +46,65 @@ public class BlogController {
     blogServiceImp.saveBlog(blog);
     BaseResponse response = new BaseResponse();
     response.setCode(200);
-    response.setMessage("Saved blog successfully");
-    response.setData("{}");
+    response.setMessage("Created blog successfully");
     return ResponseEntity.ok(response);
   }
 
+
   @Operation(
-          summary = "Get all Blogs",
-          description = "Allow to get all blogs",
+          summary = "Get post list",
+          description = "MEMBER or EXPERT or ADMIN can get all blogs",
           responses = {
                   @ApiResponse(
                           responseCode = "200",
-                          description = "Got all blog successfully",
+                          description = "got post list successfully",
                           content = @Content(
                                   mediaType = "application/json",
-                                  schema = @Schema(implementation = BaseResponse.class),
-                                  examples = @ExampleObject(
-                                          name = "Success Response",
-                                          value = "{\n  \"code\": 200,\n  \"message\": \"Got all blogs successfully\",\n  \"data\": \"[{}, {}]\"\n}"
-                                  )
+                                  schema = @Schema(implementation = BlogResponse.class)
                           )
-                  ),
+                  )
           }
-
   )
-  @GetMapping
-  public ResponseEntity<?> getAllBlogs() {
+
+  @GetMapping("/posts")
+  public ResponseEntity<?> getAllBlogsByMember() {
     BaseResponse response = new BaseResponse();
     response.setCode(200);
-    response.setData(blogServiceImp.getAllBlogs());
-    response.setMessage("Got all blogs successfully");
+    response.setData(blogServiceImp.getAllBlogsByMember());
+    response.setMessage("Got  post list successfully");
     return ResponseEntity.ok(response);
   }
 
+
+  @Operation(
+          summary = "Get article list",
+          description = "MEMBER or EXPERT or ADMIN can get article list",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "got article list successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = BlogResponse.class)
+                          )
+                  )
+          }
+  )
+
+  @GetMapping("/articles")
+  public ResponseEntity<?> getAllBlogsByExpert() {
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setData(blogServiceImp.getAllBlogsByExpert());
+    response.setMessage("Got article list successfully");
+    return ResponseEntity.ok(response);
+  }
+
+
+
   @Operation(
           summary = "Delete a Blog",
-          description = "Allow to delete a blog",
+          description = "MEMBER or EXPERT can delete a blog",
           responses = {
                   @ApiResponse(
                           responseCode = "200",
@@ -139,13 +127,12 @@ public class BlogController {
     BaseResponse response = new BaseResponse();
     response.setCode(200);
     response.setMessage("Deleted blog successfully");
-    response.setData("{}");
     return ResponseEntity.ok(response);
   }
 
   @Operation(
           summary = "Update a blog",
-          description = "Allow to update a blog",
+          description = "MEMBER or EXPERT update a blog",
           responses = {
                   @ApiResponse(
                           responseCode = "200",
@@ -170,7 +157,59 @@ public class BlogController {
     BaseResponse response = new BaseResponse();
     response.setCode(200);
     response.setMessage("Updated blog successfully");
-    response.setData("{}");
+    return ResponseEntity.ok(response);
+  }
+
+
+
+
+  @Operation(
+          summary = "Get my blogs",
+          description = "MEMBER can get blogs of member",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "got my blog successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = BlogDTO.class)
+                          )
+                  ),
+          }
+
+  )
+  @GetMapping("/my-posts")
+  public ResponseEntity<?> getMyBlogs() {
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setMessage("got my blogs successfully");
+    response.setData(blogServiceImp.getMyBlogs());
+    return ResponseEntity.ok(response);
+  }
+
+
+
+  @Operation(
+          summary = "Get blog detail",
+          description = "MEMBER can get a blog detail",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "got blog detail successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = BlogResponse.class)
+                          )
+                  ),
+          }
+
+  )
+  @GetMapping("/post-detail/{blogId}")
+  public ResponseEntity<?> getBlogDetail(@PathVariable int blogId) {
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setMessage("got blog detail successfully");
+    response.setData(blogServiceImp.getPostDetail(blogId));
     return ResponseEntity.ok(response);
   }
 }

@@ -46,7 +46,7 @@ public class AppointmentController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Get an appointment by ID")
+    @Operation(summary = "Get an appointment by fetus ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved the appointment"),
             @ApiResponse(responseCode = "404", description = "Appointment not found")

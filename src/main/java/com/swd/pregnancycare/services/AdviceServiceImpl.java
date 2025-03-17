@@ -1,9 +1,7 @@
 package com.swd.pregnancycare.services;
 
 import com.swd.pregnancycare.dto.AdviceDTO;
-import com.swd.pregnancycare.dto.BlogDTO;
 import com.swd.pregnancycare.dto.FetusDTO;
-import com.swd.pregnancycare.dto.UserDTO;
 import com.swd.pregnancycare.entity.AdviceEntity;
 import com.swd.pregnancycare.entity.FetusEntity;
 import com.swd.pregnancycare.exception.AppException;

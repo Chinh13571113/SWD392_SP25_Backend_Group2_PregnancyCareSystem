@@ -25,7 +25,7 @@ public class BlogCategoryServiceImpl implements BlogCategoryServices {
   @Override
   @PreAuthorize("hasRole('ADMIN')")
   public void saveBlogCategory(String name, String description) {
-    Optional<BlogCategoryEntity> blogCategory = blogCategoryRepo.findByName(name);
+    Optional<BlogCategoryEntity> blogCategory = blogCategoryRepo.findByNameAndDeletedFalse(name);
 
     if(blogCategory.isEmpty()) {
       BlogCategoryEntity blogCategoryEntity = new BlogCategoryEntity();
