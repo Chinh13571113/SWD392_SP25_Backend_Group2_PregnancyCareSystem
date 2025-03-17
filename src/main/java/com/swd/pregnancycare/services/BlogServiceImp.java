@@ -9,6 +9,7 @@ import com.swd.pregnancycare.exception.ErrorCode;
 import com.swd.pregnancycare.exception.AppException;
 import com.swd.pregnancycare.repository.*;
 import com.swd.pregnancycare.request.BlogRequest;
+import com.swd.pregnancycare.response.BlogResponse;
 import com.swd.pregnancycare.response.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -220,7 +221,112 @@ public class BlogServiceImp implements BlogServices {
   }
 
 
+  @Override
+  @PreAuthorize("hasAnyRole('ADMIN', 'MEMBER')")
+  public List<BlogDTO> getMyBlogs() {
+    UserResponse userResponse = userServicesImp.getMyInfo();
+    return blogRepo.findAll().stream()
+            .filter(blog -> Boolean.FALSE.equals(blog.getDeleted()))
+            .filter(blog -> blog.getUser().getId() == userResponse.getId()) // Chỉ lấy blog do user tạo
+            .map(blog -> {
+              BlogDTO blogDTO = new BlogDTO();
+              blogDTO.setId(blog.getId());
+              blogDTO.setTitle(blog.getTitle());
+              blogDTO.setDescription(blog.getDescription());
+              blogDTO.setDatePublish(blog.getDatePublish());
+              blogDTO.setStatus(blog.getStatus());
+              blogDTO.setDeleted(blog.getDeleted());
 
+              UserDTO userDTO = new UserDTO();
+              userDTO.setId(blog.getUser().getId());
+              userDTO.setEmail(blog.getUser().getEmail());
+              userDTO.setFullName(blog.getUser().getFullName());
+              userDTO.setRoles(blog.getUser().getRole().getName());
+              blogDTO.setUser(userDTO);
+
+              // Nếu blog có thông tin group
+              if (blog.getGroup() != null) {
+                GroupDTO groupDTO = new GroupDTO();
+                groupDTO.setId(blog.getGroup().getId());
+                groupDTO.setName(blog.getGroup().getName());
+                groupDTO.setDescription(blog.getGroup().getDescription());
+                groupDTO.setDate(blog.getGroup().getDate());
+                groupDTO.setDeleted(blog.getGroup().getDeleted());
+                blogDTO.setGroup(groupDTO);
+              }
+
+              if (blog.getBlogComments() != null) {
+                List<BlogCommentDTO> blogCommentDTOS = blog.getBlogComments().stream()
+                        .map(comment -> {
+                          BlogCommentDTO commentDTO = new BlogCommentDTO();
+                          commentDTO.setId(comment.getId());
+                          commentDTO.setDescription(comment.getDescription());
+                          commentDTO.setDatePublish(comment.getDatePublish());
+
+                          UserDTO userCommentDTO = new UserDTO();
+                          userCommentDTO.setId(comment.getUser().getId());
+                          userCommentDTO.setEmail(comment.getUser().getEmail());
+                          userCommentDTO.setFullName(comment.getUser().getFullName());
+                          userCommentDTO.setRoles(comment.getUser().getRole().getName());
+                          userCommentDTO.setStatus(comment.getUser().isStatus());
+                          commentDTO.setUser(userCommentDTO);
+
+                          return commentDTO;
+                        })
+                        .collect(Collectors.toList());
+                blogDTO.setBlogComments(blogCommentDTOS);
+              }
+              return blogDTO;
+            })
+            .collect(Collectors.toList());
+  }
+
+
+  @Override
+  @PreAuthorize("hasRole('MEMBER')")
+  public BlogResponse getPostDetail(int blogId) {
+    BlogEntity blogEntity = blogRepo.findByIdAndDeletedFalse(blogId)
+            .orElseThrow(() -> new AppException(ErrorCode.BLOG_NOT_EXIST));
+    BlogResponse blogResponse = new BlogResponse();
+    blogResponse.setId(blogEntity.getId());
+    blogResponse.setTitle(blogEntity.getTitle());
+    blogResponse.setDescription(blogEntity.getDescription());
+    blogResponse.setDatePublish(blogEntity.getDatePublish());
+    blogResponse.setStatus(blogEntity.getStatus());
+
+    // Map user của blog
+    UserDTO userDTO = new UserDTO();
+    userDTO.setId(blogEntity.getUser().getId());
+    userDTO.setFullName(blogEntity.getUser().getFullName());
+    userDTO.setEmail(blogEntity.getUser().getEmail());
+    userDTO.setRoles(blogEntity.getUser().getRole().getName());
+    userDTO.setStatus(blogEntity.getUser().isStatus());
+    blogResponse.setUser(userDTO);
+
+    // Map danh sách comment
+    List<BlogCommentDTO> blogCommentDTOs = blogEntity.getBlogComments().stream()
+            .map(comment -> {
+              BlogCommentDTO blogCommentDTO = new BlogCommentDTO();
+              blogCommentDTO.setId(comment.getId());
+              blogCommentDTO.setDescription(comment.getDescription());
+              blogCommentDTO.setDatePublish(comment.getDatePublish());
+
+              UserDTO commentUser = new UserDTO();
+              commentUser.setId(comment.getUser().getId());
+              commentUser.setFullName(comment.getUser().getFullName());
+              commentUser.setEmail(comment.getUser().getEmail());
+              commentUser.setRoles(comment.getUser().getRole().getName());
+              commentUser.setStatus(comment.getUser().isStatus());
+              blogCommentDTO.setUser(commentUser);
+
+              return blogCommentDTO;
+            })
+            .collect(Collectors.toList());
+
+    blogResponse.setBlogComments(blogCommentDTOs);
+
+    return blogResponse;
+  }
 
 
 }

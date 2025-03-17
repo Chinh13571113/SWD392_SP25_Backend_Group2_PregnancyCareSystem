@@ -1,5 +1,6 @@
 package com.swd.pregnancycare.controller;
 
+import com.swd.pregnancycare.dto.BlogDTO;
 import com.swd.pregnancycare.request.BlogRequest;
 import com.swd.pregnancycare.response.BaseResponse;
 import com.swd.pregnancycare.response.BlogResponse;
@@ -156,6 +157,59 @@ public class BlogController {
     BaseResponse response = new BaseResponse();
     response.setCode(200);
     response.setMessage("Updated blog successfully");
+    return ResponseEntity.ok(response);
+  }
+
+
+
+
+  @Operation(
+          summary = "Get my blogs",
+          description = "MEMBER can get blogs of member",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "got my blog successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = BlogDTO.class)
+                          )
+                  ),
+          }
+
+  )
+  @GetMapping("/my-posts")
+  public ResponseEntity<?> getMyBlogs() {
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setMessage("got my blogs successfully");
+    response.setData(blogServiceImp.getMyBlogs());
+    return ResponseEntity.ok(response);
+  }
+
+
+
+  @Operation(
+          summary = "Get blog detail",
+          description = "MEMBER can get a blog detail",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "got blog detail successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = BlogResponse.class)
+                          )
+                  ),
+          }
+
+  )
+  @GetMapping("/post-detail/{blogId}")
+  public ResponseEntity<?> getBlogDetail(@PathVariable int blogId) {
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setMessage("got blog detail successfully");
+    response.setData(blogServiceImp.getPostDetail(blogId));
     return ResponseEntity.ok(response);
   }
 }

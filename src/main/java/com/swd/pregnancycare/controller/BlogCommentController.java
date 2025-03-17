@@ -2,6 +2,7 @@ package com.swd.pregnancycare.controller;
 
 
 import com.swd.pregnancycare.response.BaseResponse;
+import com.swd.pregnancycare.response.BlogCommentResponse;
 import com.swd.pregnancycare.services.BlogCommentServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -95,16 +96,7 @@ public class BlogCommentController {
                           description = "Updated comment successfully",
                           content = @Content(
                                   mediaType = "application/json",
-                                  schema = @Schema(implementation = BaseResponse.class),
-                                  examples = @ExampleObject(
-                                          name = "Success Response",
-                                          value = """
-{
-  "code": 200,
-  "message": "Updated comment successfully"
-}
-"""
-                                  )
+                                  schema = @Schema(implementation = BaseResponse.class)
                           )
                   )
           }
@@ -120,4 +112,54 @@ public class BlogCommentController {
   }
 
 
+
+  @Operation(
+          summary = "Get all comments of a blog",
+          description = "MEMBER can get all comments of a blog",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "Got comment list successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = BlogCommentResponse.class)
+                          )
+                  )
+          }
+  )
+
+  @GetMapping("/{blogId}")
+  public ResponseEntity<?> getAllCommentsOfBlog(@PathVariable int blogId){
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setMessage("Got comment list successfully");
+    response.setData(blogCommentServiceImpl.getAllComments(blogId));
+    return ResponseEntity.ok(response);
+  }
+
+
+
+  @Operation(
+          summary = "Get all my comments ",
+          description = "MEMBER can get their comments ",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "Got my comments successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = BlogCommentResponse.class)
+                          )
+                  )
+          }
+  )
+
+  @GetMapping("/my-comments")
+  public ResponseEntity<?> getMyComments(){
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setMessage("Got my comments successfully");
+    response.setData(blogCommentServiceImpl.getMyComments());
+    return ResponseEntity.ok(response);
+  }
 }
