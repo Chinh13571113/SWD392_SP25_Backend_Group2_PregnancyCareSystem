@@ -12,7 +12,6 @@ import com.swd.pregnancycare.repository.UserRepo;
 import com.swd.pregnancycare.request.UserRequest;
 import com.swd.pregnancycare.response.UserResponse;
 import com.swd.pregnancycare.utils.DataUtils;
-import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,6 +32,7 @@ public class UserServicesImp implements UserServices{
     PasswordEncoder passwordEncoder;
     @Autowired
     MailServices mailServices;
+
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
@@ -91,9 +91,8 @@ public class UserServicesImp implements UserServices{
 
     @Override
     @PreAuthorize("hasRole('MEMBER')")
-    public void updateUser(int id, String fullName, String email, String password) {
+    public void updateUser(int id, String fullName, String email) {
         // Update user
-        if(password == null) {
             if(userRepo.existsByEmailAndStatusTrue(email) && !userRepo.findById(id).map(UserEntity::getEmail).orElse("").equals(email)) {
                 throw new AppException(ErrorCode.USER_EXIST);
             }
@@ -102,18 +101,11 @@ public class UserServicesImp implements UserServices{
             newUser.setEmail(email);
             newUser.setFullName(fullName);
             userRepo.save(newUser);
-        }
-        // Change password
-        else {
-            UserEntity user = userRepo.findById(id).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXIST));
-            user.setPassword(passwordEncoder.encode(password)); // Mã hóa mật khẩu
-            userRepo.save(user);
-        }
     }
 
     @Override
     public Boolean forgotPassword(String email) {
-        UserEntity user = userRepo.findByEmail(email).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXIST));
+        UserEntity user = userRepo.findByEmailAndStatusTrue(email).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXIST));
         String rawPassword = DataUtils.generateAndHashPassword(8); // Tạo mật khẩu 8 ký tự
 
         // 2. Băm mật khẩu trước khi lưu vào DB
@@ -137,6 +129,24 @@ public class UserServicesImp implements UserServices{
         }
         return false;
     }
+
+
+
+    @Override
+    @PreAuthorize("hasRole('MEMBER')")
+    public void changePassword(String oldPassword, String newPassword) {
+        UserResponse userResponse = getMyInfo();
+        Optional<UserEntity> user = userRepo.findByEmailAndStatusTrue(userResponse.getEmail());
+        UserEntity userEntity = user.get();
+        if(passwordEncoder.matches(oldPassword, userEntity.getPassword())) {
+            userEntity.setPassword(passwordEncoder.encode(newPassword));
+            userRepo.save(userEntity);
+        }
+        else throw new AppException(ErrorCode.PASSWORD_NOT_CORRECT);
+    }
+
+
+
 
     private void setDefaultRole(UserEntity user) {
         if (user.getRole() == null) {
