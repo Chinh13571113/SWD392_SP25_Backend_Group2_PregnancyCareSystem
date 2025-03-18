@@ -113,17 +113,34 @@ public class UserController {
     }
 
 
+
+  @Operation(
+          summary = "Update a User",
+          description = "MEMBER can update their info",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "MEMBER updated info successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = BaseResponse.class)
+                          )
+                  ),
+                  @ApiResponse(
+                          responseCode = "400",
+                          description = "Invalid input"
+                  )
+          }
+  )
+  @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(
             @PathVariable int id,
             @Parameter(description = "User name", required = false, example = "John Doe")
             @RequestParam(required = false) String name,
             @Parameter(description = "User email", required = false, example = "john@example.com")
-            @RequestParam(required = false) String email,
-            @Parameter(description = "User password", required = false, example = "new password")
-
-            @RequestParam(required = false) String password) {
+            @RequestParam(required = false) String email) {
       BaseResponse response = new BaseResponse();
-      userServicesImp.updateUser(id, name, email, password);
+      userServicesImp.updateUser(id, name, email);
       response.setCode(200);
       response.setMessage("Updated user successfully");
       return ResponseEntity.ok(response);

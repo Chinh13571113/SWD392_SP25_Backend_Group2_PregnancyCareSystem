@@ -40,10 +40,10 @@ public class GroupController {
   )
   @PostMapping
   public ResponseEntity<?> saveGroup(@RequestBody GroupRequest group) {
-    groupServicesImpl.saveGroup(group);
     BaseResponse response = new BaseResponse();
     response.setCode(200);
     response.setMessage("Created group successfully");
+    response.setData(groupServicesImpl.saveGroup(group));
     return ResponseEntity.ok(response);
   }
 

@@ -19,6 +19,7 @@ public enum ErrorCode {
     BLOG_SAVED_EXCEPTION(1002, "blog save error", HttpStatus.BAD_REQUEST),
     INVALID_PASSWORD(400, "password must be at least 8", HttpStatus.BAD_REQUEST),
     UNAUTHORIZED_EXCEPTION(999, "do not permission", HttpStatus.FORBIDDEN),
+    PASSWORD_NOT_CORRECT(400, "password is not correct", HttpStatus.BAD_REQUEST),
 
 
     ROLE_NOT_FOUND(401, "Role does not exist", HttpStatus.NOT_FOUND),
@@ -45,14 +46,17 @@ public enum ErrorCode {
     BLOG_COMMENT_SAVED_EXCEPTION(500, "save blog comment error", HttpStatus.INTERNAL_SERVER_ERROR),
     BLOG_COMMENT_NOT_EXIST(404, "blog comment not existed", HttpStatus.NOT_FOUND),
 
-    RECORD_NOT_EXIST(404, "record does not exist", HttpStatus.NOT_FOUND), DATA_NOT_FOUND(404, "Data not found", HttpStatus.NOT_FOUND), APPOINTMENT_NOT_EXIST(404, "appointment not exist", HttpStatus.NOT_FOUND),
-    SCHEDULE_NOT_EXIST(404, "Cannot find Schedule", HttpStatus.NOT_FOUND), APPOINTMENT_EXISTED(403, "Your appointment is already created", HttpStatus.BAD_REQUEST), SCHEDULE_EXISTED(403, "Your Schedule is available", HttpStatus.BAD_REQUEST), AVAILABLE_WRITER(403, "Appointment with the same date and user already exists.", HttpStatus.BAD_REQUEST);
+    RECORD_NOT_EXIST(404, "record does not exist", HttpStatus.NOT_FOUND),
+    DATA_NOT_FOUND(404, "Data not found", HttpStatus.NOT_FOUND), APPOINTMENT_NOT_EXIST(404, "appointment not exist", HttpStatus.NOT_FOUND),
+    SCHEDULE_NOT_EXIST(404, "Cannot find Schedule", HttpStatus.NOT_FOUND),
+    APPOINTMENT_EXISTED(403, "Your appointment is already created", HttpStatus.BAD_REQUEST),
+    SCHEDULE_EXISTED(403, "Your Schedule is available", HttpStatus.BAD_REQUEST),
+    AVAILABLE_WRITER(403, "Appointment with the same date and user already exists.", HttpStatus.BAD_REQUEST);
 
 
 
 
 
-    ;
 
 
     private int code;
