@@ -9,12 +9,12 @@ import java.util.List;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class GroupDTO {
-   int id;
-   String name;
-   String description;
-   LocalDateTime date;
-   Boolean deleted;
-   UserDTO owner;
-   List<UserDTO> users;
+public class BlogCategoryDTO {
+  int id;
+  String name;
+  String slug;
+  String description;
+  LocalDateTime datePublish;
+  Boolean deleted;
+  List<BlogDTO> blogs;
 }

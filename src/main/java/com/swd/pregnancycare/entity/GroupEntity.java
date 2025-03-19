@@ -17,26 +17,25 @@ public class GroupEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
-  @Column(name = "name")
   private String name;
-
-  @Column(name = "description")
   private String description;
-
-  @Column(name = "date")
   private LocalDateTime date;
+  @Column(name = "is_delete")
+  private Boolean deleted;
 
-  @OneToOne
-  @JoinColumn(name = "id_owner", unique = true)
-  private UserEntity user;
 
-  @ManyToMany
-  @JoinTable(
-          name = "user_group",
-          joinColumns = @JoinColumn(name = "id_group"),
-          inverseJoinColumns = @JoinColumn(name = "id_user")
-  )
-  private List<UserEntity> users = new ArrayList<>();
+
+  @ManyToOne
+  @JoinColumn(name = "id_owner")
+  private UserEntity owner;
+
+
+
+  // User lists
+  @OneToMany(mappedBy = "group")
+  private List<UserGroupEntity> users;
+
+
 
   //Blog
   @OneToMany(mappedBy = "group")

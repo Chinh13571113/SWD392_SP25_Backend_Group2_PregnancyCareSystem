@@ -46,7 +46,18 @@ public class AppointmentController {
         return ResponseEntity.ok(response);
     }
 
-
+    @Operation(summary = "Get an appointment by fetus ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved the appointment"),
+            @ApiResponse(responseCode = "404", description = "Appointment not found")
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getAppointmentByFetusId(@PathVariable int id) {
+        BaseResponse response = new BaseResponse();
+        response.setData(appointmentServicesImp.getAppointmentByFetusId(id));
+        response.setMessage("Success");
+        return ResponseEntity.ok(response);
+    }
 
     @Operation(summary = "Update an appointment")
     @ApiResponses(value = {

@@ -21,8 +21,6 @@ public class FetusRecordEntity {
     int id;
     BigDecimal weight;
     BigDecimal height;
-    @Column(name = "date_record")
-    LocalDateTime dateRecord;
     @Column(name = "warning")
     String warningMess;
     @ManyToOne

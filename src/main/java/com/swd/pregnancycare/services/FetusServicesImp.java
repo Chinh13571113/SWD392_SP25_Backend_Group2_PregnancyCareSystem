@@ -12,6 +12,7 @@ import com.swd.pregnancycare.repository.FetusRecordRepo;
 import com.swd.pregnancycare.repository.FetusRepo;
 import com.swd.pregnancycare.repository.UserRepo;
 import com.swd.pregnancycare.request.FetusRequest;
+import com.swd.pregnancycare.response.UserResponse;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,10 @@ public class FetusServicesImp implements FetusServices {
   private FetusRecordRepo fetusRecordRepo;
   @Autowired
   private LoginServices loginServices;
+  @Autowired
+  private UserServicesImp userServicesImp;
+
+
 
   @Override
   @PreAuthorize("hasRole('MEMBER')")
@@ -51,22 +56,20 @@ public class FetusServicesImp implements FetusServices {
     }).toList();
   }
 
-  @Transactional
   @Override
   @PreAuthorize("hasRole('MEMBER')")
   public FetusDTO saveFetus(FetusRequest fetusRequest) {
-    Optional<UserEntity> user = userRepo.findByEmail(fetusRequest.getEmail());
-    // Is user exist
-    if (user.isEmpty()) throw new AppException(ErrorCode.USER_NOT_EXIST);
+    UserResponse userResponse = userServicesImp.getMyInfo();
+    Optional<UserEntity> userEntity = userRepo.findByIdAndStatusTrue(userResponse.getId());
+    UserEntity user = userEntity.get();
 
-    UserEntity userEntity = user.get();
     FetusEntity newFetus = new FetusEntity();
 
     newFetus.setName(fetusRequest.getName());
     newFetus.setGender(fetusRequest.getGender());
     newFetus.setDueDate(fetusRequest.getDueDate());
     newFetus.setStatus(false);
-    newFetus.setUser(userEntity);
+    newFetus.setUser(user);
     FetusEntity savedFetus = fetusRepo.save(newFetus);
 
     FetusDTO fetusDTO = new FetusDTO();
@@ -78,7 +81,6 @@ public class FetusServicesImp implements FetusServices {
     return fetusDTO;
   }
 
-  @Transactional
   @Override
   @PreAuthorize("hasRole('MEMBER')")
   public void deleteFetus(int id) {
@@ -87,7 +89,6 @@ public class FetusServicesImp implements FetusServices {
       fetusRepo.deleteById(fetus.get().getId());
   }
 
-  @Transactional
   @Override
   @PreAuthorize("hasRole('MEMBER')")
   public void updateFetus(FetusRequest fetusRequest, int id) {
@@ -114,8 +115,9 @@ public class FetusServicesImp implements FetusServices {
     return FetusMapper.INSTANCE.toListFetusRecordDTO(fetusRecords);
   }
 
-  @PreAuthorize("hasRole('MEMBER')")
+
   @Override
+  @PreAuthorize("hasRole('MEMBER')")
   public void saveFetusRecord(int id, FetusRecodDTO fetusRecodDTO) {
     FetusEntity fetusEntity = fetusRepo.findById(id)
             .orElseThrow(() -> new AppException(ErrorCode.FETUS_NOT_EXIST));
@@ -123,6 +125,7 @@ public class FetusServicesImp implements FetusServices {
     fetusRecordEntity.setFetus(fetusEntity);
     fetusRecordEntity.setWeight(fetusRecodDTO.getWeight());
     fetusRecordEntity.setHeight(fetusRecodDTO.getHeight());
+    fetusRecordEntity.setWarningMess(fetusRecodDTO.getWarningMess());
 //    fetusRecordEntity.setDateRecord(fetusRecodDTO.getDateRecord());
     fetusRecordRepo.save(fetusRecordEntity);
 
@@ -136,6 +139,7 @@ public class FetusServicesImp implements FetusServices {
   }
 
   @Override
+  @PreAuthorize("hasRole('MEMBER')")
   public int getFetusWeek(int id) {
     FetusEntity fetusEntity = fetusRepo.findById(id).orElseThrow(()->new AppException(ErrorCode.FETUS_NOT_EXIST));
     LocalDate dueDate  = fetusEntity.getDueDate().toLocalDate();

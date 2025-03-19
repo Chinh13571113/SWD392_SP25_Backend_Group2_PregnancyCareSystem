@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 public class FetusRecodDTO {
     BigDecimal weight;
     BigDecimal height;
+    String warningMess;
 //    LocalDateTime dateRecord;
 
 

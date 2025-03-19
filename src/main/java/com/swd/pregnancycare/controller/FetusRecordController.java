@@ -22,9 +22,12 @@ import org.springframework.web.bind.annotation.*;
 public class FetusRecordController {
     @Autowired
     private FetusServicesImp fetusServicesImp;
+
+
+
     @Operation(
             summary = "Get Fetus Record",
-            description = "User can get their own Fetus",
+            description = "MEMBER can get their own fetus record by fetus id",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -71,7 +74,7 @@ public class FetusRecordController {
 
     )
     @GetMapping("/findById")
-    public ResponseEntity<?> getAllFetusRecord(@Parameter(description = "Id Fetus", required = true, example = "1") @RequestParam int fetusId){
+    public ResponseEntity<?> getAllFetusRecord(@Parameter(description = "Fetus ID", required = true, example = "1") @RequestParam int fetusId){
         BaseResponse response = new BaseResponse();
         response.setData(fetusServicesImp.getFetusRecordById(fetusId));
         response.setCode(200);
@@ -81,7 +84,7 @@ public class FetusRecordController {
 
     @Operation(
             summary = "Save Fetus Record",
-            description = "User can create a new Fetus",
+            description = "MEMBER can create a new Fetus Record",
             responses = {
                     @ApiResponse(
                             responseCode = "201",
@@ -97,8 +100,7 @@ public class FetusRecordController {
                     )
             }
     )
-    @PostMapping("/save-fetus-record")
-    @PreAuthorize("hasAuthority('ROLE_MEMBER')")
+    @PostMapping()
     public ResponseEntity<?> saveFetusRecord(@Parameter(description = "fetus Id is required", example = "1") @RequestParam int id,
                                                 @RequestBody FetusRecodDTO fetusRecordDto) {
         fetusServicesImp.saveFetusRecord(id,fetusRecordDto);
@@ -131,7 +133,6 @@ public class FetusRecordController {
             }
     )
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_MEMBER')")
     public ResponseEntity<?> deleteFetusRecord(@PathVariable int id) {
         fetusServicesImp.deleteFetusRecord(id);
         BaseResponse response = new BaseResponse();

@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -14,5 +15,8 @@ public class BlogDTO {
    String description;
    LocalDateTime datePublish;
    boolean status;
+   Boolean deleted;
    UserDTO user;
+   GroupDTO group;
+   List<BlogCommentDTO> blogComments;
 }

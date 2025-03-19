@@ -37,7 +37,7 @@ public class LoginServices  {
     public String login(String email, String password){
         SecurityContextHolder.clearContext();
         String token="";
-        Optional<UserEntity> user = userRepo.findByEmail(email);
+        Optional<UserEntity> user = userRepo.findByEmailAndStatusTrue(email);
         if(user.isPresent()){
             UserEntity userEntity = user.get();
 
@@ -61,8 +61,6 @@ public class LoginServices  {
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
         JWSObject jwsObject = new JWSObject(header,payload);
         try {
-//            log.info("key: "+keyjwt);
-//            log.info("Secret key length: " + keyjwt.getBytes().length);
             jwsObject.sign(new MACSigner(keyjwt.getBytes()));
             return jwsObject.serialize();
         } catch (JOSEException e) {
@@ -80,7 +78,7 @@ public class LoginServices  {
     public  UserEntity getUser(){
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
-        return userRepo.findByEmail(name).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXIST));
+        return userRepo.findByEmailAndStatusTrue(name).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXIST));
     }
 
 }

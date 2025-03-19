@@ -53,7 +53,9 @@ public class LoginController {
             @RequestParam /*@Valid*/ String email,
             @Parameter(description = "User password", required = true, example = "1234")
             @RequestParam String password){
+
         String token = loginServices.login(email, password);
+
         BaseResponse response =new BaseResponse();
         if(Objects.equals(token, "")) throw new AppException(ErrorCode.USER_NOT_EXIST);
         response.setData(token);
@@ -91,6 +93,28 @@ public class LoginController {
         return ResponseEntity.ok(response);
     }
 
-    // Delete User API
+  // Forgot Password User API
+  @Operation(
+          summary = "User change Password",
+          description = "Change Password",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "Changed successful",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = BaseResponse.class)
+                          )
+                  ),
+          }
+  )
+  @PutMapping("/change-password")
+  public ResponseEntity<?> changePassword(@RequestParam String oldPassword, @RequestParam String newPassword){
+    userServicesImp.changePassword(oldPassword, newPassword);
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setMessage("Changed password successfully");
+    return ResponseEntity.ok(response);
+  }
 
 }

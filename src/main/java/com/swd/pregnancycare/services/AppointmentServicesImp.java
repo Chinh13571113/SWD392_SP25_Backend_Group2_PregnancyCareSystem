@@ -41,7 +41,7 @@ public class AppointmentServicesImp implements AppointmentServices {
     public void makeAppointment(AppointmentDTO appointment) {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
-        UserEntity userEntity =userRepo.findByEmail(name).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXIST));
+        UserEntity userEntity =userRepo.findByEmailAndStatusTrue(name).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXIST));
         FetusEntity fetusEntity;
 
          if(appointmentRepo.existsByDateIssueAndUsers(appointment.getDateIssue(),userEntity))
