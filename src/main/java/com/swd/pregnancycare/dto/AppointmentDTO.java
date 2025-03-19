@@ -15,6 +15,6 @@ public class AppointmentDTO {
 
     String event;
     LocalDateTime dateIssue;
+    int userId;
 
-    int idFetus;
 }

@@ -44,16 +44,12 @@ public class AppointmentServicesImp implements AppointmentServices {
         UserEntity userEntity =userRepo.findByEmail(name).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXIST));
         FetusEntity fetusEntity;
 
-         if(fetusRepo.existsByIdAndUserId(appointment.getIdFetus(),userEntity.getId())){
-
-             fetusEntity =fetusRepo.findById(appointment.getIdFetus())
-                    .orElseThrow(()->new AppException(ErrorCode.FETUS_NOT_EXIST));
-        }
-        else throw new AppException(ErrorCode.DATA_NOT_FOUND);
+         if(appointmentRepo.existsByDateIssueAndUsers(appointment.getDateIssue(),userEntity))
+             throw new AppException(ErrorCode.AVAILABLE_WRITER);
 
         AppointmentEntity appointmentEntity = AppointmentEntity.builder()
                 .users(userEntity)
-                .fetus(fetusEntity)
+
                 .event(appointment.getEvent())
                 .dateIssue(appointment.getDateIssue())
                 .build();
@@ -63,21 +59,7 @@ public class AppointmentServicesImp implements AppointmentServices {
 
     }
 
-    @Override
-    @PreAuthorize("hasRole('MEMBER')")
-    public List<AppointmentDTO> getAppointmentByFetusId(int fetusId) {
-       UserEntity userEntity = loginServices.getUser();
-        FetusEntity fetusEntity;
-        if(fetusRepo.existsByIdAndUserId(fetusId,userEntity.getId())){
-            fetusEntity =fetusRepo.findById(fetusId)
-                    .orElseThrow(()->new AppException(ErrorCode.FETUS_NOT_EXIST));
-            List<AppointmentEntity> appointmentEntity = appointmentRepo.findByFetusId(fetusEntity.getId());
-            return AppointmentMapper.INSTANCE.toListAppointmentDTO(appointmentEntity);
-        }
 
-        else throw new AppException(ErrorCode.DATA_NOT_FOUND);
-
-    }
 
     @PreAuthorize("hasRole('MEMBER')")
     @Override
