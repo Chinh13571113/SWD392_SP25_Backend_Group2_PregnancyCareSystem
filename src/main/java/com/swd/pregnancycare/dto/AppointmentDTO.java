@@ -12,9 +12,9 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 
 public class AppointmentDTO {
-
+    int id;
     String event;
     LocalDateTime dateIssue;
-    int userId;
+
 
 }

@@ -10,8 +10,9 @@ import com.swd.pregnancycare.mapper.ScheduleMapper;
 import com.swd.pregnancycare.repository.AppointmentRepo;
 import com.swd.pregnancycare.repository.ScheduleRepo;
 import jakarta.mail.MessagingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -19,12 +20,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
 public class ScheduleServicesImp implements ScheduleServices{
+    private static final Logger log = LoggerFactory.getLogger(ScheduleServicesImp.class);
     @Autowired
     private ScheduleRepo scheduleRepo;
     @Autowired
@@ -35,12 +38,15 @@ public class ScheduleServicesImp implements ScheduleServices{
     @Override
     public void createReminder(ScheduleDTO scheduleDTO) {
         AppointmentEntity appointmentEntity = appointmentRepo.findById(scheduleDTO.getAppointmentId()).orElseThrow(()->new AppException(ErrorCode.APPOINTMENT_NOT_EXIST));
-        if(scheduleRepo.existsByAppointmentId(scheduleDTO.getAppointmentId())) throw new AppException(ErrorCode.SCHEDULE_EXISTED);
+
+        LocalDateTime upperBound = appointmentEntity.getDateIssue().plusHours(1);
+
+        if(scheduleDTO.getDateRemind().isBefore(appointmentEntity.getDateIssue()) && scheduleDTO.getDateRemind().isAfter(upperBound)) throw new AppException(ErrorCode.SCHEDULE_EXISTED);
         ScheduleEntity scheduleEntity = ScheduleEntity.builder()
                 .notify(scheduleDTO.getNotify())
                 .appointment(appointmentEntity)
-                .dateRemind(appointmentEntity.getDateIssue())
-                .isNotice(scheduleDTO.isNotice())
+                .dateRemind(scheduleDTO.getDateRemind())
+                .isNotice(false)
                 .type(scheduleDTO.getType()).build();
 
         scheduleRepo.save(scheduleEntity);
@@ -63,7 +69,7 @@ public class ScheduleServicesImp implements ScheduleServices{
         AppointmentEntity appointmentEntity = appointmentRepo.findById(scheduleDTO.getAppointmentId()).orElseThrow(()-> new AppException(ErrorCode.APPOINTMENT_NOT_EXIST));
         scheduleEntity.setAppointment(appointmentEntity);
         scheduleEntity.setDateRemind(appointmentEntity.getDateIssue());
-        scheduleEntity.setNotice(scheduleDTO.isNotice());
+        scheduleEntity.setNotice(false);
         scheduleEntity.setNotify(scheduleDTO.getNotify());
         scheduleEntity.setType(scheduleDTO.getType());
         scheduleRepo.save(scheduleEntity);

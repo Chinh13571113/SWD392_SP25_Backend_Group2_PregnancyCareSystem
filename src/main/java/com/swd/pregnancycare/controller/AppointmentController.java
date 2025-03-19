@@ -46,18 +46,7 @@ public class AppointmentController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Get an appointment by fetus ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully retrieved the appointment"),
-            @ApiResponse(responseCode = "404", description = "Appointment not found")
-    })
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getAppointmentByFetusId(@PathVariable int id) {
-        BaseResponse response = new BaseResponse();
-        response.setData(appointmentServicesImp.getAppointmentByFetusId(id));
-        response.setMessage("Success");
-        return ResponseEntity.ok(response);
-    }
+
 
     @Operation(summary = "Update an appointment")
     @ApiResponses(value = {
@@ -65,9 +54,8 @@ public class AppointmentController {
             @ApiResponse(responseCode = "404", description = "Appointment not found")
     })
     @PutMapping("/event")
-    public ResponseEntity<?> updateAppointment(@Parameter(description = "id Appointment",  example = "1") @RequestParam int id,
-                                               @Parameter(description = "new event",  example = "hello world") @RequestParam String event) {
-        appointmentServicesImp.updateAppointment(id,event);
+    public ResponseEntity<?> updateAppointment(@RequestBody AppointmentDTO appointmentDTO) {
+        appointmentServicesImp.updateAppointment(appointmentDTO);
         BaseResponse response = new BaseResponse();
         response.setMessage("Update success");
         return  ResponseEntity.ok(response);

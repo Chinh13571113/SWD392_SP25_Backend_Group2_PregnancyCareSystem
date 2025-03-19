@@ -17,4 +17,5 @@ public interface ScheduleRepo extends JpaRepository<ScheduleEntity,Integer> {
     @Query("SELECT s FROM schedule s " +
             "WHERE s.isNotice = false AND DATE(s.dateRemind) = CURRENT_DATE")
     List<ScheduleEntity> findSchedulesToNotify();
+    void deleteByAppointmentId(int appointmentId);
 }

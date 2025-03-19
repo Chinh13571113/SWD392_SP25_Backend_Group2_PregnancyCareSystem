@@ -12,9 +12,7 @@ import java.util.List;
 public interface AppointmentMapper {
     AppointmentMapper INSTANCE = Mappers.getMapper(AppointmentMapper.class);
 
-    @Mapping(source = "users.id", target = "userId")
-
-
+    @Mapping(target = "id", source = "id")
     AppointmentDTO toAppointmentDTO(AppointmentEntity appointmentEntity);
     List<AppointmentDTO> toListAppointmentDTO(List<AppointmentEntity> appointmentEntity);
 }

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,6 +15,8 @@ import java.util.List;
 public interface AppointmentRepo extends JpaRepository<AppointmentEntity,Integer> {
 
     List<AppointmentEntity> findByUsersId(int usersId);
-    boolean existsByDateIssueAndUsers(LocalDateTime dateIssue, UserEntity users);
+    @Query("SELECT COUNT(a) > 0 FROM appointment a WHERE DATE(a.dateIssue) = DATE(:dateIssue) AND a.users = :users")
+    boolean existsByDateIssueAndUsers(@Param("dateIssue") LocalDateTime dateIssue, @Param("users") UserEntity users);
+
 
 }
