@@ -2,30 +2,33 @@ package com.swd.pregnancycare.services;
 
 import com.swd.pregnancycare.dto.AppointmentDTO;
 import com.swd.pregnancycare.entity.AppointmentEntity;
-import com.swd.pregnancycare.entity.FetusEntity;
+import com.swd.pregnancycare.entity.ScheduleEntity;
 import com.swd.pregnancycare.entity.UserEntity;
 import com.swd.pregnancycare.exception.AppException;
 import com.swd.pregnancycare.exception.ErrorCode;
 import com.swd.pregnancycare.mapper.AppointmentMapper;
 import com.swd.pregnancycare.repository.AppointmentRepo;
 import com.swd.pregnancycare.repository.FetusRepo;
+import com.swd.pregnancycare.repository.ScheduleRepo;
 import com.swd.pregnancycare.repository.UserRepo;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class AppointmentServicesImp implements AppointmentServices {
+    private static final Logger log = LoggerFactory.getLogger(AppointmentServicesImp.class);
     @Autowired
     private AppointmentRepo appointmentRepo;
     @Autowired
@@ -36,24 +39,23 @@ public class AppointmentServicesImp implements AppointmentServices {
     private  LoginServices loginServices;
     @Autowired
     private Validator validator;
+    @Autowired
+    private ScheduleRepo scheduleRepo;
     @Override
     @PreAuthorize("hasRole('MEMBER')")
     public void makeAppointment(AppointmentDTO appointment) {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
         UserEntity userEntity =userRepo.findByEmailAndStatusTrue(name).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXIST));
-        FetusEntity fetusEntity;
+        if(appointment.getDateIssue().isBefore(LocalDateTime.now(ZoneId.of("UTC")))) throw new AppException(ErrorCode.SCHEDULE_INVALID);
 
-         if(fetusRepo.existsByIdAndUserId(appointment.getIdFetus(),userEntity.getId())){
+         if(appointmentRepo.existsByDateIssueAndUsers(appointment.getDateIssue(),userEntity))
+             throw new AppException(ErrorCode.AVAILABLE_WRITER);
 
-             fetusEntity =fetusRepo.findById(appointment.getIdFetus())
-                    .orElseThrow(()->new AppException(ErrorCode.FETUS_NOT_EXIST));
-        }
-        else throw new AppException(ErrorCode.DATA_NOT_FOUND);
 
         AppointmentEntity appointmentEntity = AppointmentEntity.builder()
+
                 .users(userEntity)
-                .fetus(fetusEntity)
                 .event(appointment.getEvent())
                 .dateIssue(appointment.getDateIssue())
                 .build();
@@ -63,21 +65,7 @@ public class AppointmentServicesImp implements AppointmentServices {
 
     }
 
-    @Override
-    @PreAuthorize("hasRole('MEMBER')")
-    public List<AppointmentDTO> getAppointmentByFetusId(int fetusId) {
-       UserEntity userEntity = loginServices.getUser();
-        FetusEntity fetusEntity;
-        if(fetusRepo.existsByIdAndUserId(fetusId,userEntity.getId())){
-            fetusEntity =fetusRepo.findById(fetusId)
-                    .orElseThrow(()->new AppException(ErrorCode.FETUS_NOT_EXIST));
-            List<AppointmentEntity> appointmentEntity = appointmentRepo.findByFetusId(fetusEntity.getId());
-            return AppointmentMapper.INSTANCE.toListAppointmentDTO(appointmentEntity);
-        }
 
-        else throw new AppException(ErrorCode.DATA_NOT_FOUND);
-
-    }
 
     @PreAuthorize("hasRole('MEMBER')")
     @Override
@@ -91,17 +79,25 @@ public class AppointmentServicesImp implements AppointmentServices {
     @Override
     public List<AppointmentDTO> getAllAppointment() {
         UserEntity user = loginServices.getUser();
-        List<AppointmentEntity> appointmentDTOList = appointmentRepo.findByUsersId(user.getId());
+        List<AppointmentEntity> appointmentEntityList = appointmentRepo.findByUsersId(user.getId());
 
-        return AppointmentMapper.INSTANCE.toListAppointmentDTO(appointmentDTOList);
+        return AppointmentMapper.INSTANCE.toListAppointmentDTO(appointmentEntityList);
     }
 
     @Override
+    @Transactional
     @PreAuthorize("hasRole('MEMBER')")
-    public void updateAppointment(int id, String newEvent) {
-        AppointmentEntity appointmentEntity = appointmentRepo.findById(id)
+    public void updateAppointment(AppointmentDTO appointmentDTO) {
+        AppointmentEntity appointmentEntity = appointmentRepo.findById(appointmentDTO.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.APPOINTMENT_NOT_EXIST));
-        appointmentEntity.setEvent(newEvent);
+        if (appointmentDTO.getDateIssue().isBefore(LocalDateTime.now(ZoneId.of("UTC")))) throw new AppException(ErrorCode.SCHEDULE_INVALID);
+        if (!appointmentEntity.getDateIssue().toLocalDate().isEqual(appointmentDTO.getDateIssue().toLocalDate())) throw new AppException(ErrorCode.AVAILABLE_WRITER);
+
+        appointmentEntity.setEvent(appointmentDTO.getEvent());
+        appointmentEntity.setDateIssue(appointmentDTO.getDateIssue());
         appointmentRepo.save(appointmentEntity);
+        scheduleRepo.deleteByAppointmentId(appointmentDTO.getId());
+
+
     }
 }

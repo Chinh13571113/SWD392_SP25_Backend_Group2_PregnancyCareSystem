@@ -29,9 +29,6 @@ public class AppointmentEntity {
     @ManyToOne
     @JoinColumn(name = "id_user")
     UserEntity users;
-    @ManyToOne
-    @JoinColumn(name = "id_fetus")
-    FetusEntity fetus;
     @OneToMany(mappedBy = "appointment")
     List<ScheduleEntity> schedules;
 }
