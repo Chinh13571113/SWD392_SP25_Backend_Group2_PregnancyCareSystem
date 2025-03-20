@@ -12,6 +12,7 @@ import java.util.List;
 public interface ScheduleMapper {
     ScheduleMapper INSTANCE = Mappers.getMapper(ScheduleMapper.class);
     @Mapping(source = "appointment.id", target = "appointmentId")
+    @Mapping(source = "id", target = "id")
     ScheduleDTO toScheduleDTO(ScheduleEntity scheduleEntity);
     List<ScheduleDTO> toListScheduleDTO(List<ScheduleEntity> scheduleDTOList);
 }
