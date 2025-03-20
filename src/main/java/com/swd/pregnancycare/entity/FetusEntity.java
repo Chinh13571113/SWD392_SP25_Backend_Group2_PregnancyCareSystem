@@ -33,8 +33,6 @@ public class FetusEntity {
     private Set<FetusRecordEntity> fetuses;
 
 
-    @OneToMany(mappedBy = "fetus")
-    List<AppointmentEntity> appointmentList;
 
 
     // Advice
