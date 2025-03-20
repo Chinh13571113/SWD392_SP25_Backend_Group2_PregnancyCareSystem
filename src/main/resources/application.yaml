@@ -17,6 +17,8 @@ spring:
       max-file-size: 3MB
       max-request-size: 10MB
 
+server:
+  address: 0.0.0.0
 
 custom:
   redis:

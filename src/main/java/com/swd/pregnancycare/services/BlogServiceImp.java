@@ -1,14 +1,13 @@
 package com.swd.pregnancycare.services;
 
-import com.swd.pregnancycare.dto.BlogCommentDTO;
-import com.swd.pregnancycare.dto.BlogDTO;
-import com.swd.pregnancycare.dto.GroupDTO;
-import com.swd.pregnancycare.dto.UserDTO;
+import com.swd.pregnancycare.dto.*;
 import com.swd.pregnancycare.entity.*;
 import com.swd.pregnancycare.exception.ErrorCode;
 import com.swd.pregnancycare.exception.AppException;
 import com.swd.pregnancycare.repository.*;
+import com.swd.pregnancycare.request.ArticleRequest;
 import com.swd.pregnancycare.request.BlogRequest;
+import com.swd.pregnancycare.response.ArticleResponse;
 import com.swd.pregnancycare.response.BlogResponse;
 import com.swd.pregnancycare.response.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +31,10 @@ public class BlogServiceImp implements BlogServices {
   private GroupRepo groupRepo;
   @Autowired
   private BlogCategoryRepo blogCategoryRepo;
+  @Autowired
+  private BlogCategoryServiceImpl blogCategoryServiceImpl;
+  @Autowired
+  private ArticleSectionRepo sectionRepo;
 
   @Override
   @PreAuthorize("hasAnyRole( 'MEMBER', 'EXPERT')")
@@ -40,7 +43,11 @@ public class BlogServiceImp implements BlogServices {
     Optional<UserEntity> user = userRepo.findByIdAndStatusTrue(userResponse.getId());
     UserEntity userEntity = user.get();
 
-    GroupEntity groupEntity = groupRepo.findByIdAndDeletedFalse(blogRequest.getGroupId()).orElseThrow(()-> new AppException(ErrorCode.GROUP_NOT_EXIST));
+    GroupEntity groupEntity = null;
+    if(blogRequest.getGroupId() != null) {
+      groupRepo.findByIdAndDeletedFalse(blogRequest.getGroupId()).orElseThrow(()-> new AppException(ErrorCode.GROUP_NOT_EXIST));
+    }
+
 
     Optional<BlogCategoryEntity> blogCategory = blogCategoryRepo.findByIdAndDeletedFalse(blogRequest.getBlogCategoryId());
     BlogCategoryEntity blogCategoryEntity = blogCategory.get();
@@ -52,6 +59,7 @@ public class BlogServiceImp implements BlogServices {
     newBlog.setStatus(false);
     newBlog.setDatePublish(LocalDateTime.now());
     newBlog.setDeleted(false);
+    newBlog.setSlug(blogCategoryServiceImpl.generateSlug(blogRequest.getTitle()));
     newBlog.setGroup(groupEntity);
     newBlog.setUser(userEntity);
     newBlog.setBlogCategory(blogCategoryEntity);
@@ -60,10 +68,10 @@ public class BlogServiceImp implements BlogServices {
 
 
 
+
   @Override
   @PreAuthorize("hasAnyRole('ADMIN', 'MEMBER', 'EXPERT')")
-  public List<BlogDTO> getAllBlogsByMember() {
-    UserResponse userResponse = userServicesImp.getMyInfo();
+  public List<BlogDTO> getAllBlogsByMember() {UserResponse userResponse = userServicesImp.getMyInfo();
 
     // Lấy danh sách groupId mà user đã tham gia (chỉ lấy những group chưa bị xóa)
     List<Integer> joinedGroupIds = groupRepo.findAll().stream()
@@ -185,6 +193,7 @@ public class BlogServiceImp implements BlogServices {
               blogDTO.setDatePublish(blog.getDatePublish());
               blogDTO.setStatus(blog.getStatus());
               blogDTO.setDeleted(blog.getDeleted());
+              blogDTO.setSlug(blog.getSlug());
 
               UserDTO userDTO = new UserDTO();
               userDTO.setId(blog.getUser().getId());
@@ -214,6 +223,16 @@ public class BlogServiceImp implements BlogServices {
                         .collect(Collectors.toList());
                 blogDTO.setBlogComments(blogCommentDTOS);
               }
+
+              // Category
+              BlogCategoryDTO blogCategoryDTO = new BlogCategoryDTO();
+              blogCategoryDTO.setId(blog.getBlogCategory().getId());
+              blogCategoryDTO.setName(blog.getBlogCategory().getName());
+              blogCategoryDTO.setSlug(blog.getBlogCategory().getSlug());
+              blogCategoryDTO.setDescription(blog.getBlogCategory().getDescription());
+              blogCategoryDTO.setDatePublish(blog.getBlogCategory().getDatePublish());
+              blogCategoryDTO.setDeleted(blog.getBlogCategory().getDeleted());
+              blogDTO.setBlogCategory(blogCategoryDTO);
 
               return blogDTO;
             })
@@ -293,6 +312,7 @@ public class BlogServiceImp implements BlogServices {
     blogResponse.setDescription(blogEntity.getDescription());
     blogResponse.setDatePublish(blogEntity.getDatePublish());
     blogResponse.setStatus(blogEntity.getStatus());
+    blogResponse.setSlug(blogEntity.getSlug());
 
     // Map user của blog
     UserDTO userDTO = new UserDTO();
@@ -302,6 +322,15 @@ public class BlogServiceImp implements BlogServices {
     userDTO.setRoles(blogEntity.getUser().getRole().getName());
     userDTO.setStatus(blogEntity.getUser().isStatus());
     blogResponse.setUser(userDTO);
+
+    // A category
+    BlogCategoryDTO blogCategoryDTO = new BlogCategoryDTO();
+    blogCategoryDTO.setId(blogEntity.getBlogCategory().getId());
+    blogCategoryDTO.setName(blogEntity.getBlogCategory().getName());
+    blogCategoryDTO.setDescription(blogEntity.getBlogCategory().getDescription());
+    blogCategoryDTO.setDatePublish(blogEntity.getBlogCategory().getDatePublish());
+    blogCategoryDTO.setSlug(blogEntity.getBlogCategory().getSlug());
+    blogResponse.setBlogCategory(blogCategoryDTO);
 
     // Map danh sách comment
     List<BlogCommentDTO> blogCommentDTOs = blogEntity.getBlogComments().stream()
@@ -322,11 +351,146 @@ public class BlogServiceImp implements BlogServices {
               return blogCommentDTO;
             })
             .collect(Collectors.toList());
-
     blogResponse.setBlogComments(blogCommentDTOs);
+
 
     return blogResponse;
   }
+
+  @Override
+  @PreAuthorize("hasAnyRole('EXPERT', 'MEMBER')")
+  public BlogResponse getArticleDetail(int articleId) {
+    BlogEntity blogEntity = blogRepo.findByIdAndDeletedFalse(articleId)
+            .orElseThrow(() -> new AppException(ErrorCode.ARTICLE_NOT_EXIST));
+    BlogResponse blogResponse = new BlogResponse();
+    blogResponse.setId(blogEntity.getId());
+    blogResponse.setTitle(blogEntity.getTitle());
+    blogResponse.setDescription(blogEntity.getDescription());
+    blogResponse.setDatePublish(blogEntity.getDatePublish());
+    blogResponse.setStatus(blogEntity.getStatus());
+    blogResponse.setSlug(blogEntity.getSlug());
+
+    // A category
+    BlogCategoryDTO blogCategoryDTO = new BlogCategoryDTO();
+    blogCategoryDTO.setId(blogEntity.getBlogCategory().getId());
+    blogCategoryDTO.setName(blogEntity.getBlogCategory().getName());
+    blogCategoryDTO.setDescription(blogEntity.getBlogCategory().getDescription());
+    blogCategoryDTO.setDatePublish(blogEntity.getBlogCategory().getDatePublish());
+    blogCategoryDTO.setSlug(blogEntity.getBlogCategory().getSlug());
+    blogResponse.setBlogCategory(blogCategoryDTO);
+
+    // Map expert của article
+    UserDTO userDTO = new UserDTO();
+    userDTO.setId(blogEntity.getUser().getId());
+    userDTO.setFullName(blogEntity.getUser().getFullName());
+    userDTO.setEmail(blogEntity.getUser().getEmail());
+    userDTO.setRoles(blogEntity.getUser().getRole().getName());
+    userDTO.setStatus(blogEntity.getUser().isStatus());
+    blogResponse.setUser(userDTO);
+
+    // Map article section
+    List<ArticleSectionDTO> articleSectionDTOS = blogEntity.getArticleSections().stream()
+            .map(articleSection -> {
+              ArticleSectionDTO articleSectionDTO = new ArticleSectionDTO();
+              articleSectionDTO.setId(articleSection.getId());
+              articleSectionDTO.setSectionTitle(articleSection.getSectionTitle());
+              articleSectionDTO.setDescription(articleSection.getDescription());
+              articleSectionDTO.setAnchor(articleSection.getAnchor());
+              articleSectionDTO.setDisplayOrder(articleSection.getDisplayOrder());
+              return articleSectionDTO;
+            })
+            .toList();
+    blogResponse.setArticleSections(articleSectionDTOS);
+
+    return blogResponse;
+  }
+
+
+
+  @Override
+  @PreAuthorize("hasRole('MEMBER')")
+  public ArticleResponse saveArticle(ArticleRequest articleRequest) {
+    BlogEntity article = new BlogEntity();
+    article.setTitle(articleRequest.getTitle());
+    article.setDescription(articleRequest.getDescription());
+    article.setDatePublish(LocalDateTime.now());
+    article.setSlug(blogCategoryServiceImpl.generateSlug(articleRequest.getTitle()));
+    article.setStatus(false);
+    article.setDeleted(false);
+
+    // Category
+    BlogCategoryEntity blogCategory = blogCategoryRepo.findByIdAndDeletedFalse(articleRequest.getBlogCategoryId()).orElseThrow(()-> new AppException(ErrorCode.BLOG_CATEGORY_NOT_EXIST));
+    article.setBlogCategory(blogCategory);
+
+    // Expert
+    UserResponse userResponse = userServicesImp.getMyInfo();
+    Optional<UserEntity> expert = userRepo.findByIdAndStatusTrue(userResponse.getId());
+    UserEntity expertEntity = expert.get();
+    article.setUser(expertEntity);
+
+    // Lưu bài viết trước
+    BlogEntity savedArticle = blogRepo.save(article);
+
+    // Article Section
+    List<ArticleSectionEntity> sections = articleRequest.getArticleSections().stream().map(sectionRequest -> {
+      ArticleSectionEntity section = new ArticleSectionEntity();
+      section.setSectionTitle(sectionRequest.getSectionTitle());
+      section.setDescription(sectionRequest.getDescription());
+      section.setDisplayOrder(sectionRequest.getDisplayOrder());
+      section.setAnchor(blogCategoryServiceImpl.generateSlug(section.getSectionTitle()));
+      section.setBlog(savedArticle);
+      return section;
+    }).toList();
+    article.setArticleSections(sections);
+
+    // Lưu danh sách sections sau khi đã có article ID
+    sectionRepo.saveAll(sections);
+    savedArticle.setArticleSections(sections);
+
+    // Response
+
+    ArticleResponse res = new ArticleResponse();
+    res.setId(savedArticle.getId());
+    res.setDatePublish(savedArticle.getDatePublish());
+    res.setDescription(savedArticle.getDescription());
+    res.setSlug(savedArticle.getSlug());
+    res.setStatus(savedArticle.getStatus());
+    res.setTitle(savedArticle.getTitle());
+
+    // Expert
+    UserDTO userDTO = new UserDTO();
+    userDTO.setId(savedArticle.getUser().getId());
+    userDTO.setEmail(savedArticle.getUser().getEmail());
+    userDTO.setFullName(savedArticle.getUser().getFullName());
+    userDTO.setRoles(savedArticle.getUser().getRole().getName());
+    userDTO.setStatus(savedArticle.getUser().isStatus());
+    res.setUser(userDTO);
+
+    // Category
+    BlogCategoryDTO categoryDTO = new BlogCategoryDTO();
+    categoryDTO.setId(savedArticle.getBlogCategory().getId());
+    categoryDTO.setName(savedArticle.getBlogCategory().getName());
+    categoryDTO.setDatePublish(savedArticle.getBlogCategory().getDatePublish());
+    categoryDTO.setDescription(savedArticle.getBlogCategory().getDescription());
+    categoryDTO.setSlug(savedArticle.getBlogCategory().getSlug());
+    res.setBlogCategory(categoryDTO);
+
+    // Section
+    List<ArticleSectionDTO> articleSectionDTOS = savedArticle.getArticleSections().stream()
+                    .map(sectionEntity -> {
+                      ArticleSectionDTO sectionDTO = new ArticleSectionDTO();
+                      sectionDTO.setId(sectionEntity.getId());
+                      sectionDTO.setSectionTitle(sectionEntity.getSectionTitle());
+                      sectionDTO.setDescription(sectionEntity.getDescription());
+                      sectionDTO.setAnchor(sectionEntity.getAnchor());
+                      sectionDTO.setDisplayOrder(sectionEntity.getDisplayOrder());
+                      return sectionDTO;
+                    }).toList();
+    res.setArticleSections(articleSectionDTOS);
+
+    return res;
+  }
+
 
 
 }

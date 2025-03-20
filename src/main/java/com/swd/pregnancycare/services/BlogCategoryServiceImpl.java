@@ -95,7 +95,7 @@ public class BlogCategoryServiceImpl implements BlogCategoryServices {
   }
 
 
-  private String generateSlug(String name) {
+  public String generateSlug(String name) {
     // Convert the name to lowercase, trim it, and replace spaces with hyphens
     return name.trim().toLowerCase().replaceAll("\\s+", "-");
   }

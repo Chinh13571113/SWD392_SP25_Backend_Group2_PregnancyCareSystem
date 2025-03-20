@@ -25,6 +25,7 @@ public enum ErrorCode {
     ROLE_NOT_FOUND(401, "Role does not exist", HttpStatus.NOT_FOUND),
     REGISTER_FAILED(400, "register failed", HttpStatus.BAD_REQUEST),
     BLOG_NOT_EXIST(404, "blog not found", HttpStatus.NOT_FOUND),
+    ARTICLE_NOT_EXIST(404, "article not found", HttpStatus.NOT_FOUND),
     GROUP_NOT_EXIST(404, "group not existed", HttpStatus.NOT_FOUND),
     GROUP_EXIST(400, "group existed", HttpStatus.BAD_REQUEST),
     GROUP_HAS_USER_ALREADY(999, "group has a user already", HttpStatus.CONFLICT),

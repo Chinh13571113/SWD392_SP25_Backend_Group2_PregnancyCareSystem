@@ -1,7 +1,9 @@
 package com.swd.pregnancycare.controller;
 
 import com.swd.pregnancycare.dto.BlogDTO;
+import com.swd.pregnancycare.request.ArticleRequest;
 import com.swd.pregnancycare.request.BlogRequest;
+import com.swd.pregnancycare.response.ArticleResponse;
 import com.swd.pregnancycare.response.BaseResponse;
 import com.swd.pregnancycare.response.BlogResponse;
 import com.swd.pregnancycare.services.BlogServiceImp;
@@ -14,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -210,6 +213,57 @@ public class BlogController {
     response.setCode(200);
     response.setMessage("got blog detail successfully");
     response.setData(blogServiceImp.getPostDetail(blogId));
+    return ResponseEntity.ok(response);
+  }
+
+
+
+  @Operation(
+          summary = "Get article detail",
+          description = "MEMBER or EXPERT can get a article detail",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "got article detail successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = ArticleResponse.class)
+                          )
+                  ),
+          }
+
+  )
+  @GetMapping("/article-detail/{blogId}")
+  public ResponseEntity<?> getArticleDetail(@PathVariable int blogId) {
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setMessage("got article detail successfully");
+    response.setData(blogServiceImp.getArticleDetail(blogId));
+    return ResponseEntity.ok(response);
+  }
+
+
+  @Operation(
+          summary = "Create a new article ",
+          description = "EXPERT can create a new article",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "Created a article successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = ArticleResponse.class)
+                          )
+                  ),
+          }
+
+  )
+  @PostMapping("/articles")
+  public ResponseEntity<?> createArticle(@RequestBody ArticleRequest articleRequest) {
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setMessage("Created article successfully");
+    response.setData(blogServiceImp.saveArticle(articleRequest));
     return ResponseEntity.ok(response);
   }
 }
