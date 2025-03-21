@@ -47,12 +47,12 @@ public class BlogEntity {
 
 
   // Blog comments
-  @OneToMany(mappedBy = "blog")
+  @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<BlogCommentEntity> blogComments;
 
 
   // Article Section
-  @OneToMany(mappedBy = "blog")
+  @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ArticleSectionEntity> articleSections;
 
 

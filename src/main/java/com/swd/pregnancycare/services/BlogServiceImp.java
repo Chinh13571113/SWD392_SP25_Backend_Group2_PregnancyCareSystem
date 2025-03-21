@@ -10,6 +10,7 @@ import com.swd.pregnancycare.request.BlogRequest;
 import com.swd.pregnancycare.response.ArticleResponse;
 import com.swd.pregnancycare.response.BlogResponse;
 import com.swd.pregnancycare.response.UserResponse;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -155,12 +156,53 @@ public class BlogServiceImp implements BlogServices {
 
   @Override
   @PreAuthorize("hasAnyRole( 'MEMBER', 'EXPERT')")
-  public void deleteBlog(int id) {
+  public void moveBlogToTrash(int id) {
     Optional<BlogEntity> blog = blogRepo.findByIdAndDeletedFalse(id);
     if (blog.isEmpty()) throw new AppException(ErrorCode.BLOG_NOT_EXIST);
     BlogEntity blogEntity = blog.get();
-    blogEntity.setStatus(true);
+    blogEntity.setDeleted(true);
     blogRepo.save(blogEntity);
+  }
+
+
+  @Transactional
+  @Override
+  @PreAuthorize("hasRole('ADMIN')")
+  public void deleteBlog(int id) {
+      // Kiểm tra blog có tồn tại hay không
+      BlogEntity blog = blogRepo.findById(id)
+              .orElseThrow(() -> new AppException(ErrorCode.BLOG_NOT_EXIST));
+
+      // Kiểm tra trạng thái xóa của blog (nếu chưa xóa thì không cho xóa vĩnh viễn)
+      if (!blog.getDeleted()) {
+        throw new AppException(ErrorCode.BLOG_NOT_TRASHED); // BLOG_NOT_TRASHED: blog chưa được đưa vào trash
+      }
+
+    try {
+      // Nếu blog đã được đánh dấu xóa (deleted = true) thì thực hiện xóa vĩnh viễn
+      blogRepo.deleteByIdAndDeletedTrue(id);
+    } catch (Exception e) {
+      throw new AppException(ErrorCode.BLOG_DELETED_FAILED);
+    }
+  }
+
+  @Override
+  @PreAuthorize("hasRole('ADMIN')")
+  public void restoreBlog(int id) {
+    BlogEntity blog = blogRepo.findById(id)
+            .orElseThrow(() -> new AppException(ErrorCode.BLOG_NOT_EXIST));
+
+    // Kiểm tra trạng thái xóa của blog (nếu  xóa thì  cho phép restore)
+    if (!blog.getDeleted()) {
+      throw new AppException(ErrorCode.BLOG_NOT_DELETED); // BLOG_NOT_TRASHED: blog chưa được đưa vào trash
+    }
+
+    try {
+      blog.setDeleted(false);
+      blogRepo.save(blog);
+    } catch (Exception e) {
+      throw new AppException(ErrorCode.BLOG_SAVED_EXCEPTION);
+    }
   }
 
 
@@ -492,5 +534,51 @@ public class BlogServiceImp implements BlogServices {
   }
 
 
+
+  @Override
+  @PreAuthorize("hasRole('ADMIN')")
+  public List<BlogResponse> getAllBlogs() {
+    return blogRepo.findAll().stream()
+            .map(blog -> {
+              BlogResponse blogResponse = new BlogResponse();
+              blogResponse.setId(blog.getId());
+              blogResponse.setTitle(blog.getTitle());
+              blogResponse.setDatePublish(blog.getDatePublish());
+              blogResponse.setStatus(blog.getStatus());
+              blogResponse.setDeleted(blog.getDeleted());
+
+              // Author
+              UserDTO author = new UserDTO();
+              author.setId(blog.getUser().getId());
+              author.setFullName(blog.getUser().getFullName());
+              author.setEmail(blog.getUser().getEmail());
+              author.setRoles(blog.getUser().getRole().getName());
+              author.setStatus(blog.getUser().isStatus());
+              blogResponse.setUser(author);
+
+              return blogResponse;
+            }).collect(Collectors.toList());
+  }
+
+
+
+  @Override
+  @PreAuthorize("hasRole('ADMIN')")
+  public void deleteManyBlogs(List<Integer> idList){
+    List<BlogEntity> blogsToUpdate = blogRepo.findAll().stream()
+            .filter(blog -> idList.contains(blog.getId()))
+            .peek(blog -> blog.setDeleted(true))
+            .collect(Collectors.toList());
+    blogRepo.saveAll(blogsToUpdate);
+  }
+
+
+  @Override
+  @PreAuthorize("hasRole('ADMIN')")
+  public void approveBlog(int id) {
+    BlogEntity blogEntity = blogRepo.findByIdAndDeletedFalse(id).orElseThrow(()->new AppException(ErrorCode.BLOG_NOT_EXIST));
+    blogEntity.setStatus(true);
+    blogRepo.save(blogEntity);
+  }
 
 }

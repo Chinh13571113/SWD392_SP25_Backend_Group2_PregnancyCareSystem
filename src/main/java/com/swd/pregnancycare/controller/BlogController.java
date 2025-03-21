@@ -19,6 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(value = "/api/blogs")
 @CrossOrigin
@@ -52,6 +54,84 @@ public class BlogController {
     response.setMessage("Created blog successfully");
     return ResponseEntity.ok(response);
   }
+
+
+
+  @Operation(
+          summary = "Get all blogs (Posts and Articles) ",
+          description = "ADMIN can get all blogs",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "Got all blogs successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = BlogResponse.class)
+                          )
+                  ),
+          }
+
+  )
+  @GetMapping()
+  public ResponseEntity<?> getAllBlogs() {
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setMessage("Got all blogs successfully");
+    response.setData(blogServiceImp.getAllBlogs());
+    return ResponseEntity.ok(response);
+  }
+
+
+  @Operation(
+          summary = "Delete many blogs (Posts or Articles) ",
+          description = "ADMIN can delete many blogs",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "Deleted many blogs successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = BaseResponse.class)
+                          )
+                  ),
+          }
+
+  )
+  @DeleteMapping()
+  public ResponseEntity<?> deleteManyBlogs(@RequestBody List<Integer> idList) {
+    blogServiceImp.deleteManyBlogs(idList);
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setMessage("Deleted many blogs successfully");
+    return ResponseEntity.ok(response);
+  }
+
+
+
+  @Operation(
+          summary = "Approve a blog (Posts or Articles) ",
+          description = "ADMIN can approve a blog",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "Approved a blog successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = BaseResponse.class)
+                          )
+                  ),
+          }
+
+  )
+  @PutMapping("/status/{id}")
+  public ResponseEntity<?> approveBlog(@PathVariable int id) {
+    blogServiceImp.approveBlog(id);
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setMessage("Approved a blog successfully");
+    return ResponseEntity.ok(response);
+  }
+
 
 
   @Operation(
@@ -106,19 +186,41 @@ public class BlogController {
 
 
   @Operation(
-          summary = "Delete a Blog",
-          description = "MEMBER or EXPERT can delete a blog",
+          summary = "Move a Blog to trash",
+          description = "MEMBER or EXPERT can move a blog to trash",
           responses = {
                   @ApiResponse(
                           responseCode = "200",
                           description = "Deleted blog successfully",
                           content = @Content(
                                   mediaType = "application/json",
-                                  schema = @Schema(implementation = BaseResponse.class),
-                                  examples = @ExampleObject(
-                                          name = "Success Response",
-                                          value = "{\n  \"code\": 200,\n  \"message\": \"Deleted blog successfully\",\n  \"data\": \"null\"\n}"
-                                  )
+                                  schema = @Schema(implementation = BaseResponse.class)
+                          )
+                  ),
+          }
+
+  )
+  @DeleteMapping("/trash/{id}")
+  public  ResponseEntity<?> moveBlogToTrash(@PathVariable int id) {
+    blogServiceImp.moveBlogToTrash(id);
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setMessage("Deleted blog successfully");
+    return ResponseEntity.ok(response);
+  }
+
+
+
+  @Operation(
+          summary = "Delete a Blog permanently",
+          description = "ADMIN can delete a blog permanently",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "Deleted blog successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = BaseResponse.class)
                           )
                   ),
           }
@@ -132,6 +234,33 @@ public class BlogController {
     response.setMessage("Deleted blog successfully");
     return ResponseEntity.ok(response);
   }
+
+
+  @Operation(
+          summary = "Restore a Blog ",
+          description = "ADMIN can restore a blog",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "Restored blog successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = BaseResponse.class)
+                          )
+                  ),
+          }
+
+  )
+  @PutMapping("/restoration/{id}")
+  public  ResponseEntity<?> restoreBlog(@PathVariable int id) {
+    blogServiceImp.restoreBlog(id);
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setMessage("Restored blog successfully");
+    return ResponseEntity.ok(response);
+  }
+
+
 
   @Operation(
           summary = "Update a blog",

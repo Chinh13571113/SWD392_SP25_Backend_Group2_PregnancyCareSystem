@@ -13,7 +13,12 @@ public interface BlogServices {
   void saveBlog(BlogRequest blog);
   List<BlogDTO> getAllBlogsByMember();
   List<BlogDTO> getAllBlogsByExpert();
-  void deleteBlog(int blogId);
+  void moveBlogToTrash(int blogId);
+
+  void deleteBlog(int id);
+
+  void restoreBlog(int id);
+
   void updateBlog(BlogRequest blogRequest, int id);
   List<BlogDTO> getMyBlogs();
   BlogResponse getPostDetail(int blogId);
@@ -21,4 +26,10 @@ public interface BlogServices {
   BlogResponse getArticleDetail(int articleId);
 
   ArticleResponse saveArticle(ArticleRequest articleRequest);
+
+  List<BlogResponse> getAllBlogs();
+
+  void deleteManyBlogs(List<Integer> idList);
+
+  void approveBlog(int id);
 }

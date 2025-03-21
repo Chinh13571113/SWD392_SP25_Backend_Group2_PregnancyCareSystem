@@ -17,6 +17,9 @@ public enum ErrorCode {
     UNCATEGORIZED_EXCEPTION(1001, "uncategorize exception", HttpStatus.INTERNAL_SERVER_ERROR),
     UPDATE_USER_FAILED(400, "update user failed", HttpStatus.BAD_REQUEST),
     BLOG_SAVED_EXCEPTION(1002, "blog save error", HttpStatus.BAD_REQUEST),
+    BLOG_NOT_TRASHED(1002, "blog is activating", HttpStatus.BAD_REQUEST),
+    BLOG_NOT_DELETED(1002, "blog is not deleted", HttpStatus.BAD_REQUEST),
+    BLOG_DELETED_FAILED(1002, "delete blog error", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_PASSWORD(400, "password must be at least 8", HttpStatus.BAD_REQUEST),
     UNAUTHORIZED_EXCEPTION(999, "do not permission", HttpStatus.FORBIDDEN),
     PASSWORD_NOT_CORRECT(400, "password is not correct", HttpStatus.BAD_REQUEST),
@@ -46,6 +49,7 @@ public enum ErrorCode {
 
     BLOG_COMMENT_SAVED_EXCEPTION(500, "save blog comment error", HttpStatus.INTERNAL_SERVER_ERROR),
     BLOG_COMMENT_NOT_EXIST(404, "blog comment not existed", HttpStatus.NOT_FOUND),
+
 
     RECORD_NOT_EXIST(404, "record does not exist", HttpStatus.NOT_FOUND),
     DATA_NOT_FOUND(404, "Data not found", HttpStatus.NOT_FOUND), APPOINTMENT_NOT_EXIST(404, "appointment not exist", HttpStatus.NOT_FOUND),

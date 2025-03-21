@@ -20,6 +20,7 @@ public class BlogResponse {
   LocalDateTime datePublish;
   boolean status;
   String slug;
+  Boolean deleted;
   UserDTO user;
   BlogCategoryDTO blogCategory;
   List<BlogCommentDTO> blogComments;
