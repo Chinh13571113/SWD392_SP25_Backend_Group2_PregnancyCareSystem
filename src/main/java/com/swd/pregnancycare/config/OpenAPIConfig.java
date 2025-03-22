@@ -22,7 +22,7 @@ import org.springdoc.core.models.GroupedOpenApi;
                 contact = @Contact(name = "Your Name", email = "your.email@example.com")
         ),
         servers = {
-                @Server(url = "http://localhost:8080", description = "Local Server")
+                @Server(url = "http://localhost:8081", description = "Local Server")
         },
 
         security = {@SecurityRequirement(name = "bearerToken")}

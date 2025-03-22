@@ -39,7 +39,10 @@ public class SecurityConfig {
           "/api/authentication/login",
           "/api/authentication/forgot-password",
           "/api/appointment/schedule/send-emails",
-          "/api/users/register"
+
+          "/api/users/register",
+          "/api/duedate/**",
+          "/api/fetal-growth/**"
 
   };
   @Value("${jwt.key}")

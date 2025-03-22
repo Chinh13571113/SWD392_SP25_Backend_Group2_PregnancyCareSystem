@@ -11,6 +11,7 @@ import com.swd.pregnancycare.repository.*;
 import com.swd.pregnancycare.request.BlogRequest;
 import com.swd.pregnancycare.response.BlogResponse;
 import com.swd.pregnancycare.response.UserResponse;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -169,6 +170,23 @@ public class BlogServiceImp implements BlogServices {
 
     blogRepo.save(blogEntity);
   }
+
+
+    public void approveBlog(int blogId) {
+        Optional<BlogEntity> optionalBlog = blogRepo.findById(blogId);
+        if (optionalBlog.isPresent()) {
+            BlogEntity blog = optionalBlog.get();
+
+            if (!blog.getStatus()) {
+                blog.setStatus(true);
+                blogRepo.save(blog);
+            }
+        } else {
+            throw new EntityNotFoundException("Blog does not exist with ID " + blogId);
+        }
+    }
+
+
 
 
 

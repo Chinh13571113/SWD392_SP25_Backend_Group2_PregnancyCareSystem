@@ -212,4 +212,9 @@ public class BlogController {
     response.setData(blogServiceImp.getPostDetail(blogId));
     return ResponseEntity.ok(response);
   }
+@GetMapping("approve/{id}")
+  public  ResponseEntity<?> approveBlog(@RequestParam int blogId) {
+        blogServiceImp.approveBlog(blogId);
+        return ResponseEntity.ok("Approve succesfully !!! ");
+    }
 }
