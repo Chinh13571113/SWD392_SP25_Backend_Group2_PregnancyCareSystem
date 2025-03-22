@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 
 public class ScheduleDTO {
-    int id;
     int appointmentId;
     LocalDateTime dateRemind;
     String notify;

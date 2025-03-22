@@ -8,7 +8,7 @@ import java.util.List;
 public interface ScheduleServices {
     void createReminder(ScheduleDTO scheduleDTO);
     List<ScheduleDTO> getReminderByAppointmentId(int id);
-    void updateReminder(ScheduleDTO scheduleDTO);
+    void updateReminder(int id, ScheduleDTO scheduleDTO);
     void deleteReminder(int id);
     void sendReminderEmail() throws MessagingException;
 

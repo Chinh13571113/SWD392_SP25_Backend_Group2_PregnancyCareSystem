@@ -42,6 +42,8 @@ public class SecurityConfig {
 
           "/api/users/register",
           "/api/duedate/**",
+          "/api/package",
+
           "/api/fetal-growth/**"
 
   };
