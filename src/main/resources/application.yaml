@@ -30,8 +30,6 @@ jwt:
 
 upload:
   path: C:\Users\DELL\Desktop\images
-server:
-  port: 8081
 openapi:
   service:
     api-docs: api-service

@@ -12,6 +12,7 @@ import java.util.Optional;
 
 @RequestMapping("/api/userpackage")
 @RestController
+@CrossOrigin
 public class UserPackageController {
     @Autowired
     private UserPackageService userpackageService ;

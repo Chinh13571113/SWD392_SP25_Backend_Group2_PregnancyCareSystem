@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @Tag(name = "Fetus API", description = "Api for Fetus Insert")
 @RequestMapping(value = "/api/fetus-record")
+@CrossOrigin
 public class FetusRecordController {
     @Autowired
     private FetusServicesImp fetusServicesImp;
