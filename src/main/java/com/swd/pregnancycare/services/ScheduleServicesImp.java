@@ -61,7 +61,6 @@ public class ScheduleServicesImp implements ScheduleServices{
     @PreAuthorize("hasRole('MEMBER')")
     public List<ScheduleDTO> getReminderByAppointmentId(int id) {
         List<ScheduleEntity> scheduleEntityList = scheduleRepo.findByAppointmentId(id);
-        System.out.println("ID LIST: "+scheduleRepo.findByAppointmentId(id));
         if(scheduleEntityList.isEmpty()) throw new AppException(ErrorCode.SCHEDULE_NOT_EXIST);
         List<ScheduleEntity> filteredList = scheduleEntityList.stream()
                 .filter(schedule -> !schedule.isNotice()) // Chỉ lấy những cái có isNotice = false

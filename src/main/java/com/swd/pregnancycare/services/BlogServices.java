@@ -11,6 +11,8 @@ import java.util.List;
 
 public interface BlogServices {
   void saveBlog(BlogRequest blog);
+
+
   List<BlogDTO> getAllBlogsByMember();
   List<BlogDTO> getAllBlogsByExpert();
   void moveBlogToTrash(int blogId);

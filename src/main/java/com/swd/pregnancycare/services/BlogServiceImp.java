@@ -221,6 +221,23 @@ public class BlogServiceImp implements BlogServices {
   }
 
 
+//    public void approveBlog(int blogId) {
+//        Optional<BlogEntity> optionalBlog = blogRepo.findById(blogId);
+//        if (optionalBlog.isPresent()) {
+//            BlogEntity blog = optionalBlog.get();
+//
+//            if (!blog.getStatus()) {
+//                blog.setStatus(true);
+//                blogRepo.save(blog);
+//            }
+//        } else {
+//            throw new EntityNotFoundException("Blog does not exist with ID " + blogId);
+//        }
+//    }
+
+
+
+
 
 
   private List<BlogDTO> getBlogsByRole(String roleName) {
