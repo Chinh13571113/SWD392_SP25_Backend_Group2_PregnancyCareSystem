@@ -13,8 +13,6 @@ import jakarta.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -26,7 +24,6 @@ import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class ScheduleServicesImp implements ScheduleServices{
@@ -62,16 +59,13 @@ public class ScheduleServicesImp implements ScheduleServices{
     public List<ScheduleDTO> getReminderByAppointmentId(int id) {
         List<ScheduleEntity> scheduleEntityList = scheduleRepo.findByAppointmentId(id);
         if(scheduleEntityList.isEmpty()) throw new AppException(ErrorCode.SCHEDULE_NOT_EXIST);
-        List<ScheduleEntity> filteredList = scheduleEntityList.stream()
-                .filter(schedule -> !schedule.isNotice()) // Chỉ lấy những cái có isNotice = false
-                .toList();
-        return ScheduleMapper.INSTANCE.toListScheduleDTO(filteredList);
+        return ScheduleMapper.INSTANCE.toListScheduleDTO(scheduleEntityList);
     }
 
     @Override
     @PreAuthorize("hasRole('MEMBER')")
-    public void updateReminder( ScheduleDTO scheduleDTO) {
-        ScheduleEntity scheduleEntity= scheduleRepo.findById(scheduleDTO.getId()).orElseThrow(()-> new AppException(ErrorCode.SCHEDULE_NOT_EXIST));
+    public void updateReminder(int id, ScheduleDTO scheduleDTO) {
+        ScheduleEntity scheduleEntity= scheduleRepo.findById(id).orElseThrow(()-> new AppException(ErrorCode.SCHEDULE_NOT_EXIST));
         AppointmentEntity appointmentEntity = appointmentRepo.findById(scheduleDTO.getAppointmentId()).orElseThrow(()-> new AppException(ErrorCode.APPOINTMENT_NOT_EXIST));
         scheduleEntity.setAppointment(appointmentEntity);
         scheduleEntity.setDateRemind(appointmentEntity.getDateIssue());
@@ -87,12 +81,7 @@ public class ScheduleServicesImp implements ScheduleServices{
         scheduleRepo.findById(id).orElseThrow(()-> new AppException(ErrorCode.SCHEDULE_NOT_EXIST));
         scheduleRepo.deleteById(id);
     }
-    @EventListener(ApplicationReadyEvent.class)
-    @Transactional
-    public void sendReminderEmailOnStartup() throws MessagingException {
-        System.out.println("🚀 Server started! Checking for reminders...");
-        sendReminderEmail();
-    }
+
     @Scheduled(cron = "0 * * * * ?") // Chạy lúc 8h sáng hàng ngày
     @Transactional
     @Override

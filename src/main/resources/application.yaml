@@ -18,6 +18,7 @@ spring:
       max-request-size: 10MB
 
 server:
+  port: 8080
   address: 0.0.0.0
 
 custom:
@@ -30,6 +31,7 @@ jwt:
 
 upload:
   path: C:\Users\DELL\Desktop\images
+
 openapi:
   service:
     api-docs: api-service
