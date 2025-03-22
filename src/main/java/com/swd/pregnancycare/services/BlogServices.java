@@ -9,6 +9,9 @@ import java.util.List;
 
 public interface BlogServices {
   void saveBlog(BlogRequest blog);
+
+
+  public void approveBlog(int blogId);
   List<BlogDTO> getAllBlogsByMember();
   List<BlogDTO> getAllBlogsByExpert();
   void deleteBlog(int blogId);
