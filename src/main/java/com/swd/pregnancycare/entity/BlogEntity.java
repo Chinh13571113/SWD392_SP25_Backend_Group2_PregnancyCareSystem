@@ -24,6 +24,7 @@ public class BlogEntity {
   private boolean status;
   @Column(name = "is_delete")
   private Boolean deleted;
+  private String slug;
 
 
 
@@ -46,9 +47,13 @@ public class BlogEntity {
 
 
   // Blog comments
-  @OneToMany(mappedBy = "blog")
+  @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<BlogCommentEntity> blogComments;
 
+
+  // Article Section
+  @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<ArticleSectionEntity> articleSections;
 
 
   public boolean getStatus() {
