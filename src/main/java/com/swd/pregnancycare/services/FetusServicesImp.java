@@ -5,12 +5,15 @@ import com.swd.pregnancycare.dto.FetusRecodDTO;
 import com.swd.pregnancycare.entity.FetusEntity;
 import com.swd.pregnancycare.entity.FetusRecordEntity;
 import com.swd.pregnancycare.entity.UserEntity;
+import com.swd.pregnancycare.entity.WhoStandardEntity;
 import com.swd.pregnancycare.exception.AppException;
 import com.swd.pregnancycare.exception.ErrorCode;
 import com.swd.pregnancycare.mapper.FetusMapper;
 import com.swd.pregnancycare.repository.FetusRecordRepo;
 import com.swd.pregnancycare.repository.FetusRepo;
 import com.swd.pregnancycare.repository.UserRepo;
+import com.swd.pregnancycare.repository.WhoStandardRepo;
+import com.swd.pregnancycare.request.FetusRecordResponse;
 import com.swd.pregnancycare.request.FetusRequest;
 import com.swd.pregnancycare.response.UserResponse;
 import jakarta.transaction.Transactional;
@@ -20,11 +23,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -39,7 +43,8 @@ public class FetusServicesImp implements FetusServices {
   private LoginServices loginServices;
   @Autowired
   private UserServicesImp userServicesImp;
-
+  @Autowired
+  private WhoStandardRepo whoStandardRepo;
 
 
   @Override
@@ -124,6 +129,53 @@ public class FetusServicesImp implements FetusServices {
     return FetusMapper.INSTANCE.toListFetusRecordDTO(fetusRecords);
   }
 
+  @Override
+  @PreAuthorize("hasRole('MEMBER')")
+  public Map<String, List<?>> getStatisticFetusRecordById(int id) {
+    List<FetusRecordEntity> fetusRecords = fetusRecordRepo.findByFetusId(id)
+            .orElseThrow(() -> new AppException(ErrorCode.RECORD_NOT_EXIST));
+
+    // Lấy ngày dự sinh từ FetusEntity
+    FetusEntity fetus = fetusRepo.findById(id)
+            .orElseThrow(() -> new AppException(ErrorCode.RECORD_NOT_EXIST));
+    LocalDate dueDate = fetus.getDueDate().toLocalDate(); // Ngày dự sinh
+
+    // Sử dụng TreeMap để lưu bản ghi mới nhất theo tuần (TreeMap giúp tự động sắp xếp theo tuần tăng dần)
+    Map<Integer, FetusRecordEntity> latestRecordsByWeek = new TreeMap<>();
+
+    for (FetusRecordEntity record : fetusRecords) {
+      LocalDate recordDate = record.getDateRecord().toLocalDate();
+
+      // Tính tuần thai
+      int fetusWeek = 40 - (int) ChronoUnit.DAYS.between(recordDate, dueDate) / 7;
+
+      // Nếu tuần đã có bản ghi, chỉ cập nhật nếu record mới hơn
+      if (!latestRecordsByWeek.containsKey(fetusWeek) ||
+              record.getDateRecord().isAfter(latestRecordsByWeek.get(fetusWeek).getDateRecord())) {
+        latestRecordsByWeek.put(fetusWeek, record);
+      }
+    }
+
+    // Chuyển dữ liệu thành danh sách
+    List<Integer> fetusWeeks = new ArrayList<>(latestRecordsByWeek.keySet());
+    List<BigDecimal> weights = latestRecordsByWeek.values().stream()
+            .map(FetusRecordEntity::getWeight)
+            .collect(Collectors.toList());
+    List<BigDecimal> heights = latestRecordsByWeek.values().stream()
+            .map(FetusRecordEntity::getHeight)
+            .collect(Collectors.toList());
+
+    // Tạo kết quả trả về
+    Map<String, List<?>> response = new HashMap<>();
+    response.put("fetusWeek", fetusWeeks);
+    response.put("weight", weights);
+    response.put("height", heights);
+
+    return response;
+
+
+  }
+
 
   @Override
   @PreAuthorize("hasRole('MEMBER')")
@@ -162,6 +214,30 @@ public class FetusServicesImp implements FetusServices {
     int currentWeek = 40 - weeksUntilDueDate;
 
     return Math.max(1, Math.min(40, currentWeek));
+  }
+  @PreAuthorize("hasRole('MEMBER')")
+  @Override
+  public Map<String, List<?>> getStandard() {
+    List<WhoStandardEntity> standards = whoStandardRepo.findAll();
+
+    List<Integer> fetusWeeks = new ArrayList<>();
+    List<BigDecimal> weights = new ArrayList<>();
+    List<BigDecimal> heights = new ArrayList<>();
+
+    for (WhoStandardEntity standard : standards) {
+      fetusWeeks.add(standard.getFetusWeek());
+      weights.add(standard.getWeight());
+      heights.add(standard.getHeight());
+    }
+
+    Map<String, List<?>> response = new HashMap<>();
+    response.put("fetusWeek", fetusWeeks);
+    response.put("weight", weights);
+    response.put("height", heights);
+
+    return response;
+
+
   }
 
 }

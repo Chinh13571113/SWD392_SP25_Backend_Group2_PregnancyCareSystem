@@ -273,4 +273,11 @@ public class FetusController {
         response.setMessage("Success");
         return ResponseEntity.ok(response);
     }
+    @Operation(summary = "Get Standard statistics table of fetus", description = "follow fetus growth")
+    @GetMapping("/Who")
+    public ResponseEntity<?> getWHOData(){
+        BaseResponse response = new BaseResponse();
+        response.setData(fetusServicesImp.getStandard());
+        return ResponseEntity.ok(response);
+    }
 }

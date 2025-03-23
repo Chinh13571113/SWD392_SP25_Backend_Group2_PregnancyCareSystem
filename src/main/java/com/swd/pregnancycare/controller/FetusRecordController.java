@@ -140,4 +140,12 @@ public class FetusRecordController {
         response.setMessage("Successfully deleted fetus with ID " + id);
         return ResponseEntity.ok(response);
     }
+    @GetMapping("/Statistic/findById")
+    public ResponseEntity<?> getStatisticFetusRecord(@Parameter(description = "Fetus ID", required = true, example = "1") @RequestParam int fetusId){
+        BaseResponse response = new BaseResponse();
+        response.setData(fetusServicesImp.getStatisticFetusRecordById(fetusId));
+        response.setCode(200);
+        response.setMessage("");
+        return ResponseEntity.ok(response);
+    }
 }

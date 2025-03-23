@@ -2,9 +2,11 @@ package com.swd.pregnancycare.services;
 
 import com.swd.pregnancycare.dto.FetusDTO;
 import com.swd.pregnancycare.dto.FetusRecodDTO;
+import com.swd.pregnancycare.entity.WhoStandardEntity;
 import com.swd.pregnancycare.request.FetusRequest;
 
 import java.util.List;
+import java.util.Map;
 
 public interface FetusServices {
     List<FetusDTO> getAllFetus();
@@ -16,6 +18,6 @@ public interface FetusServices {
     void saveFetusRecord(int id, FetusRecodDTO fetusRecodDTO);
     void deleteFetusRecord(int id);
     int getFetusWeek(int id);
-
-
+    Map<String, List<?>> getStandard();
+    Map<String, List<?>> getStatisticFetusRecordById(int id);
 }
