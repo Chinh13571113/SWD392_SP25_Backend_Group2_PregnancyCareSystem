@@ -14,11 +14,16 @@ public enum ErrorCode {
 
     USER_EXIST(400, "user existed", HttpStatus.BAD_REQUEST),
     USER_NOT_EXIST(403, "user not existed", HttpStatus.BAD_REQUEST),
+    USER_NOT_ACTIVE(403, "user is not  active", HttpStatus.BAD_REQUEST),
     UNCATEGORIZED_EXCEPTION(1001, "uncategorize exception", HttpStatus.INTERNAL_SERVER_ERROR),
     UPDATE_USER_FAILED(400, "update user failed", HttpStatus.BAD_REQUEST),
     BLOG_SAVED_EXCEPTION(1002, "blog save error", HttpStatus.BAD_REQUEST),
-    BLOG_NOT_TRASHED(1002, "blog is activating", HttpStatus.BAD_REQUEST),
-    BLOG_NOT_DELETED(1002, "blog is not deleted", HttpStatus.BAD_REQUEST),
+    BLOG_NOT_TRASHED(400, "blog is activating", HttpStatus.BAD_REQUEST),
+    BLOG_NOT_DELETED(400, "blog is not deleted", HttpStatus.BAD_REQUEST),
+    BLOG_IS_NOT_ARTICLE(400, "blog is not article", HttpStatus.BAD_REQUEST),
+    BLOG_IS_NOT_POST(400, "blog is not post", HttpStatus.BAD_REQUEST),
+    POST_IS_NOT_APPROVED(400, "post is not approved", HttpStatus.BAD_REQUEST),
+    ARTICLE_IS_NOT_APPROVED(400, "article is not approved", HttpStatus.BAD_REQUEST),
     BLOG_DELETED_FAILED(1002, "delete blog error", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_PASSWORD(400, "password must be at least 8", HttpStatus.BAD_REQUEST),
     UNAUTHORIZED_EXCEPTION(999, "do not permission", HttpStatus.FORBIDDEN),
@@ -42,7 +47,7 @@ public enum ErrorCode {
 
 
     BLOG_CATEGORY_EXIST(400, "blog category existed", HttpStatus.BAD_REQUEST),
-    BLOG_CATEGORY_NOT_EXIST(404, "blog category not existed", HttpStatus.NOT_FOUND),
+    CATEGORY_NOT_EXIST(404, "category not existed", HttpStatus.NOT_FOUND),
     BLOG_CATEGORY_DELETE_FAILED(500, "delete blog category error", HttpStatus.INTERNAL_SERVER_ERROR),
     BLOG_CATEGORY_UPDATE_FAILED(500, "update blog category error", HttpStatus.INTERNAL_SERVER_ERROR),
 

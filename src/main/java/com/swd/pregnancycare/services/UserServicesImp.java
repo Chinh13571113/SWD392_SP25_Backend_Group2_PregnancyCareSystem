@@ -80,7 +80,7 @@ public class UserServicesImp implements UserServices{
     }
 
     @Override
-    @PreAuthorize("hasRole('MEMBER')")
+    @PreAuthorize("hasAnyRole( 'MEMBER', 'ADMIN', 'EXPERT')")
     public UserResponse getMyInfo() {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();

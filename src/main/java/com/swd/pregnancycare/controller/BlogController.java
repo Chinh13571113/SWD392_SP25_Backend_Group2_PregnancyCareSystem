@@ -136,7 +136,7 @@ public class BlogController {
 
   @Operation(
           summary = "Get post list",
-          description = "MEMBER or EXPERT or ADMIN can get all blogs",
+          description = "All users can get all posts",
           responses = {
                   @ApiResponse(
                           responseCode = "200",
@@ -161,7 +161,7 @@ public class BlogController {
 
   @Operation(
           summary = "Get article list",
-          description = "MEMBER or EXPERT or ADMIN can get article list",
+          description = "All users can get article list",
           responses = {
                   @ApiResponse(
                           responseCode = "200",
@@ -173,7 +173,6 @@ public class BlogController {
                   )
           }
   )
-
   @GetMapping("/articles")
   public ResponseEntity<?> getAllBlogsByExpert() {
     BaseResponse response = new BaseResponse();
@@ -349,7 +348,7 @@ public class BlogController {
 
   @Operation(
           summary = "Get article detail",
-          description = "MEMBER or EXPERT can get a article detail",
+          description = "All users can get a article detail",
           responses = {
                   @ApiResponse(
                           responseCode = "200",

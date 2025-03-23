@@ -13,4 +13,5 @@ public class FetusDTO {
      String name;
      LocalDateTime dueDate;
      String gender;
+     UserDTO user;
 }

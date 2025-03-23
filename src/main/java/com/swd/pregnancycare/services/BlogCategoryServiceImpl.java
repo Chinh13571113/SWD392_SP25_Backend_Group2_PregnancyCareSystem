@@ -71,7 +71,7 @@ public class BlogCategoryServiceImpl implements BlogCategoryServices {
   @Override
   @PreAuthorize("hasRole('ADMIN')")
   public void deleteBlogCategory(int id) {
-    BlogCategoryEntity blogCategory = blogCategoryRepo.findById(id).orElseThrow(()-> new AppException(ErrorCode.BLOG_CATEGORY_NOT_EXIST));
+    BlogCategoryEntity blogCategory = blogCategoryRepo.findById(id).orElseThrow(()-> new AppException(ErrorCode.CATEGORY_NOT_EXIST));
     try {
       blogCategory.setDeleted(true);
       blogCategoryRepo.save(blogCategory);
@@ -83,7 +83,7 @@ public class BlogCategoryServiceImpl implements BlogCategoryServices {
   @Override
   @PreAuthorize("hasRole('ADMIN')")
   public void updateBlogCategory(int id, String name, String description) {
-    BlogCategoryEntity blogCategory = blogCategoryRepo.findById(id).orElseThrow(()-> new AppException(ErrorCode.BLOG_CATEGORY_NOT_EXIST));
+    BlogCategoryEntity blogCategory = blogCategoryRepo.findById(id).orElseThrow(()-> new AppException(ErrorCode.CATEGORY_NOT_EXIST));
     try {
       blogCategory.setName(name);
       blogCategory.setDescription(description);

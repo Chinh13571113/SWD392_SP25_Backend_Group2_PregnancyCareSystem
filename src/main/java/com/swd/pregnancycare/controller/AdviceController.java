@@ -2,6 +2,7 @@ package com.swd.pregnancycare.controller;
 
 import com.swd.pregnancycare.dto.FetusDTO;
 import com.swd.pregnancycare.request.FetusRequest;
+import com.swd.pregnancycare.response.AdviceResponse;
 import com.swd.pregnancycare.response.BaseResponse;
 import com.swd.pregnancycare.services.AdviceServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,6 +25,8 @@ public class AdviceController {
   @Autowired
   private AdviceServiceImpl adviceServiceImpl;
 
+
+  // API for MEMBER
   @Operation(
           summary = "Create a new advice",
           description = "Member can create a new advice",
@@ -43,74 +46,64 @@ public class AdviceController {
           }
   )
   @PostMapping()
-  public ResponseEntity<?> createAdvice(@RequestParam int id,
+  public ResponseEntity<?> createAdvice(@RequestParam int fetusId,
+                                        @RequestParam int categoryId,
                                         @RequestParam String title,
                                         @RequestParam String description) {
-    adviceServiceImpl.saveAdvice(id, title, description);
+    adviceServiceImpl.saveAdvice(fetusId, categoryId, title, description);
     BaseResponse response = new BaseResponse();
     response.setCode(200);
     response.setMessage("Created advice successfully");
     return ResponseEntity.ok(response);
   }
 
+
   @Operation(
-          summary = "Get all advices",
-          description = "Member can get all advices",
+          summary = "Get all advices for member",
+          description = "MEMBER can get all their advices",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "got my advice list successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = AdviceResponse.class)
+                          )
+                  )
+          }
+  )
+  @GetMapping("/members")
+  public ResponseEntity<?> getAllAdvicesForMember(){
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setMessage("got my advice list successfully");
+    response.setData(adviceServiceImpl.getAllAdvicesForMember());
+    return ResponseEntity.ok(response);
+  }
+
+
+
+  // API for EXPERT
+  @Operation(
+          summary = "Get all advices for experts",
+          description = "EXPERT can get all advices",
           responses = {
                   @ApiResponse(
                           responseCode = "200",
                           description = "got advice list successfully",
                           content = @Content(
                                   mediaType = "application/json",
-                                  schema = @Schema(implementation = BaseResponse.class),
-                                  examples = @ExampleObject(
-                                          name = "Success Response",
-                                          value = """
-{
-  "code": 200,
-  "message": "got advice list successfully",
-  "data": [
-    {
-      "id": 1,
-      "title": "Something",
-      "description": "Something",
-      "status": "false",
-      "answer": "answered",
-      "fetus": {
-        "id": 2,
-        "name": "Baby B",
-        "dueDate": "2025-08-15",
-        "gender": "girl"
-      }
-    },
-    {
-      "id": 2,
-      "title": "Something 2",
-      "description": "Something 2",
-      "status": "true",
-      "answer": "answered 2",
-      "fetus": {
-        "id": 3,
-        "name": "Baby A",
-        "dueDate": "2025-08-15",
-        "gender": "boy"
-      }
-    }
-  ]
-}
-"""
-                                  )
+                                  schema = @Schema(implementation = AdviceResponse.class)
                           )
                   )
           }
   )
-
   @GetMapping()
-  public ResponseEntity<?> getAllAdvices(){
+  public ResponseEntity<?> getAllAdvicesForExpert(){
     BaseResponse response = new BaseResponse();
     response.setCode(200);
     response.setMessage("got advice list successfully");
-    response.setData(adviceServiceImpl.getAllAdvices());
+    response.setData(adviceServiceImpl.getAllAdvicesForExpert());
     return ResponseEntity.ok(response);
   }
 
@@ -123,21 +116,11 @@ public class AdviceController {
                           description = "Deleted advice successfully",
                           content = @Content(
                                   mediaType = "application/json",
-                                  schema = @Schema(implementation = BaseResponse.class),
-                                  examples = @ExampleObject(
-                                          name = "Success Response",
-                                          value = """
-{
-  "code": 200,
-  "message": "Deleted advice successfully"
-}
-"""
-                                  )
+                                  schema = @Schema(implementation = BaseResponse.class)
                           )
                   )
           }
   )
-
   @DeleteMapping("/{id}")
   public ResponseEntity<?> deleteAdvice(@PathVariable int id){
     BaseResponse response = new BaseResponse();
@@ -148,35 +131,26 @@ public class AdviceController {
   }
 
   @Operation(
-                  summary = "Update advice",
-                  description = "Expert update advice",
+                  summary = "Answer advice",
+                  description = "EXPERT answer advice",
                   responses = {
                           @ApiResponse(
                           responseCode = "200",
-                          description = "Updated advice successfully",
+                          description = "Answered advice successfully",
                           content = @Content(
                                   mediaType = "application/json",
-                                  schema = @Schema(implementation = BaseResponse.class),
-                                  examples = @ExampleObject(
-                                          name = "Success Response",
-                                          value = """
-{
-  "code": 200,
-  "message": "Updated advice successfully"
-}
-"""
-                                  )
+                                  schema = @Schema(implementation = BaseResponse.class)
                           )
                   )
           }
   )
 
-  @PutMapping("/{id}")
-  public ResponseEntity<?> updateAdvice(@PathVariable int id, @RequestParam String answer, @RequestParam boolean status){
+  @PutMapping("/status/{adviceId}")
+  public ResponseEntity<?> answerAdvice(@PathVariable int adviceId, @RequestParam String answer){
     BaseResponse response = new BaseResponse();
-    adviceServiceImpl.updateAdvice(id, answer, status);
+    adviceServiceImpl.answerAdvice(adviceId, answer);
     response.setCode(200);
-    response.setMessage("Updated advice successfully");
+    response.setMessage("Answered advice successfully");
     return ResponseEntity.ok(response);
   }
 }

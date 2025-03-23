@@ -28,4 +28,7 @@ public class BlogCategoryEntity {
   // Blog
   @OneToMany(mappedBy = "blogCategory")
   private List<BlogEntity> blogs;
+
+  @OneToMany(mappedBy = "category")
+  private List<AdviceEntity> advices;
 }

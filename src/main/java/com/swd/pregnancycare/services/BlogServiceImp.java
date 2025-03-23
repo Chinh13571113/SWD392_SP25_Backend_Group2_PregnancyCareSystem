@@ -71,28 +71,15 @@ public class BlogServiceImp implements BlogServices {
 
 
   @Override
-  @PreAuthorize("hasAnyRole('ADMIN', 'MEMBER', 'EXPERT')")
-  public List<BlogDTO> getAllBlogsByMember() {UserResponse userResponse = userServicesImp.getMyInfo();
-
-    // Lấy danh sách groupId mà user đã tham gia (chỉ lấy những group chưa bị xóa)
-    List<Integer> joinedGroupIds = groupRepo.findAll().stream()
-            .filter(group -> Boolean.FALSE.equals(group.getDeleted()))
-            .filter(group -> group.getUsers() != null &&
-                    group.getUsers().stream()
-                            .anyMatch(userGroup -> userGroup.getUser().getId() == userResponse.getId()))
-            .map(group -> group.getId())
-            .collect(Collectors.toList());
-
+  public List<BlogDTO> getAllBlogsByMember() {
     // Lấy blog với điều kiện:
     // - Blog chưa bị xóa
     // - Chủ blog có role là MEMBER
-    // - Blog thuộc về 1 group mà member đã tham gia
+    // - Blog đã được approved
     return blogRepo.findAll().stream()
             .filter(blog -> Boolean.FALSE.equals(blog.getDeleted()))
             .filter(blog -> "MEMBER".equals(blog.getUser().getRole().getName()))
-            .filter(blog -> blog.getGroup() != null &&
-                    joinedGroupIds.contains(blog.getGroup().getId()))
-            .filter(blog -> Boolean.FALSE.equals(blog.getGroup().getDeleted()))
+            .filter(blog -> Boolean.TRUE.equals(blog.getStatus()))
             .map(blog -> {
               BlogDTO blogDTO = new BlogDTO();
               blogDTO.setId(blog.getId());
@@ -147,7 +134,6 @@ public class BlogServiceImp implements BlogServices {
 
 
   @Override
-  @PreAuthorize("hasAnyRole('ADMIN', 'EXPERT', 'MEMBER')")
   public List<BlogDTO> getAllBlogsByExpert() {
     return getBlogsByRole("EXPERT");
   }
@@ -244,6 +230,7 @@ public class BlogServiceImp implements BlogServices {
     return blogRepo.findAll().stream()
             .filter(blog -> Boolean.FALSE.equals(blog.getDeleted())) // Lọc những blog chưa bị xóa
             .filter(blog -> blog.getUser().getRole().getName().equals(roleName)) // Lọc theo roleName
+            .filter(blog -> Boolean.TRUE.equals(blog.getStatus())) // Lọc những blogs are approved
             .map(blog -> {
               BlogDTO blogDTO = new BlogDTO();
               blogDTO.setId(blog.getId());
@@ -361,10 +348,14 @@ public class BlogServiceImp implements BlogServices {
 
 
   @Override
-  @PreAuthorize("hasRole('MEMBER')")
   public BlogResponse getPostDetail(int blogId) {
     BlogEntity blogEntity = blogRepo.findByIdAndDeletedFalse(blogId)
             .orElseThrow(() -> new AppException(ErrorCode.BLOG_NOT_EXIST));
+
+    if(!blogEntity.getUser().getRole().getName().equals("MEMBER")) throw new AppException(ErrorCode.BLOG_IS_NOT_POST);
+
+    if(!blogEntity.getStatus()) throw new AppException(ErrorCode.POST_IS_NOT_APPROVED);
+
     BlogResponse blogResponse = new BlogResponse();
     blogResponse.setId(blogEntity.getId());
     blogResponse.setTitle(blogEntity.getTitle());
@@ -417,10 +408,16 @@ public class BlogServiceImp implements BlogServices {
   }
 
   @Override
-  @PreAuthorize("hasAnyRole('EXPERT', 'MEMBER')")
   public BlogResponse getArticleDetail(int articleId) {
     BlogEntity blogEntity = blogRepo.findByIdAndDeletedFalse(articleId)
             .orElseThrow(() -> new AppException(ErrorCode.ARTICLE_NOT_EXIST));
+
+    if(!blogEntity.getUser().getRole().getName().equals("EXPERT")) {
+      throw new AppException(ErrorCode.BLOG_IS_NOT_ARTICLE);
+    }
+
+    if(!blogEntity.getStatus()) throw new AppException(ErrorCode.ARTICLE_IS_NOT_APPROVED);
+
     BlogResponse blogResponse = new BlogResponse();
     blogResponse.setId(blogEntity.getId());
     blogResponse.setTitle(blogEntity.getTitle());
@@ -478,7 +475,7 @@ public class BlogServiceImp implements BlogServices {
     article.setDeleted(false);
 
     // Category
-    BlogCategoryEntity blogCategory = blogCategoryRepo.findByIdAndDeletedFalse(articleRequest.getBlogCategoryId()).orElseThrow(()-> new AppException(ErrorCode.BLOG_CATEGORY_NOT_EXIST));
+    BlogCategoryEntity blogCategory = blogCategoryRepo.findByIdAndDeletedFalse(articleRequest.getBlogCategoryId()).orElseThrow(()-> new AppException(ErrorCode.CATEGORY_NOT_EXIST));
     article.setBlogCategory(blogCategory);
 
     // Expert
