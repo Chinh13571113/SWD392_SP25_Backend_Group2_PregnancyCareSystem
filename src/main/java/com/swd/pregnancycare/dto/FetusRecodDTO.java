@@ -18,10 +18,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FetusRecodDTO {
+    int id;
     LocalDateTime dateRecord;
     BigDecimal weight;
     BigDecimal height;
-    String warningMess;
+    String warningMess="";
 //    LocalDateTime dateRecord;
 
 
