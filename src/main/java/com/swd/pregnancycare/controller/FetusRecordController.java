@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Tag(name = "Fetus API", description = "Api for Fetus Insert")
+@CrossOrigin
 @RequestMapping(value = "/api/fetus-record")
 public class FetusRecordController {
     @Autowired
@@ -139,12 +140,22 @@ public class FetusRecordController {
         response.setMessage("Successfully deleted fetus with ID " + id);
         return ResponseEntity.ok(response);
     }
+    @Operation(summary = "Get a data of Fetus Record", description = "get data")
     @GetMapping("/Statistic/findById")
     public ResponseEntity<?> getStatisticFetusRecord(@Parameter(description = "Fetus ID", required = true, example = "1") @RequestParam int fetusId){
         BaseResponse response = new BaseResponse();
         response.setData(fetusServicesImp.getStatisticFetusRecordById(fetusId));
         response.setCode(200);
         response.setMessage("");
+        return ResponseEntity.ok(response);
+    }
+    @Operation(summary = "Update Fetus Record", description = "Update Fetus Record")
+
+    @PutMapping()
+    public ResponseEntity<?> updateFetusRecord(@RequestBody FetusRecodDTO fetusRecodDTO){
+        BaseResponse response = new BaseResponse();
+        fetusServicesImp.updateFetusRecord(fetusRecodDTO);
+        response.setMessage("Update Successfully");
         return ResponseEntity.ok(response);
     }
 }
