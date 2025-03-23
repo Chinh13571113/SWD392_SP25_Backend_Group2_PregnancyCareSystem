@@ -2,7 +2,9 @@ package com.swd.pregnancycare.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
@@ -13,6 +15,8 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class FetusRecodDTO {
     LocalDateTime dateRecord;
     BigDecimal weight;
