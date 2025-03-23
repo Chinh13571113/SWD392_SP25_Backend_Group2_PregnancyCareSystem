@@ -16,12 +16,12 @@ import com.swd.pregnancycare.repository.WhoStandardRepo;
 import com.swd.pregnancycare.request.FetusRecordResponse;
 import com.swd.pregnancycare.request.FetusRequest;
 import com.swd.pregnancycare.response.UserResponse;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -117,7 +117,16 @@ public class FetusServicesImp implements FetusServices {
   @PreAuthorize("hasRole('MEMBER')")
   public List<FetusDTO> getMyFetus() {
     UserEntity user = loginServices.getUser();
-    return FetusMapper.INSTANCE.toListFetusDTO(fetusRepo.findByUserId(user.getId()));
+    LocalDate today = LocalDate.now();
+    List<FetusEntity> fetusEntityList = fetusRepo.findByUserId(user.getId()).stream()
+            .filter(fetus -> {
+              if (fetus.getDueDate() == null) return false; // Bỏ qua nếu không có ngày dự sinh
+              long weeksUntilDue = ChronoUnit.WEEKS.between(today, fetus.getDueDate());
+              return (40 - weeksUntilDue) <= 40;
+            })
+            .toList();
+
+    return FetusMapper.INSTANCE.toListFetusDTO(fetusEntityList); // Không cần map nếu dữ liệu đã là FetusDTO
   }
 
   //FETUS RECORD
@@ -175,6 +184,22 @@ public class FetusServicesImp implements FetusServices {
 
 
   }
+  @PreAuthorize("hasRole('MEMBER')")
+
+  @Override
+  public void updateFetusRecord(FetusRecodDTO fetusRecodDTO) {
+    FetusRecordEntity fetusRecord = fetusRecordRepo.findById(fetusRecodDTO.getId()).orElseThrow(()->new AppException(ErrorCode.FETUS_NOT_EXIST));
+
+
+
+
+    fetusRecord.setHeight(fetusRecodDTO.getHeight());
+    fetusRecord.setWeight(fetusRecodDTO.getWeight());
+
+    // Lưu warning nếu có
+
+    fetusRecordRepo.save(fetusRecord);
+  }
 
 
   @Override
@@ -182,14 +207,55 @@ public class FetusServicesImp implements FetusServices {
   public void saveFetusRecord(int id, FetusRecodDTO fetusRecodDTO) {
     FetusEntity fetusEntity = fetusRepo.findById(id)
             .orElseThrow(() -> new AppException(ErrorCode.FETUS_NOT_EXIST));
+    if (fetusRecodDTO.getWeight().compareTo(BigDecimal.ZERO) <= 0 ||
+            fetusRecodDTO.getHeight().compareTo(BigDecimal.ZERO) <= 0) {
+      throw new AppException(ErrorCode.INVALID_FETUS_RECORD);
+    }
+    boolean existsTodayRecord = fetusRecordRepo.existsByFetusIdAndDateRecordBetween(
+            id,
+            fetusRecodDTO.getDateRecord().toLocalDate().atStartOfDay(),
+            fetusRecodDTO.getDateRecord().toLocalDate().atTime(23, 59, 59)
+    );
+    if (existsTodayRecord) {
+      throw new AppException(ErrorCode.DUPLICATE_FETUS_RECORD);
+    }
+    int week = getFetusWeek(id);
+
+    // Tìm tuần gần nhất có trong WHO
+    WhoStandardEntity closestWHO = whoStandardRepo.findTopByFetusWeekLessThanEqualOrderByFetusWeekDesc(week);
+    if (closestWHO == null) {
+      closestWHO = whoStandardRepo.findTopByFetusWeekLessThanEqualOrderByFetusWeekDesc(week);
+    }
+    if (closestWHO == null) {
+      throw new AppException(ErrorCode.STANDARD_WHO_NOT_FOUND);
+    }
+    String warningMess = generateWarningMessage(fetusRecodDTO, closestWHO);
     FetusRecordEntity fetusRecordEntity= new FetusRecordEntity();
     fetusRecordEntity.setFetus(fetusEntity);
     fetusRecordEntity.setWeight(fetusRecodDTO.getWeight());
     fetusRecordEntity.setHeight(fetusRecodDTO.getHeight());
-    fetusRecordEntity.setWarningMess(fetusRecodDTO.getWarningMess());
+    fetusRecordEntity.setWarningMess(warningMess);
 //    fetusRecordEntity.setDateRecord(fetusRecodDTO.getDateRecord());
     fetusRecordRepo.save(fetusRecordEntity);
 
+  }
+
+  private String generateWarningMessage(FetusRecodDTO fetusRecodDTO, WhoStandardEntity who) {
+    StringBuilder warning = new StringBuilder();
+
+    if (fetusRecodDTO.getWeight().compareTo(who.getWeight()) < 0) {
+      warning.append("Cân nặng thấp hơn chuẩn WHO. ");
+    } else if (fetusRecodDTO.getWeight().compareTo(who.getWeight()) > 0) {
+      warning.append("Cân nặng cao hơn chuẩn WHO. ");
+    }
+
+    if (fetusRecodDTO.getHeight().compareTo(who.getHeight()) < 0) {
+      warning.append("Chiều cao thấp hơn chuẩn WHO. ");
+    } else if (fetusRecodDTO.getHeight().compareTo(who.getHeight()) > 0) {
+      warning.append("Chiều cao cao hơn chuẩn WHO. ");
+    }
+
+    return !warning.isEmpty() ? warning.toString().trim() : "Chỉ số trong giới hạn chuẩn.";
   }
   @Override
   @PreAuthorize("hasRole('MEMBER')")

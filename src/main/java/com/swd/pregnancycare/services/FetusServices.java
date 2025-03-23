@@ -20,4 +20,5 @@ public interface FetusServices {
     int getFetusWeek(int id);
     Map<String, List<?>> getStandard();
     Map<String, List<?>> getStatisticFetusRecordById(int id);
+    void updateFetusRecord(FetusRecodDTO fetusRecodDTO);
 }
