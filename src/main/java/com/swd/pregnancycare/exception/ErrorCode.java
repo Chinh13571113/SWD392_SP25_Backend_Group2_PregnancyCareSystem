@@ -61,7 +61,7 @@ public enum ErrorCode {
     SCHEDULE_NOT_EXIST(404, "Cannot find Schedule", HttpStatus.NOT_FOUND),
     APPOINTMENT_EXISTED(403, "Your appointment is already created", HttpStatus.BAD_REQUEST),
     SCHEDULE_EXISTED(403, "Your Schedule is not in part of times", HttpStatus.BAD_REQUEST),
-    AVAILABLE_WRITER(403, "Appointment with the same date and user already exists.", HttpStatus.BAD_REQUEST), SCHEDULE_INVALID(403,"Date not in the past" ,HttpStatus.BAD_REQUEST );
+    AVAILABLE_WRITER(403, "Appointment with the same date and user already exists.", HttpStatus.BAD_REQUEST), SCHEDULE_INVALID(403,"Date not in the past" ,HttpStatus.BAD_REQUEST ), FETUS_IN_DANGER(403,"Your Fetus is in Danger" ,HttpStatus.BAD_REQUEST);
 
 
 
