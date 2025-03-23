@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class FetusRecodDTO {
+    LocalDateTime dateRecord;
     BigDecimal weight;
     BigDecimal height;
     String warningMess;

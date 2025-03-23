@@ -62,7 +62,16 @@ public class FetusServicesImp implements FetusServices {
     UserResponse userResponse = userServicesImp.getMyInfo();
     Optional<UserEntity> userEntity = userRepo.findByIdAndStatusTrue(userResponse.getId());
     UserEntity user = userEntity.get();
+    LocalDate today = LocalDate.now();
 
+
+    LocalDate dueDate = fetusRequest.getDueDate().toLocalDate();
+
+    long weeks = ChronoUnit.WEEKS.between(today, dueDate);
+
+    if (weeks > 42) {
+      throw new AppException(ErrorCode.FETUS_IN_DANGER);
+    }
     FetusEntity newFetus = new FetusEntity();
 
     newFetus.setName(fetusRequest.getName());
