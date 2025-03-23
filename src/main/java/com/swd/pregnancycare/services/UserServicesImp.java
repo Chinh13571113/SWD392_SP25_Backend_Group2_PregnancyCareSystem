@@ -1,17 +1,23 @@
 package com.swd.pregnancycare.services;
 
+import com.swd.pregnancycare.dto.CertificateDTO;
 import com.swd.pregnancycare.dto.DataMailDTO;
 import com.swd.pregnancycare.dto.UserDTO;
+import com.swd.pregnancycare.entity.CertificateEntity;
+import com.swd.pregnancycare.entity.PossessDegreeEntity;
 import com.swd.pregnancycare.entity.RoleEntity;
 import com.swd.pregnancycare.entity.UserEntity;
 import com.swd.pregnancycare.exception.AppException;
 import com.swd.pregnancycare.exception.ErrorCode;
 import com.swd.pregnancycare.mapper.UserMapper;
+import com.swd.pregnancycare.repository.PossessDegreeRepo;
 import com.swd.pregnancycare.repository.RoleRepo;
 import com.swd.pregnancycare.repository.UserRepo;
 import com.swd.pregnancycare.request.UserRequest;
+import com.swd.pregnancycare.response.ExpertResponse;
 import com.swd.pregnancycare.response.UserResponse;
 import com.swd.pregnancycare.utils.DataUtils;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServicesImp implements UserServices{
@@ -32,6 +39,8 @@ public class UserServicesImp implements UserServices{
     PasswordEncoder passwordEncoder;
     @Autowired
     MailServices mailServices;
+    @Autowired
+    PossessDegreeRepo possessDegreeRepo;
 
 
     @Override
@@ -145,7 +154,41 @@ public class UserServicesImp implements UserServices{
         else throw new AppException(ErrorCode.PASSWORD_NOT_CORRECT);
     }
 
+    @Transactional
+    @Override
+    public ExpertResponse getExpertDetail(int expertId) {
+        UserEntity expert = userRepo.findByIdAndStatusTrue(expertId).orElseThrow(()-> new AppException(ErrorCode.USER_NOT_EXIST));
 
+        if(!expert.getRole().getName().equals("EXPERT")) throw new AppException(ErrorCode.EXPERT_NOT_EXIST);
+
+        ExpertResponse expertResponse = new ExpertResponse();
+        expertResponse.setId(expert.getId());
+        expertResponse.setFullName(expert.getFullName());
+        expertResponse.setEmail(expert.getEmail());
+        expertResponse.setRole(expert.getRole().getName());
+
+        // Map Certificate
+        List<PossessDegreeEntity> degrees = null;
+        try {
+            degrees = possessDegreeRepo.findByUserId(expertId);
+            System.out.println("EXPERT: "+degrees);
+        } catch (Exception e) {
+            throw new AppException(ErrorCode.DATA_NOT_FOUND);
+        }
+
+        List<CertificateDTO> certificateDTOs = degrees.stream()
+                .map(degree -> {
+                    CertificateEntity cert = degree.getCertificate();
+                    CertificateDTO dto = new CertificateDTO();
+                    dto.setId(cert.getId());
+                    dto.setName(cert.getName());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+        expertResponse.setCertificates(certificateDTOs);
+        return expertResponse;
+    }
 
 
     private void setDefaultRole(UserEntity user) {

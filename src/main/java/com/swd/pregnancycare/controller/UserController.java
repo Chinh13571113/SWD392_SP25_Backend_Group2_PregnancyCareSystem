@@ -4,6 +4,7 @@ import com.swd.pregnancycare.exception.AppException;
 import com.swd.pregnancycare.exception.ErrorCode;
 import com.swd.pregnancycare.request.UserRequest;
 import com.swd.pregnancycare.response.BaseResponse;
+import com.swd.pregnancycare.response.ExpertResponse;
 import com.swd.pregnancycare.services.UserServicesImp;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -176,4 +177,28 @@ public class UserController {
         }
         return ResponseEntity.ok(response);
     }
+
+
+  @Operation(
+          summary = "Get expert detail",
+          description = "All users can get expert detail",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "Got expert detail successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = ExpertResponse.class)
+                          )
+                  )
+          }
+  )
+  @GetMapping("/experts/{id}")
+  public ResponseEntity<?> getExpertDetail(@PathVariable int id) {
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setMessage("Got expert detail successfully");
+    response.setData(userServicesImp.getExpertDetail(id));
+    return ResponseEntity.ok(response);
+  }
 }

@@ -72,4 +72,8 @@ public class UserEntity {
     // Advice List
     @OneToMany(mappedBy = "expert")
     private List<AdviceEntity> advices;
+
+    // Certificate
+    @OneToMany(mappedBy = "user")
+    private List<PossessDegreeEntity> certificates;
 }

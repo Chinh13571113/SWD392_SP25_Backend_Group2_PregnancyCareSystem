@@ -14,6 +14,7 @@ public enum ErrorCode {
 
     USER_EXIST(400, "user existed", HttpStatus.BAD_REQUEST),
     USER_NOT_EXIST(403, "user not existed", HttpStatus.BAD_REQUEST),
+    EXPERT_NOT_EXIST(403, "expert not existed", HttpStatus.BAD_REQUEST),
     USER_NOT_ACTIVE(403, "user is not  active", HttpStatus.BAD_REQUEST),
     UNCATEGORIZED_EXCEPTION(1001, "uncategorize exception", HttpStatus.INTERNAL_SERVER_ERROR),
     UPDATE_USER_FAILED(400, "update user failed", HttpStatus.BAD_REQUEST),

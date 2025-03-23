@@ -2,6 +2,7 @@ package com.swd.pregnancycare.services;
 
 import com.swd.pregnancycare.dto.UserDTO;
 import com.swd.pregnancycare.request.UserRequest;
+import com.swd.pregnancycare.response.ExpertResponse;
 import com.swd.pregnancycare.response.UserResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -16,4 +17,6 @@ public interface UserServices {
     void updateUser(int id, String fullName, String email);
     Boolean forgotPassword(String email);
     void changePassword(String oldPassword, String newPassword);
+
+  ExpertResponse getExpertDetail(int expertId);
 }
