@@ -235,7 +235,7 @@ public class FetusServicesImp implements FetusServices {
     fetusRecordEntity.setWeight(fetusRecodDTO.getWeight());
     fetusRecordEntity.setHeight(fetusRecodDTO.getHeight());
     fetusRecordEntity.setWarningMess(warningMess);
-//    fetusRecordEntity.setDateRecord(fetusRecodDTO.getDateRecord());
+    fetusRecordEntity.setDateRecord(fetusRecodDTO.getDateRecord());
     fetusRecordRepo.save(fetusRecordEntity);
 
   }

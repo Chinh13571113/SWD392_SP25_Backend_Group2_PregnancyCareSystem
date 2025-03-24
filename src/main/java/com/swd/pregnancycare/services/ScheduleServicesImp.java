@@ -13,6 +13,8 @@ import jakarta.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -81,7 +83,12 @@ public class ScheduleServicesImp implements ScheduleServices{
         scheduleRepo.findById(id).orElseThrow(()-> new AppException(ErrorCode.SCHEDULE_NOT_EXIST));
         scheduleRepo.deleteById(id);
     }
-
+    @EventListener(ApplicationReadyEvent.class)
+    @Transactional
+    public void sendReminderEmailOnStartup() throws MessagingException {
+        System.out.println("🚀 Server started! Checking for reminders...");
+        sendReminderEmail();
+    }
     @Scheduled(cron = "0 * * * * ?") // Chạy lúc 8h sáng hàng ngày
     @Transactional
     @Override
