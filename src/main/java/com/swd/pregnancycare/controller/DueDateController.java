@@ -3,120 +3,62 @@ package com.swd.pregnancycare.controller;
 import com.swd.pregnancycare.dto.*;
 import com.swd.pregnancycare.enums.PregnancyPeriodEntity;
 import com.swd.pregnancycare.enums.PregnancyTimeline;
+import com.swd.pregnancycare.response.BaseResponse;
+import com.swd.pregnancycare.services.CalculatorServicesImp;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-@RequestMapping("/api/duedate")
+@RequestMapping("/api/due-date-calculator")
 @RestController
-@Tag(name = "Due Date & Pregnancy Timeline", description = "APIs for calculating due dates and pregnancy stages")
+@Tag(name = "Due date Calculator", description = "APIs for calculating due dates and pregnancy stages")
 @CrossOrigin
 public class DueDateController {
-
+    @Autowired
+    private CalculatorServicesImp calculatorServicesImp;
     @Operation(summary = "Calculate due date from last period", description = "Calculates the estimated due date based on the last menstrual period and cycle length.")
     @PostMapping("/last-period")
-    public ResponseEntity getCaculateDueDate(@RequestBody LastPeriodInputDTO lastPeriodInput) {
-        PregnancyTimeline pregnancyTimeline = new PregnancyTimeline();
+    public ResponseEntity<?> getCaculateDueDate(@RequestBody LastPeriodInputDTO lastPeriodInput) {
 
-        if (lastPeriodInput.getCycleLength() < 20 || lastPeriodInput.getCycleLength() >45) {
-            return ResponseEntity.badRequest().body("Invalid cycle length. Must be between 20 and 45 days.");
-        }
-        pregnancyTimeline.updateTimelineWithDates(lastPeriodInput.getLastPeriod(), lastPeriodInput.getCycleLength());
-        return ResponseEntity.ok(pregnancyTimeline);
+        return ResponseEntity.ok(getResponse(calculatorServicesImp.getPeriodMethod(lastPeriodInput)));
 
 
 
     }
     @Operation(summary = "Calculate due date from conception date", description = "Estimates the due date based on the conception date and provides the pregnancy timeline.")
     @PostMapping("/conception-date")
-    public ResponseEntity  getPregnancyTimelineFromConception(@RequestBody ConceptionInputDTO input) {
-        if (input.getConceptionDate() == null) {
-            return ResponseEntity.badRequest().body(null);
-        }
-
-
-        LocalDate dueDate = input.getConceptionDate().plusDays(266).minusWeeks(2);
-
-
-        PregnancyTimeline pregnancyTimeline = new PregnancyTimeline();
-        List<PregnancyPeriodEntity> updatedTimeline = new ArrayList<>();
-
-        for (PregnancyPeriodEntity event : pregnancyTimeline) {
-
-            LocalDate eventDate = input.getConceptionDate().plusWeeks(event.getStartWeek()-2);
-            updatedTimeline.add(new PregnancyPeriodEntity(
-                    event.getStartWeek(),
-                    event.getEndWeek(),
-                    event.getDecription(),
-                    event.getTrimester(),
-                    eventDate
-            ));
-        }
-
-        return ResponseEntity.ok(updatedTimeline);
+    public ResponseEntity<?>  getPregnancyTimelineFromConception(@RequestBody ConceptionInputDTO input) {
+        return ResponseEntity.ok(getResponse(calculatorServicesImp.getConceptionDate(input)));
     }
     @Operation(summary = "Calculate due date for IVF pregnancies", description = "Estimates the due date for IVF pregnancies based on embryo transfer day.")
     @PostMapping("/ivf")
-    public ResponseEntity getPregnancyTimelineFromIVF(@RequestBody IVFInputDTO input) {
-        if (input.getConceptionDate() == null) {
-            return ResponseEntity.badRequest().body(null);
-        }
-        if (input.getIvdDate() != 3 &&input.getIvdDate() != 5) {
-            return ResponseEntity.badRequest().body("ivf day must be 3 or 5 days");
-        }
-
-
-        LocalDate dueDate = input.getConceptionDate().plusDays(266).minusWeeks(2);
-
-
-        PregnancyTimeline pregnancyTimeline = new PregnancyTimeline();
-        List<PregnancyPeriodEntity> updatedTimeline = new ArrayList<>();
-
-        for (PregnancyPeriodEntity event : pregnancyTimeline) {
-
-            LocalDate eventDate = input.getConceptionDate().plusWeeks(event.getStartWeek()-2).minusDays(input.getIvdDate());
-            updatedTimeline.add(new PregnancyPeriodEntity(
-                    event.getStartWeek(),
-                    event.getEndWeek(),
-                    event.getDecription(),
-                    event.getTrimester(),
-                    eventDate
-            ));
-        }
-
-        return ResponseEntity.ok(updatedTimeline);
+    public ResponseEntity<?> getPregnancyTimelineFromIVF(@RequestBody IVFInputDTO input) {
+        return ResponseEntity.ok(getResponse(calculatorServicesImp.getIVF(input)));
     }
     @Operation(summary = "Calculate due date from ultrasound", description = "Estimates the due date based on an ultrasound scan.")
     @PostMapping("/ultrasound")
-    public ResponseEntity<List<PregnancyPeriodEntity>> getDueDateFromUltrasound(@RequestBody UltrasoundInputDTO ultrasoundInput) {
-        if (ultrasoundInput.gestationalWeeks < 4 || ultrasoundInput.gestationalWeeks > 42) {
-            return ResponseEntity.badRequest().body(null);
-        }
+    public ResponseEntity<?> getDueDateFromUltrasound(@RequestBody UltrasoundInputDTO ultrasoundInput) {
 
-        LocalDate dueDate = PregnancyTimeline.getDueDateFromUltrasound(
-                ultrasoundInput.ultrasoundDate,
-                ultrasoundInput.gestationalWeeks,
-                ultrasoundInput.gestationalDays
-        );
-
-        PregnancyTimeline pregnancyTimeline = new PregnancyTimeline();
-        pregnancyTimeline.updateTimelineWithDueDate(dueDate);
-        return ResponseEntity.ok(pregnancyTimeline);
+        return ResponseEntity.ok(getResponse(calculatorServicesImp.getUltraSound(ultrasoundInput)));
     }
     @Operation(summary = "Calculate pregnancy timeline from estimated due date", description = "Generates the pregnancy timeline based on an estimated due date.")
     @PostMapping("/from-due-date")
-    public ResponseEntity<List<PregnancyPeriodEntity>> getTimelineFromDueDate(@RequestBody DueDateInputDTO dueDateInput) {
+    public ResponseEntity<?> getTimelineFromDueDate(@RequestBody DueDateInputDTO dueDateInput) {
         if (dueDateInput.dueDate.isBefore(LocalDate.now().minusMonths(9)) || dueDateInput.dueDate.isAfter(LocalDate.now().plusMonths(12))) {
             return ResponseEntity.badRequest().body(null);
         }
-
-        PregnancyTimeline pregnancyTimeline = new PregnancyTimeline();
-        pregnancyTimeline.updateTimelineWithDueDate(dueDateInput.dueDate);
-        return ResponseEntity.ok(pregnancyTimeline);
+        return ResponseEntity.ok(getResponse(dueDateInput));
+    }
+    public BaseResponse getResponse(Object data){
+        BaseResponse response = new BaseResponse();
+        response.setData(data);
+        return response;
     }
 }

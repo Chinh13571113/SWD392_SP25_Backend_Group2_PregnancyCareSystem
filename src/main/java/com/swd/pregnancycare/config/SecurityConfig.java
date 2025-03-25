@@ -40,7 +40,7 @@ public class SecurityConfig {
           "/api/authentication/forgot-password",
           "/api/appointment/schedule/send-emails",
           "/api/users/register",
-          "/api/duedate/**",
+          "/api/due-date-calculator/**",
           "/api/package",
 
           "/api/fetal-growth/**"
