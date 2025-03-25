@@ -10,7 +10,6 @@ import lombok.experimental.FieldDefaults;
 public class AdviceRequest {
   String title;
   String description;
-  String answer;
-  boolean status;
-  FetusDTO fetus;
+  int fetusId;
+  int categoryId;
 }

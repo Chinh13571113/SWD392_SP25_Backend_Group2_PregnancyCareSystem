@@ -19,4 +19,6 @@ public interface UserServices {
     void changePassword(String oldPassword, String newPassword);
 
   ExpertResponse getExpertDetail(int expertId);
+
+  List<ExpertResponse> getAllExperts();
 }

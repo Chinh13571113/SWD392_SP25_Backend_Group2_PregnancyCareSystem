@@ -9,24 +9,24 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity(name = "possess_degree")
-@IdClass(PossessDegreeId.class)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class PossessDegreeEntity {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private int id;
   @Column(name = "dateBegin")
   private LocalDateTime dateBegin;
   @Column(name = "dateEnd")
   private LocalDateTime dateEnd;
 
 
-  @Id
   @ManyToOne
   @JoinColumn(name = "id_user")
   private UserEntity user;
 
 
-  @Id
   @ManyToOne
   @JoinColumn(name = "id_certificate")
   private CertificateEntity certificate;

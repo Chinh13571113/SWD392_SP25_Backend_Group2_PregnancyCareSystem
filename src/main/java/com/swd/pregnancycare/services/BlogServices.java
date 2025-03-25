@@ -25,7 +25,7 @@ public interface BlogServices {
   List<BlogDTO> getMyBlogs();
   BlogResponse getPostDetail(int blogId);
 
-  BlogResponse getArticleDetail(int articleId);
+  BlogResponse getArticleDetail(String slug);
 
   ArticleResponse saveArticle(ArticleRequest articleRequest);
 

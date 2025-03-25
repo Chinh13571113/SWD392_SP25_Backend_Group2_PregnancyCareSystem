@@ -118,7 +118,7 @@ public class UserController {
 
   @Operation(
           summary = "Update a User",
-          description = "MEMBER can update their info",
+          description = "MEMBER or EXPERT or ADMIN can update their info",
           responses = {
                   @ApiResponse(
                           responseCode = "200",
@@ -177,6 +177,30 @@ public class UserController {
         }
         return ResponseEntity.ok(response);
     }
+
+
+  @Operation(
+          summary = "Get all experts",
+          description = "All users can get all experts",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "Got all experts successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = ExpertResponse.class)
+                          )
+                  )
+          }
+  )
+  @GetMapping("/experts")
+  public ResponseEntity<?> getAllExperts() {
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setMessage("Got all experts successfully");
+    response.setData(userServicesImp.getAllExperts());
+    return ResponseEntity.ok(response);
+  }
 
 
   @Operation(

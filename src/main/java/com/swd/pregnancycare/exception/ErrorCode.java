@@ -24,7 +24,11 @@ public enum ErrorCode {
     BLOG_IS_NOT_ARTICLE(400, "blog is not article", HttpStatus.BAD_REQUEST),
     BLOG_IS_NOT_POST(400, "blog is not post", HttpStatus.BAD_REQUEST),
     POST_IS_NOT_APPROVED(400, "post is not approved", HttpStatus.BAD_REQUEST),
+
+
     ARTICLE_IS_NOT_APPROVED(400, "article is not approved", HttpStatus.BAD_REQUEST),
+    ARTICLE_EXIST(400, "article existed", HttpStatus.BAD_REQUEST),
+
     BLOG_DELETED_FAILED(1002, "delete blog error", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_PASSWORD(400, "password must be at least 8", HttpStatus.BAD_REQUEST),
     UNAUTHORIZED_EXCEPTION(999, "do not permission", HttpStatus.FORBIDDEN),

@@ -8,6 +8,5 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface PossessDegreeRepo extends JpaRepository<PossessDegreeEntity, Integer> {
-  @Query("SELECT p FROM possess_degree p WHERE p.user.id = :userId")
-  List<PossessDegreeEntity> findByUserId(@Param("userId") int userId);
+  List<PossessDegreeEntity> findByUserId(int userId);
 }
