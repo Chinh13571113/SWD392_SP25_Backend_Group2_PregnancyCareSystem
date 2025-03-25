@@ -42,6 +42,7 @@ public class UserServicesImp implements UserServices{
             UserDTO userDTO = new UserDTO();
             userDTO.setId(data.getId());
             userDTO.setEmail(data.getEmail());
+            userDTO.setStatus(data.isStatus());
             userDTO.setFullName(data.getFullName());
             userDTO.setRoles(data.getRole().getName());
             return userDTO;
@@ -67,14 +68,14 @@ public class UserServicesImp implements UserServices{
     @Override
     @PreAuthorize("hasAnyRole( 'MEMBER', 'ADMIN')")
     public Boolean createUser(UserRequest request) {
-        System.out.println("List: "+userRepo.existsByEmailAndStatusTrue(request.getEmail()));
+
         if(userRepo.existsByEmailAndStatusTrue(request.getEmail())) throw new AppException(ErrorCode.USER_EXIST);
         UserEntity user = new UserEntity();
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword())); // Mã hóa mật khẩu
         user.setFullName(request.getFullName());
         user.setStatus(true);
-        setDefaultRole(user);
+        setDefaultRole(user,"MEMBER");
         userRepo.save(user);
         return true;
     }
@@ -148,12 +149,17 @@ public class UserServicesImp implements UserServices{
 
 
 
-    private void setDefaultRole(UserEntity user) {
+    public void setDefaultRole(UserEntity user,String role) {
         if (user.getRole() == null) {
             // Truy vấn RoleEntity với tên "ROLE_USER"
-            RoleEntity defaultRole = roleRepo.findByName("MEMBER")
+            RoleEntity defaultRole = roleRepo.findByName(role)
                     .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));  // Nếu không tìm thấy role "ROLE_USER"
             user.setRole(defaultRole);
         }
+    }
+    public void setUpRole(UserEntity user,String role) {
+        RoleEntity defaultRole = roleRepo.findByName(role)
+                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));  // Nếu không tìm thấy role "ROLE_USER"
+        user.setRole(defaultRole);
     }
 }
