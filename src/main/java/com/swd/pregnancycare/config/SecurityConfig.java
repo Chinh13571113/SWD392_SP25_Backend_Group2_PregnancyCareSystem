@@ -41,7 +41,7 @@ public class SecurityConfig {
           "/api/appointment/schedule/send-emails",
 
           "/api/users/register",
-          "/api/duedate/**",
+          "/api/due-date-calculator/**",
           "/api/package",
 
           "/api/fetal-growth/**"
