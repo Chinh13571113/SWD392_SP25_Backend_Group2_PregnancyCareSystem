@@ -45,3 +45,9 @@ mailServer:
   protocol: smtp
   isSSL: true
 
+paypal:
+  client:
+    id: ARjqT5-IHMjP5GWgXTNZGOcUr-HWbv-_s5zKuFCvb8s21B2aoMb6swsUad1n-abMlB2DVbRDz-7t5knH
+    secret: EPB-2LYBeZ2ZaWLFnKIU3dPZSqn17D_lsAW1jE1vyv5LNCyysmtQBjgLB7ECSOOj9VXUr5DJ8VV4uipq
+  mode: sandbox  # Hoặc "live" khi chạy thực tế
+  base-url: https://api-m.sandbox.paypal.com

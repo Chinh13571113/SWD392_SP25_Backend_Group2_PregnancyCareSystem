@@ -43,7 +43,7 @@ public class SecurityConfig {
           "/api/users/register",
           "/api/due-date-calculator/**",
           "/api/package",
-
+          "/api/paypal/**",
           "/api/fetal-growth/**"
 
   };
