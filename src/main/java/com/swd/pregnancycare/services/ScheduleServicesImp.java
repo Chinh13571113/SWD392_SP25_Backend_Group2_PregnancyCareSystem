@@ -44,6 +44,10 @@ public class ScheduleServicesImp implements ScheduleServices{
         LocalDateTime upperBound = appointmentEntity.getDateIssue().plusHours(1);
 
         if(scheduleDTO.getDateRemind().isBefore(appointmentEntity.getDateIssue()) || scheduleDTO.getDateRemind().isAfter(upperBound)) throw new AppException(ErrorCode.SCHEDULE_EXISTED);
+        boolean exists = scheduleRepo.findExistingSchedule(scheduleDTO.getAppointmentId(), scheduleDTO.getDateRemind()).isPresent();
+        if (exists) {
+            throw new AppException(ErrorCode.SCHEDULE_EXISTED); // Lỗi mới để báo trùng lịch
+        }
         ScheduleEntity scheduleEntity = ScheduleEntity.builder()
                 .notify(scheduleDTO.getNotify())
                 .appointment(appointmentEntity)
