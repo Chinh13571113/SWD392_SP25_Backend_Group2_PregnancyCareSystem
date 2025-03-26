@@ -54,7 +54,7 @@ public class DueDateController {
         if (dueDateInput.dueDate.isBefore(LocalDate.now().minusMonths(9)) || dueDateInput.dueDate.isAfter(LocalDate.now().plusMonths(12))) {
             return ResponseEntity.badRequest().body(null);
         }
-        return ResponseEntity.ok(getResponse(dueDateInput));
+        return ResponseEntity.ok(getResponse(calculatorServicesImp.getFromDueDate(dueDateInput.getDueDate())));
     }
     public BaseResponse getResponse(Object data){
         BaseResponse response = new BaseResponse();

@@ -5,6 +5,7 @@ import com.swd.pregnancycare.dto.IVFInputDTO;
 import com.swd.pregnancycare.dto.LastPeriodInputDTO;
 import com.swd.pregnancycare.dto.UltrasoundInputDTO;
 
+import java.time.LocalDate;
 
 
 public interface CalculatorServices {
@@ -13,4 +14,5 @@ public interface CalculatorServices {
     String getIVF(IVFInputDTO ivfInputDTO);
     String getUltraSound(UltrasoundInputDTO ultrasoundInputDTO);
 
+    String getFromDueDate(LocalDate dueDate);
 }
