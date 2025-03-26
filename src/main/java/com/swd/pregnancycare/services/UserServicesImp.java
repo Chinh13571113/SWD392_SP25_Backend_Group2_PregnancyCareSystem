@@ -39,7 +39,9 @@ public class UserServicesImp implements UserServices{
     @Autowired
     MailServices mailServices;
     @Autowired
-    PossessDegreeRepo possessDegreeRepo;
+    private PossessDegreeRepo possessDegreeRepo;
+    @Autowired
+    private MailServicesImp mailServicesImp;
 
 
     @Override
@@ -74,7 +76,7 @@ public class UserServicesImp implements UserServices{
     }
 
     @Override
-    @PreAuthorize("hasAnyRole( 'MEMBER', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public Boolean createUser(UserRequest request) {
 
         if(userRepo.existsByEmailAndStatusTrue(request.getEmail())) throw new AppException(ErrorCode.USER_EXIST);
@@ -153,6 +155,27 @@ public class UserServicesImp implements UserServices{
         }
         else throw new AppException(ErrorCode.PASSWORD_NOT_CORRECT);
     }
+
+
+    @Override
+    public void resister(UserRequest request, String verificationCode) {
+        boolean result = mailServicesImp.verifyCode(request.getEmail(), verificationCode);
+
+        if(!result) {
+            throw new AppException(ErrorCode.VERIFICATION_CODE_ERROR);
+        }
+
+        if(userRepo.existsByEmailAndStatusTrue(request.getEmail())) throw new AppException(ErrorCode.USER_EXIST);
+        UserEntity user = new UserEntity();
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword())); // Mã hóa mật khẩu
+        user.setFullName(request.getFullName());
+        user.setStatus(true);
+        setDefaultRole(user,"MEMBER");
+        userRepo.save(user);
+    }
+
+
 
     @Override
     public ExpertResponse getExpertDetail(int expertId) {

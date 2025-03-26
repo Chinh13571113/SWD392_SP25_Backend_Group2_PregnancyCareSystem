@@ -61,6 +61,8 @@ public enum ErrorCode {
     BLOG_COMMENT_NOT_EXIST(404, "blog comment not existed", HttpStatus.NOT_FOUND),
 
 
+    VERIFICATION_CODE_ERROR(404, "Verification code is incorrect", HttpStatus.BAD_REQUEST),
+
     RECORD_NOT_EXIST(404, "record does not exist", HttpStatus.NOT_FOUND),
     DATA_NOT_FOUND(404, "Data not found", HttpStatus.NOT_FOUND), APPOINTMENT_NOT_EXIST(404, "appointment not exist", HttpStatus.NOT_FOUND),
     SCHEDULE_NOT_EXIST(404, "Cannot find Schedule", HttpStatus.NOT_FOUND),

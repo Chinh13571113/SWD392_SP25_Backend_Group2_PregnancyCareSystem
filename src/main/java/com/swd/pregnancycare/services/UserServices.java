@@ -18,6 +18,8 @@ public interface UserServices {
     Boolean forgotPassword(String email);
     void changePassword(String oldPassword, String newPassword);
 
+  void resister(UserRequest request, String verificationCode);
+
   ExpertResponse getExpertDetail(int expertId);
 
   List<ExpertResponse> getAllExperts();

@@ -1,33 +1,86 @@
 package com.swd.pregnancycare.services;
 
 import com.swd.pregnancycare.dto.DataMailDTO;
+import com.swd.pregnancycare.exception.AppException;
+import com.swd.pregnancycare.exception.ErrorCode;
+import com.swd.pregnancycare.repository.UserRepo;
+import com.swd.pregnancycare.request.UserRequest;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMailMessage;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 @Service
 public class MailServicesImp implements MailServices {
     @Autowired
-    JavaMailSender mailSender;
+    private JavaMailSender mailSender;
     @Autowired
-    SpringTemplateEngine templateEngine;
+    private SpringTemplateEngine templateEngine;
+    @Autowired
+    private UserRepo userRepo;
+
+    // Map lưu mã xác thực tạm thời (nên có thời gian hết hạn khi triển khai thực tế)
+    private Map<String, String> verificationCodes = new ConcurrentHashMap<>();
+
     @Override
     public void sendHtmlMail(DataMailDTO dataMailDTO, String templateName) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message,true,"utf-8");
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "utf-8");
         Context context = new Context();
         context.setVariables(dataMailDTO.getProps());
-        String html = templateEngine.process(templateName,context);
+        String html = templateEngine.process(templateName, context);
         helper.setTo(dataMailDTO.getTo());
         helper.setSubject(dataMailDTO.getSubject());
-        helper.setText(html,true);
+        helper.setText(html, true);
         mailSender.send(message);
+    }
 
+
+
+    // Hàm tạo mã xác thực ngẫu nhiên
+    private String generateVerificationCode() {
+        // Ví dụ: mã gồm 6 chữ số
+        int code = (int)(Math.random() * 900000) + 100000;
+        return String.valueOf(code);
+    }
+
+    // Hàm gửi email mã xác thực
+    public void sendVerificationEmail(String email) throws MessagingException {
+        if(userRepo.existsByEmailAndStatusTrue(email)) throw new AppException(ErrorCode.USER_EXIST);
+
+        // Tạo mã xác thực
+        String code = generateVerificationCode();
+        // Lưu mã xác thực theo email
+        verificationCodes.put(email, code);
+
+        // Chuẩn bị dữ liệu gửi mail
+        DataMailDTO dataMailDTO = new DataMailDTO();
+        dataMailDTO.setTo(email);
+        dataMailDTO.setSubject("Mã xác thực của bạn");
+        Map<String, Object> props = new HashMap<>();
+        props.put("code", code); // truyền biến 'code' cho template
+        dataMailDTO.setProps(props);
+
+        // Gửi mail với template "verification" (file verification.html)
+        sendHtmlMail(dataMailDTO, "verification");
+    }
+
+    // Hàm kiểm tra mã xác thực
+    public boolean verifyCode(String email, String code) {
+        String storedCode = verificationCodes.get(email);
+        if (storedCode != null && storedCode.equals(code)) {
+            // Nếu cần, xóa mã sau khi xác thực thành công để tránh lạm dụng
+            verificationCodes.remove(email);
+            return true;
+        }
+        return false;
     }
 }

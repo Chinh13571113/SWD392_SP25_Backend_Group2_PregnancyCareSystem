@@ -38,11 +38,11 @@ public class SecurityConfig {
           "/swagger-ui.html",
           "/api/authentication/login",
           "/api/authentication/forgot-password",
+          "/api/authentication/register",
+          "/api/authentication/verification-code",
           "/api/appointment/schedule/send-emails",
-          "/api/users/register",
           "/api/due-date-calculator/**",
           "/api/package",
-
           "/api/fetal-growth/**"
 
   };

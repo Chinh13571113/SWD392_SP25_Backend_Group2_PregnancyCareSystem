@@ -86,8 +86,7 @@ public class UserController {
 
     @Operation(
             summary = "Create a new User",
-            tags = {"Authenticated API"},
-            description = "User can create a new user",
+            description = "ADMIN can create a new user",
             responses = {
                     @ApiResponse(
                             responseCode = "201",
@@ -103,7 +102,7 @@ public class UserController {
                     )
             }
     )
-    @PostMapping("/register")
+    @PostMapping()
     public ResponseEntity<?> createUser(
             @Parameter(description = "User details", required = true)
             @RequestBody UserRequest userRequest) {
