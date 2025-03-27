@@ -44,10 +44,7 @@ public class BlogServiceImp implements BlogServices {
     Optional<UserEntity> user = userRepo.findByIdAndStatusTrue(userResponse.getId());
     UserEntity userEntity = user.get();
 
-    GroupEntity groupEntity = null;
-    if(blogRequest.getGroupId() != null) {
-      groupRepo.findByIdAndDeletedFalse(blogRequest.getGroupId()).orElseThrow(()-> new AppException(ErrorCode.GROUP_NOT_EXIST));
-    }
+    GroupEntity groupEntity = groupRepo.findByIdAndDeletedFalse(blogRequest.getGroupId()).orElseThrow(()-> new AppException(ErrorCode.GROUP_NOT_EXIST));
 
 
     Optional<BlogCategoryEntity> blogCategory = blogCategoryRepo.findByIdAndDeletedFalse(blogRequest.getBlogCategoryId());

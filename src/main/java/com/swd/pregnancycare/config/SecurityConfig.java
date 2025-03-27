@@ -41,8 +41,11 @@ public class SecurityConfig {
           "/api/authentication/register",
           "/api/authentication/verification-code",
           "/api/appointment/schedule/send-emails",
+          "/api/users/register",
           "/api/due-date-calculator/**",
           "/api/package",
+          "/api/paypal/**",
+          "/paypal/**",
           "/api/fetal-growth/**"
 
   };

@@ -60,6 +60,8 @@ public enum ErrorCode {
     BLOG_COMMENT_SAVED_EXCEPTION(500, "save blog comment error", HttpStatus.INTERNAL_SERVER_ERROR),
     BLOG_COMMENT_NOT_EXIST(404, "blog comment not existed", HttpStatus.NOT_FOUND),
 
+    PACKAGE_NOT_EXIST(404, "package not existed", HttpStatus.NOT_FOUND),
+
 
     VERIFICATION_CODE_ERROR(404, "Verification code is incorrect", HttpStatus.BAD_REQUEST),
 
@@ -68,7 +70,7 @@ public enum ErrorCode {
     SCHEDULE_NOT_EXIST(404, "Cannot find Schedule", HttpStatus.NOT_FOUND),
     APPOINTMENT_EXISTED(403, "Your appointment is already created", HttpStatus.BAD_REQUEST),
     SCHEDULE_EXISTED(403, "Your Schedule is not in part of times", HttpStatus.BAD_REQUEST),
-    AVAILABLE_WRITER(403, "Appointment with the same date and user already exists.", HttpStatus.BAD_REQUEST), SCHEDULE_INVALID(403,"Date not in the past" ,HttpStatus.BAD_REQUEST ), FETUS_IN_DANGER(403,"Your Fetus is in Danger" ,HttpStatus.BAD_REQUEST), INVALID_FETUS_RECORD(403,"Weight and height must be greater than 0" ,HttpStatus.BAD_REQUEST ), DUPLICATE_FETUS_RECORD(403,"Fetus record already exists for today" ,HttpStatus.CONFLICT ), STANDARD_WHO_NOT_FOUND(404,"Data not found" ,HttpStatus.NOT_FOUND ), DATA_INVALID(403,"Data invalid!" ,HttpStatus.BAD_REQUEST );
+    AVAILABLE_WRITER(403, "Appointment with the same date and user already exists.", HttpStatus.BAD_REQUEST), SCHEDULE_INVALID(403,"Date not in the past" ,HttpStatus.BAD_REQUEST ), FETUS_IN_DANGER(403,"Your Fetus is in Danger" ,HttpStatus.BAD_REQUEST), INVALID_FETUS_RECORD(403,"Weight and height must be greater than 0" ,HttpStatus.BAD_REQUEST ), DUPLICATE_FETUS_RECORD(403,"Fetus record already exists for today" ,HttpStatus.CONFLICT ), STANDARD_WHO_NOT_FOUND(404,"Data not found" ,HttpStatus.NOT_FOUND ), DATA_INVALID(403,"Data invalid!" ,HttpStatus.BAD_REQUEST ), CURRENCY_INVALID(403,"Invalid currency code! enter [USD EUR JPY VND]" ,HttpStatus.BAD_REQUEST );
 
 
 
