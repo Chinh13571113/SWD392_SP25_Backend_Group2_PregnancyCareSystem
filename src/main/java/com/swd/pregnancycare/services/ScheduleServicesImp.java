@@ -71,14 +71,18 @@ public class ScheduleServicesImp implements ScheduleServices{
     @Override
     @PreAuthorize("hasRole('MEMBER')")
     public void updateReminder(int id, ScheduleDTO scheduleDTO) {
-        ScheduleEntity scheduleEntity= scheduleRepo.findById(id).orElseThrow(()-> new AppException(ErrorCode.SCHEDULE_NOT_EXIST));
-        AppointmentEntity appointmentEntity = appointmentRepo.findById(scheduleDTO.getAppointmentId()).orElseThrow(()-> new AppException(ErrorCode.APPOINTMENT_NOT_EXIST));
-        scheduleEntity.setAppointment(appointmentEntity);
-        scheduleEntity.setDateRemind(appointmentEntity.getDateIssue());
-        scheduleEntity.setNotice(false);
-        scheduleEntity.setNotify(scheduleDTO.getNotify());
-        scheduleEntity.setType(scheduleDTO.getType());
-        scheduleRepo.save(scheduleEntity);
+        try {
+            ScheduleEntity scheduleEntity= scheduleRepo.findById(id).orElseThrow(()-> new AppException(ErrorCode.SCHEDULE_NOT_EXIST));
+            AppointmentEntity appointmentEntity = appointmentRepo.findById(scheduleDTO.getAppointmentId()).orElseThrow(()-> new AppException(ErrorCode.APPOINTMENT_NOT_EXIST));
+            scheduleEntity.setAppointment(appointmentEntity);
+            scheduleEntity.setDateRemind(appointmentEntity.getDateIssue());
+            scheduleEntity.setNotice(false);
+            scheduleEntity.setNotify(scheduleDTO.getNotify());
+            scheduleEntity.setType(scheduleDTO.getType());
+            scheduleRepo.save(scheduleEntity);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override
