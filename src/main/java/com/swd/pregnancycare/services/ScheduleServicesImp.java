@@ -70,8 +70,8 @@ public class ScheduleServicesImp implements ScheduleServices{
 
     @Override
     @PreAuthorize("hasRole('MEMBER')")
-    public void updateReminder(int id, ScheduleDTO scheduleDTO) {
-        ScheduleEntity scheduleEntity= scheduleRepo.findById(id).orElseThrow(()-> new AppException(ErrorCode.SCHEDULE_NOT_EXIST));
+    public void updateReminder(ScheduleDTO scheduleDTO) {
+        ScheduleEntity scheduleEntity= scheduleRepo.findById(scheduleDTO.getId()).orElseThrow(()-> new AppException(ErrorCode.SCHEDULE_NOT_EXIST));
         AppointmentEntity appointmentEntity = appointmentRepo.findById(scheduleDTO.getAppointmentId()).orElseThrow(()-> new AppException(ErrorCode.APPOINTMENT_NOT_EXIST));
         scheduleEntity.setAppointment(appointmentEntity);
         scheduleEntity.setDateRemind(appointmentEntity.getDateIssue());
