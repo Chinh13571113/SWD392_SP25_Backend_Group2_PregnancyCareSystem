@@ -41,9 +41,10 @@ public class ScheduleServicesImp implements ScheduleServices{
     public void createReminder(ScheduleDTO scheduleDTO) {
         AppointmentEntity appointmentEntity = appointmentRepo.findById(scheduleDTO.getAppointmentId()).orElseThrow(()->new AppException(ErrorCode.APPOINTMENT_NOT_EXIST));
 
-        LocalDateTime upperBound = appointmentEntity.getDateIssue().plusHours(1);
 
-        if(scheduleDTO.getDateRemind().isBefore(appointmentEntity.getDateIssue()) || scheduleDTO.getDateRemind().isAfter(upperBound)) throw new AppException(ErrorCode.SCHEDULE_EXISTED);
+
+        if(scheduleDTO.getDateRemind().isBefore(appointmentEntity.getDateIssue()) ||
+                !scheduleDTO.getDateRemind().toLocalDate().equals(appointmentEntity.getDateIssue().toLocalDate())) throw new AppException(ErrorCode.SCHEDULE_INVALID);
         boolean exists = scheduleRepo.findExistingSchedule(scheduleDTO.getAppointmentId(), scheduleDTO.getDateRemind()).isPresent();
         if (exists) {
             throw new AppException(ErrorCode.SCHEDULE_EXISTED); // Lỗi mới để báo trùng lịch
@@ -70,19 +71,17 @@ public class ScheduleServicesImp implements ScheduleServices{
 
     @Override
     @PreAuthorize("hasRole('MEMBER')")
-    public void updateReminder(int id, ScheduleDTO scheduleDTO) {
-        try {
-            ScheduleEntity scheduleEntity= scheduleRepo.findById(id).orElseThrow(()-> new AppException(ErrorCode.SCHEDULE_NOT_EXIST));
-            AppointmentEntity appointmentEntity = appointmentRepo.findById(scheduleDTO.getAppointmentId()).orElseThrow(()-> new AppException(ErrorCode.APPOINTMENT_NOT_EXIST));
-            scheduleEntity.setAppointment(appointmentEntity);
-            scheduleEntity.setDateRemind(appointmentEntity.getDateIssue());
-            scheduleEntity.setNotice(false);
-            scheduleEntity.setNotify(scheduleDTO.getNotify());
-            scheduleEntity.setType(scheduleDTO.getType());
-            scheduleRepo.save(scheduleEntity);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+    public void updateReminder(ScheduleDTO scheduleDTO) {
+        ScheduleEntity scheduleEntity= scheduleRepo.findById(scheduleDTO.getId()).orElseThrow(()-> new AppException(ErrorCode.SCHEDULE_NOT_EXIST));
+        AppointmentEntity appointmentEntity = appointmentRepo.findById(scheduleDTO.getAppointmentId()).orElseThrow(()-> new AppException(ErrorCode.APPOINTMENT_NOT_EXIST));
+        if(scheduleDTO.getDateRemind().isBefore(appointmentEntity.getDateIssue())||
+                !scheduleDTO.getDateRemind().toLocalDate().equals(appointmentEntity.getDateIssue().toLocalDate())) throw new AppException(ErrorCode.SCHEDULE_INVALID);
+        scheduleEntity.setAppointment(appointmentEntity);
+        scheduleEntity.setDateRemind(appointmentEntity.getDateIssue());
+        scheduleEntity.setNotice(false);
+        scheduleEntity.setNotify(scheduleDTO.getNotify());
+        scheduleEntity.setType(scheduleDTO.getType());
+        scheduleRepo.save(scheduleEntity);
     }
 
     @Override

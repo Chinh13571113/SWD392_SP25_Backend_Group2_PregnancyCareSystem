@@ -50,9 +50,9 @@ public class ScheduleController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Reminder updated successfully")
     })
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateReminder(@PathVariable Integer id, @RequestBody ScheduleDTO scheduleDTO) {
-        scheduleServicesImp.updateReminder(id,scheduleDTO);
+    @PutMapping("/edit-schedule")
+    public ResponseEntity<?> updateReminder(@RequestBody ScheduleDTO scheduleDTO) {
+        scheduleServicesImp.updateReminder(scheduleDTO);
         BaseResponse response =new BaseResponse();
         response.setMessage("Update Success");
         return ResponseEntity.ok(response);
