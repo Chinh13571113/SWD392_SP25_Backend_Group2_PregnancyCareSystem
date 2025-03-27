@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name="packages")
+@Table(name="member_utility")
 @Getter
 @Setter
 @NoArgsConstructor

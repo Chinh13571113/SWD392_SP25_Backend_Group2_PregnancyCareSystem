@@ -24,7 +24,12 @@ public class DueDateController {
             return ResponseEntity.badRequest().body("Invalid cycle length. Must be between 20 and 45 days.");
         }
         pregnancyTimeline.updateTimelineWithDates(lastPeriodInput.getLastPeriod(), lastPeriodInput.getCycleLength());
-        return ResponseEntity.ok(pregnancyTimeline);
+
+        DueDateDTO dueDateInfo = new DueDateDTO();
+        dueDateInfo.setTimeline(pregnancyTimeline);
+        dueDateInfo.setDueDate(pregnancyTimeline.get(pregnancyTimeline.size()-2));
+
+        return ResponseEntity.ok(dueDateInfo);
 
 
 
@@ -55,7 +60,11 @@ public class DueDateController {
             ));
         }
 
-        return ResponseEntity.ok(updatedTimeline);
+        DueDateDTO dueDateInfo = new DueDateDTO();
+        dueDateInfo.setTimeline(updatedTimeline);
+        dueDateInfo.setDueDate(updatedTimeline.get(updatedTimeline.size()-2));
+
+        return ResponseEntity.ok(dueDateInfo);
     }
 
     @PostMapping("/ivf")
@@ -85,12 +94,16 @@ public class DueDateController {
                     eventDate
             ));
         }
+        DueDateDTO dueDateInfo = new DueDateDTO();
+        dueDateInfo.setTimeline(updatedTimeline);
+        dueDateInfo.setDueDate(updatedTimeline.get(updatedTimeline.size()-2));
 
-        return ResponseEntity.ok(updatedTimeline);
+        return ResponseEntity.ok(dueDateInfo);
+
     }
 
     @PostMapping("/ultrasound")
-    public ResponseEntity<List<PregnancyPeriodEntity>> getDueDateFromUltrasound(@RequestBody UltrasoundInputDTO ultrasoundInput) {
+    public ResponseEntity getDueDateFromUltrasound(@RequestBody UltrasoundInputDTO ultrasoundInput) {
         if (ultrasoundInput.gestationalWeeks < 4 || ultrasoundInput.gestationalWeeks > 42) {
             return ResponseEntity.badRequest().body(null);
         }
@@ -103,16 +116,27 @@ public class DueDateController {
 
         PregnancyTimeline pregnancyTimeline = new PregnancyTimeline();
         pregnancyTimeline.updateTimelineWithDueDate(dueDate);
-        return ResponseEntity.ok(pregnancyTimeline);
+
+        DueDateDTO dueDateInfo = new DueDateDTO();
+        dueDateInfo.setTimeline(pregnancyTimeline);
+        dueDateInfo.setDueDate(pregnancyTimeline.get(pregnancyTimeline.size()-2));
+
+        return ResponseEntity.ok(dueDateInfo);
+
+
     }
     @PostMapping("/from-due-date")
-    public ResponseEntity<List<PregnancyPeriodEntity>> getTimelineFromDueDate(@RequestBody DueDateInputDTO dueDateInput) {
+    public ResponseEntity getTimelineFromDueDate(@RequestBody DueDateInputDTO dueDateInput) {
         if (dueDateInput.dueDate.isBefore(LocalDate.now().minusMonths(9)) || dueDateInput.dueDate.isAfter(LocalDate.now().plusMonths(12))) {
             return ResponseEntity.badRequest().body(null);
         }
 
         PregnancyTimeline pregnancyTimeline = new PregnancyTimeline();
         pregnancyTimeline.updateTimelineWithDueDate(dueDateInput.dueDate);
-        return ResponseEntity.ok(pregnancyTimeline);
+        DueDateDTO dueDateInfo = new DueDateDTO();
+        dueDateInfo.setTimeline(pregnancyTimeline);
+        dueDateInfo.setDueDate(pregnancyTimeline.get(pregnancyTimeline.size()-2));
+
+        return ResponseEntity.ok(dueDateInfo);
     }
 }
