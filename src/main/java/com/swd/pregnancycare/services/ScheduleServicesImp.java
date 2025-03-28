@@ -41,10 +41,9 @@ public class ScheduleServicesImp implements ScheduleServices{
     public void createReminder(ScheduleDTO scheduleDTO) {
         AppointmentEntity appointmentEntity = appointmentRepo.findById(scheduleDTO.getAppointmentId()).orElseThrow(()->new AppException(ErrorCode.APPOINTMENT_NOT_EXIST));
 
+        LocalDateTime upperBound = appointmentEntity.getDateIssue().plusHours(1);
 
-
-        if(scheduleDTO.getDateRemind().isBefore(appointmentEntity.getDateIssue()) ||
-                !scheduleDTO.getDateRemind().toLocalDate().equals(appointmentEntity.getDateIssue().toLocalDate())) throw new AppException(ErrorCode.SCHEDULE_INVALID);
+        if(scheduleDTO.getDateRemind().isBefore(appointmentEntity.getDateIssue()) || scheduleDTO.getDateRemind().isAfter(upperBound)) throw new AppException(ErrorCode.SCHEDULE_EXISTED);
         boolean exists = scheduleRepo.findExistingSchedule(scheduleDTO.getAppointmentId(), scheduleDTO.getDateRemind()).isPresent();
         if (exists) {
             throw new AppException(ErrorCode.SCHEDULE_EXISTED); // Lỗi mới để báo trùng lịch
