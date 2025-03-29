@@ -1,9 +1,6 @@
 package com.swd.pregnancycare.services;
 
-import com.swd.pregnancycare.enums.FetalComparisonResult;
-import com.swd.pregnancycare.enums.FetalHeightEntity;
-import com.swd.pregnancycare.enums.FetalWeightEntity;
-import com.swd.pregnancycare.enums.HeadCircumferenceEntity;
+import com.swd.pregnancycare.enums.*;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -34,9 +31,9 @@ public class FetalGrowthService {
     );
 
     public FetalComparisonResult compareFetalData(int week, Double userHeadCircumference, Double userFetalLength, Double userFetalWeight) {
-        HeadCircumferenceEntity hc = getHeadCircumferenceByWeek(week);
-        FetalHeightEntity fl = getFetalHeightByWeek(week);
-        FetalWeightEntity fw = getFetalWeightByWeek(week);
+        HeadCircumferenceEntity hc = HeadCircumferenceTimeLine.getHeadCircumferenceByWeek(week);
+        FetalHeightEntity fl = FetalHeightTimeLine.getFetalHeightByWeek(week);
+        FetalWeightEntity fw = FetalWeightTimeLine.getFetalWeightByWeek(week);
 
         if (hc == null || fl == null || fw == null) {
             return new FetalComparisonResult(week, "Data not available", "Data not available", "Data not available");
