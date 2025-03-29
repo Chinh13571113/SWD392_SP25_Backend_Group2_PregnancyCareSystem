@@ -45,6 +45,7 @@ public class PackageService {
         PackageEntity packageEntity = new PackageEntity();
         packageEntity.setName(request.getName());
         packageEntity.setPrice(request.getPrice());
+        packageEntity.setDescription(request.getDescription());
         PackageEntity newPackage = packageRepo.save(packageEntity);
         return newPackage;
     }
@@ -56,6 +57,7 @@ public class PackageService {
         PackageEntity packageEntity = packageRepo.findById(id).orElseThrow(()->new AppException(ErrorCode.PACKAGE_NOT_EXIST));
         packageEntity.setName(request.getName());
         packageEntity.setPrice(request.getPrice());
+        packageEntity.setDescription(request.getDescription());
         packageRepo.save(packageEntity);
     }
 

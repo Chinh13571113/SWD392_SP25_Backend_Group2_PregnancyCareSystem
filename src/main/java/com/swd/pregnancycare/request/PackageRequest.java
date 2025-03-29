@@ -9,4 +9,5 @@ import lombok.experimental.FieldDefaults;
 public class PackageRequest {
   String name;
   double price;
+  String description;
 }
