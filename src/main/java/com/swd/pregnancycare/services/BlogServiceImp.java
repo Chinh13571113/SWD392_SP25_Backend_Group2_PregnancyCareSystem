@@ -44,10 +44,7 @@ public class BlogServiceImp implements BlogServices {
     Optional<UserEntity> user = userRepo.findByIdAndStatusTrue(userResponse.getId());
     UserEntity userEntity = user.get();
 
-    GroupEntity groupEntity = null;
-    if(blogRequest.getGroupId() != null) {
-      groupRepo.findByIdAndDeletedFalse(blogRequest.getGroupId()).orElseThrow(()-> new AppException(ErrorCode.GROUP_NOT_EXIST));
-    }
+    GroupEntity groupEntity = groupRepo.findByIdAndDeletedFalse(blogRequest.getGroupId()).orElseThrow(()-> new AppException(ErrorCode.GROUP_NOT_EXIST));
 
 
     Optional<BlogCategoryEntity> blogCategory = blogCategoryRepo.findByIdAndDeletedFalse(blogRequest.getBlogCategoryId());
@@ -408,8 +405,8 @@ public class BlogServiceImp implements BlogServices {
   }
 
   @Override
-  public BlogResponse getArticleDetail(int articleId) {
-    BlogEntity blogEntity = blogRepo.findByIdAndDeletedFalse(articleId)
+  public BlogResponse getArticleDetail(String slug) {
+    BlogEntity blogEntity = blogRepo.findBySlugAndDeletedFalse(slug)
             .orElseThrow(() -> new AppException(ErrorCode.ARTICLE_NOT_EXIST));
 
     if(!blogEntity.getUser().getRole().getName().equals("EXPERT")) {
@@ -464,8 +461,11 @@ public class BlogServiceImp implements BlogServices {
 
 
   @Override
-  @PreAuthorize("hasRole('MEMBER')")
+  @PreAuthorize("hasRole('EXPERT')")
   public ArticleResponse saveArticle(ArticleRequest articleRequest) {
+    Optional<BlogEntity> blog = blogRepo.findByTitleAndDeletedFalse(articleRequest.getTitle());
+    if(blog.isPresent()) throw new AppException(ErrorCode.ARTICLE_EXIST);
+
     BlogEntity article = new BlogEntity();
     article.setTitle(articleRequest.getTitle());
     article.setDescription(articleRequest.getDescription());

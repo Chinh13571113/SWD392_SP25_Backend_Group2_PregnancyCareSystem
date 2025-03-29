@@ -9,7 +9,6 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity(name="userpackage")
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,10 +18,19 @@ public class UserPackageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private int package_id ;
-    @Column(name = "id_user")
-    private int user_id ;
     private LocalDateTime dateBegin ;
     private LocalDateTime dateEnd ;
+
+
+    // User
+    @ManyToOne
+    @JoinColumn(name = "id_user")
+    private UserEntity user;
+
+
+    // Package
+    @ManyToOne
+    @JoinColumn(name = "id_package")
+    private PackageEntity packageEntity;
 
 }

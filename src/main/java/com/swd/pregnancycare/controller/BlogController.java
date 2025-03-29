@@ -361,12 +361,12 @@ public class BlogController {
           }
 
   )
-  @GetMapping("/article-detail/{blogId}")
-  public ResponseEntity<?> getArticleDetail(@PathVariable int blogId) {
+  @GetMapping("/article-detail/{slug}")
+  public ResponseEntity<?> getArticleDetail(@PathVariable String slug) {
     BaseResponse response = new BaseResponse();
     response.setCode(200);
     response.setMessage("got article detail successfully");
-    response.setData(blogServiceImp.getArticleDetail(blogId));
+    response.setData(blogServiceImp.getArticleDetail(slug));
     return ResponseEntity.ok(response);
   }
 

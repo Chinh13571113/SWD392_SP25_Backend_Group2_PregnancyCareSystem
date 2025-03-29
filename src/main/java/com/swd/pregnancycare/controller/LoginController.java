@@ -2,8 +2,10 @@ package com.swd.pregnancycare.controller;
 
 import com.swd.pregnancycare.exception.AppException;
 import com.swd.pregnancycare.exception.ErrorCode;
+import com.swd.pregnancycare.request.UserRequest;
 import com.swd.pregnancycare.response.BaseResponse;
 import com.swd.pregnancycare.services.LoginServices;
+import com.swd.pregnancycare.services.MailServicesImp;
 import com.swd.pregnancycare.services.UserServicesImp;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -12,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +31,8 @@ public class LoginController {
     private LoginServices loginServices;
     @Autowired
     private UserServicesImp userServicesImp;
+    @Autowired
+    private MailServicesImp mailServicesImp;
 
     @Operation(
             summary = "User Login",
@@ -116,5 +121,64 @@ public class LoginController {
     response.setMessage("Changed password successfully");
     return ResponseEntity.ok(response);
   }
+
+
+
+  // Forgot Password User API
+  @Operation(
+          summary = "User resister",
+          description = "GUEST can resister",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "Resister successful",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = BaseResponse.class)
+                          )
+                  ),
+          }
+  )
+  @PostMapping("/register")
+  public ResponseEntity<?> register(@RequestBody UserRequest request, @RequestParam String verificationCode){
+    userServicesImp.resister(request, verificationCode);
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setMessage("Resister successfully");
+    return ResponseEntity.ok(response);
+  }
+
+
+
+  // Send Verification
+  @Operation(
+          summary = "Send Verification Code API",
+          description = "Send Verification Code",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "Sent verification code successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = BaseResponse.class)
+                          )
+                  ),
+          }
+  )
+  @PostMapping("/verification-code")
+  public ResponseEntity<?> sendVerificationCode(@RequestParam String email) {
+    BaseResponse response = new BaseResponse();
+    try {
+      mailServicesImp.sendVerificationEmail(email);
+      response.setCode(200);
+      response.setMessage("Sent verification code successfully");
+      return ResponseEntity.ok(response);
+    } catch (MessagingException e) {
+      response.setCode(400);
+      response.setMessage("Error sending email: " + e.getMessage());
+      return ResponseEntity.ok(response);
+    }
+  }
+
 
 }

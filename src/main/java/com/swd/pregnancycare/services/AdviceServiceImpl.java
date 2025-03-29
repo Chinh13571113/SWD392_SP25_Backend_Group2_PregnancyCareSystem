@@ -13,6 +13,7 @@ import com.swd.pregnancycare.repository.AdviceRepo;
 import com.swd.pregnancycare.repository.BlogCategoryRepo;
 import com.swd.pregnancycare.repository.FetusRepo;
 import com.swd.pregnancycare.repository.UserRepo;
+import com.swd.pregnancycare.request.AdviceRequest;
 import com.swd.pregnancycare.response.AdviceResponse;
 import com.swd.pregnancycare.response.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,13 +43,13 @@ public class AdviceServiceImpl implements AdviceServices {
   // Function for MEMBER
   @Override
   @PreAuthorize("hasRole('MEMBER')")
-  public void saveAdvice(int fetusId, int categoryId, String title, String description) {
-    FetusEntity fetus = fetusRepo.findById(fetusId).orElseThrow(()-> new AppException(ErrorCode.FETUS_NOT_EXIST));
-    BlogCategoryEntity category = categoryRepo.findByIdAndDeletedFalse(categoryId).orElseThrow(()->new AppException(ErrorCode.CATEGORY_NOT_EXIST));
+  public void saveAdvice(AdviceRequest adviceRequest) {
+    FetusEntity fetus = fetusRepo.findById(adviceRequest.getFetusId()).orElseThrow(()-> new AppException(ErrorCode.FETUS_NOT_EXIST));
+    BlogCategoryEntity category = categoryRepo.findByIdAndDeletedFalse(adviceRequest.getCategoryId()).orElseThrow(()->new AppException(ErrorCode.CATEGORY_NOT_EXIST));
     try {
       AdviceEntity advice = new AdviceEntity();
-      advice.setTitle(title);
-      advice.setDescription(description);
+      advice.setTitle(adviceRequest.getTitle());
+      advice.setDescription(adviceRequest.getDescription());
       advice.setDatePublish(LocalDateTime.now());
       advice.setStatus(false);
       advice.setFetus(fetus);

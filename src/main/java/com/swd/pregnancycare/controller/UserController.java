@@ -4,6 +4,7 @@ import com.swd.pregnancycare.exception.AppException;
 import com.swd.pregnancycare.exception.ErrorCode;
 import com.swd.pregnancycare.request.UserRequest;
 import com.swd.pregnancycare.response.BaseResponse;
+import com.swd.pregnancycare.response.ExpertResponse;
 import com.swd.pregnancycare.services.UserServicesImp;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -85,8 +86,7 @@ public class UserController {
 
     @Operation(
             summary = "Create a new User",
-            tags = {"Authenticated API"},
-            description = "User can create a new user",
+            description = "ADMIN can create a new user",
             responses = {
                     @ApiResponse(
                             responseCode = "201",
@@ -102,7 +102,7 @@ public class UserController {
                     )
             }
     )
-    @PostMapping("/register")
+    @PostMapping()
     public ResponseEntity<?> createUser(
             @Parameter(description = "User details", required = true)
             @RequestBody UserRequest userRequest) {
@@ -117,7 +117,7 @@ public class UserController {
 
   @Operation(
           summary = "Update a User",
-          description = "MEMBER can update their info",
+          description = "MEMBER or EXPERT or ADMIN can update their info",
           responses = {
                   @ApiResponse(
                           responseCode = "200",
@@ -176,4 +176,52 @@ public class UserController {
         }
         return ResponseEntity.ok(response);
     }
+
+
+  @Operation(
+          summary = "Get all experts",
+          description = "All users can get all experts",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "Got all experts successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = ExpertResponse.class)
+                          )
+                  )
+          }
+  )
+  @GetMapping("/experts")
+  public ResponseEntity<?> getAllExperts() {
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setMessage("Got all experts successfully");
+    response.setData(userServicesImp.getAllExperts());
+    return ResponseEntity.ok(response);
+  }
+
+
+  @Operation(
+          summary = "Get expert detail",
+          description = "All users can get expert detail",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "Got expert detail successfully",
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = ExpertResponse.class)
+                          )
+                  )
+          }
+  )
+  @GetMapping("/experts/{id}")
+  public ResponseEntity<?> getExpertDetail(@PathVariable int id) {
+    BaseResponse response = new BaseResponse();
+    response.setCode(200);
+    response.setMessage("Got expert detail successfully");
+    response.setData(userServicesImp.getExpertDetail(id));
+    return ResponseEntity.ok(response);
+  }
 }

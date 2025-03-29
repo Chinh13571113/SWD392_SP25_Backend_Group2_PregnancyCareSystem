@@ -38,6 +38,8 @@ public class SecurityConfig {
           "/swagger-ui.html",
           "/api/authentication/login",
           "/api/authentication/forgot-password",
+          "/api/authentication/register",
+          "/api/authentication/verification-code",
           "/api/appointment/schedule/send-emails",
           "/api/users/register",
           "/api/duedate/**",
@@ -46,6 +48,8 @@ public class SecurityConfig {
           "/api/due-date-calculator/**",
 
           "/api/paypal/**",
+          "/paypal/**",
+          "/api/fetal-growth/**"
 
   };
   @Value("${jwt.key}")
@@ -76,7 +80,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(request ->
                     {
                       request.requestMatchers(AUTH_WHITELIST).permitAll();
-                      request.requestMatchers(HttpMethod.GET, "/api/blogs/articles", "/api/blogs/article-detail/**", "/api/blogs/posts", "/api/blogs/post-detail/**", "/api/blogs/article-detail/**").permitAll();
+                      request.requestMatchers(HttpMethod.GET, "/api/blogs/articles", "/api/blogs/article-detail/**", "/api/blogs/posts", "/api/blogs/post-detail/**", "/api/blogs/article-detail/**", "/api/users/experts/**").permitAll();
                       request.anyRequest().authenticated();
                     }
             );

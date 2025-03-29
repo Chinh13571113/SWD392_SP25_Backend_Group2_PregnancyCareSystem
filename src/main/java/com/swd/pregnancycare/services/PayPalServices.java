@@ -5,15 +5,21 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.swd.pregnancycare.config.PayPalConfig;
+import com.swd.pregnancycare.controller.PaymentController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Map;
 
 
 @Service
 public class PayPalServices {
+  private static final Logger logger = LoggerFactory.getLogger(PaymentController.class);
 
     @Autowired
     private PayPalConfig payPalConfig;
@@ -83,6 +89,32 @@ public class PayPalServices {
         return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonObject);
 
     }
+
+
+  public String executePayment(String paymentId, String payerId) throws JsonProcessingException {
+    String url = payPalConfig.getBaseUrl() + "/v1/payments/payment/" + paymentId + "/execute";
+    String accessToken = getAccessToken(); // Lấy Access Token
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.setBearerAuth(accessToken); // Sử dụng Access Token hợp lệ
+
+    ObjectMapper mapper = new ObjectMapper();
+    String requestBody = mapper.writeValueAsString(Map.of("payer_id", payerId));
+
+    HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
+    RestTemplate restTemplate = new RestTemplate();
+
+    try {
+      logger.info("Executing PayPal Payment: paymentId={}, payerId={}", paymentId, payerId);
+      ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
+      logger.info("PayPal Execute Payment Response: {}", response.getBody());
+      return response.getBody();
+    } catch (HttpClientErrorException e) {
+      logger.error("PayPal API error: {}", e.getResponseBodyAsString());
+      throw e;
+    }
+  }
 
 
 }

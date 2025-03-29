@@ -14,6 +14,7 @@ public enum ErrorCode {
 
     USER_EXIST(400, "user existed", HttpStatus.BAD_REQUEST),
     USER_NOT_EXIST(403, "user not existed", HttpStatus.BAD_REQUEST),
+    EXPERT_NOT_EXIST(403, "expert not existed", HttpStatus.BAD_REQUEST),
     USER_NOT_ACTIVE(403, "user is not  active", HttpStatus.BAD_REQUEST),
     UNCATEGORIZED_EXCEPTION(1001, "uncategorize exception", HttpStatus.INTERNAL_SERVER_ERROR),
     UPDATE_USER_FAILED(400, "update user failed", HttpStatus.BAD_REQUEST),
@@ -23,7 +24,11 @@ public enum ErrorCode {
     BLOG_IS_NOT_ARTICLE(400, "blog is not article", HttpStatus.BAD_REQUEST),
     BLOG_IS_NOT_POST(400, "blog is not post", HttpStatus.BAD_REQUEST),
     POST_IS_NOT_APPROVED(400, "post is not approved", HttpStatus.BAD_REQUEST),
+
+
     ARTICLE_IS_NOT_APPROVED(400, "article is not approved", HttpStatus.BAD_REQUEST),
+    ARTICLE_EXIST(400, "article existed", HttpStatus.BAD_REQUEST),
+
     BLOG_DELETED_FAILED(1002, "delete blog error", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_PASSWORD(400, "password must be at least 8", HttpStatus.BAD_REQUEST),
     UNAUTHORIZED_EXCEPTION(999, "do not permission", HttpStatus.FORBIDDEN),
@@ -55,6 +60,10 @@ public enum ErrorCode {
     BLOG_COMMENT_SAVED_EXCEPTION(500, "save blog comment error", HttpStatus.INTERNAL_SERVER_ERROR),
     BLOG_COMMENT_NOT_EXIST(404, "blog comment not existed", HttpStatus.NOT_FOUND),
 
+    PACKAGE_NOT_EXIST(404, "package not existed", HttpStatus.NOT_FOUND),
+
+
+    VERIFICATION_CODE_ERROR(404, "Verification code is incorrect", HttpStatus.BAD_REQUEST),
 
     RECORD_NOT_EXIST(404, "record does not exist", HttpStatus.NOT_FOUND),
     DATA_NOT_FOUND(404, "Data not found", HttpStatus.NOT_FOUND), APPOINTMENT_NOT_EXIST(404, "appointment not exist", HttpStatus.NOT_FOUND),

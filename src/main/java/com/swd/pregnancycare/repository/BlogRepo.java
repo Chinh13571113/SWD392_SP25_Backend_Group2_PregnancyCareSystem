@@ -10,5 +10,7 @@ import java.util.Optional;
 public interface BlogRepo extends JpaRepository<BlogEntity,Integer> {
   Optional<BlogEntity> findByIdAndDeletedFalse(int id);
   Optional<BlogEntity> findByIdAndDeletedTrue(int id);
+  Optional<BlogEntity> findByTitleAndDeletedFalse(String title);
+  Optional<BlogEntity> findBySlugAndDeletedFalse(String title);
   void deleteByIdAndDeletedTrue(int id);
 }

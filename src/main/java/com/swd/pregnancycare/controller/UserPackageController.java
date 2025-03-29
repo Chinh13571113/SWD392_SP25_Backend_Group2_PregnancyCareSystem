@@ -1,6 +1,7 @@
 package com.swd.pregnancycare.controller;
 
 import com.swd.pregnancycare.entity.UserPackageEntity;
+import com.swd.pregnancycare.response.BaseResponse;
 import com.swd.pregnancycare.services.UserPackageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,33 +24,14 @@ public class UserPackageController {
 
     @Operation(summary = "Create a new user package", description = "Assigns a package to a user")
     @PostMapping
-    public ResponseEntity<String> addUserPackage(@RequestBody UserPackageEntity userPackageEntity) {
-        userPackageService.addNew(userPackageEntity);
-        return ResponseEntity.ok("Create UserPackage successfully");
+    public ResponseEntity<?> addUserPackage(@RequestParam int packageId) {
+        userPackageService.addNew(packageId);
+        BaseResponse response = new BaseResponse();
+        response.setCode(200);
+        response.setMessage("Created UserPackage successfully");
+        return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Update an existing user package", description = "Updates a specific user package by ID")
-    @PutMapping("/{id}")
-    public ResponseEntity<String> updateUserPackageEntity(
-            @PathVariable int id,
-            @RequestBody UserPackageEntity userPackageEntity
-    ) {
-        try {
-            userPackageService.update(userPackageEntity);
-            return ResponseEntity.ok("Update UserPackage successfully");
-        } catch (IndexOutOfBoundsException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ID not found");
-        }
-    }
 
-    @Operation(summary = "Delete a user package", description = "Removes a specific user package by ID")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUserPackageEntity(@PathVariable int id) {
-        try {
-            userPackageService.delete(id);
-            return ResponseEntity.ok("Delete UserPackage successfully");
-        } catch (IndexOutOfBoundsException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ID not found");
-        }
-    }
+
 }

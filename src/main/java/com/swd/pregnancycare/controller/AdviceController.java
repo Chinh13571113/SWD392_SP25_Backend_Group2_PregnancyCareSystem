@@ -1,6 +1,7 @@
 package com.swd.pregnancycare.controller;
 
 import com.swd.pregnancycare.dto.FetusDTO;
+import com.swd.pregnancycare.request.AdviceRequest;
 import com.swd.pregnancycare.request.FetusRequest;
 import com.swd.pregnancycare.response.AdviceResponse;
 import com.swd.pregnancycare.response.BaseResponse;
@@ -29,7 +30,7 @@ public class AdviceController {
   // API for MEMBER
   @Operation(
           summary = "Create a new advice",
-          description = "Member can create a new advice",
+          description = "MEMBER can create a new advice",
           responses = {
                   @ApiResponse(
                           responseCode = "200",
@@ -46,11 +47,8 @@ public class AdviceController {
           }
   )
   @PostMapping()
-  public ResponseEntity<?> createAdvice(@RequestParam int fetusId,
-                                        @RequestParam int categoryId,
-                                        @RequestParam String title,
-                                        @RequestParam String description) {
-    adviceServiceImpl.saveAdvice(fetusId, categoryId, title, description);
+  public ResponseEntity<?> createAdvice(@RequestBody AdviceRequest adviceRequest) {
+    adviceServiceImpl.saveAdvice(adviceRequest);
     BaseResponse response = new BaseResponse();
     response.setCode(200);
     response.setMessage("Created advice successfully");

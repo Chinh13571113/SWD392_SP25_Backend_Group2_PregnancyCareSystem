@@ -135,6 +135,8 @@ public class FetusServicesImp implements FetusServices {
   public List<FetusRecodDTO> getFetusRecordById(int id) {
     List<FetusRecordEntity> fetusRecords = fetusRecordRepo.findByFetusId(id)
             .orElseThrow(() -> new AppException(ErrorCode.RECORD_NOT_EXIST));
+
+
     return FetusMapper.INSTANCE.toListFetusRecordDTO(fetusRecords);
   }
 
@@ -202,11 +204,13 @@ public class FetusServicesImp implements FetusServices {
   }
 
 
+  @Transactional
   @Override
   @PreAuthorize("hasRole('MEMBER')")
   public void saveFetusRecord(int id, FetusRecodDTO fetusRecodDTO) {
     FetusEntity fetusEntity = fetusRepo.findById(id)
             .orElseThrow(() -> new AppException(ErrorCode.FETUS_NOT_EXIST));
+
     if (fetusRecodDTO.getWeight().compareTo(BigDecimal.ZERO) <= 0 ||
             fetusRecodDTO.getHeight().compareTo(BigDecimal.ZERO) <= 0) {
       throw new AppException(ErrorCode.INVALID_FETUS_RECORD);
@@ -229,15 +233,15 @@ public class FetusServicesImp implements FetusServices {
     if (closestWHO == null) {
       throw new AppException(ErrorCode.STANDARD_WHO_NOT_FOUND);
     }
+
     String warningMess = generateWarningMessage(fetusRecodDTO, closestWHO);
     FetusRecordEntity fetusRecordEntity= new FetusRecordEntity();
     fetusRecordEntity.setFetus(fetusEntity);
     fetusRecordEntity.setWeight(fetusRecodDTO.getWeight());
     fetusRecordEntity.setHeight(fetusRecodDTO.getHeight());
-    fetusRecordEntity.setWarningMess(warningMess);
     fetusRecordEntity.setDateRecord(fetusRecodDTO.getDateRecord());
+    fetusRecordEntity.setWarningMess(warningMess);
     fetusRecordRepo.save(fetusRecordEntity);
-
   }
 
   private String generateWarningMessage(FetusRecodDTO fetusRecodDTO, WhoStandardEntity who) {

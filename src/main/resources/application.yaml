@@ -18,7 +18,7 @@ spring:
       max-request-size: 10MB
 
 server:
-  port: 8081
+  port: 8080
   address: 0.0.0.0
 
 custom:
@@ -35,7 +35,7 @@ upload:
 openapi:
   service:
     api-docs: api-service
-    server: http://localhost:8081
+    server: http://localhost:8080
     title: API Service
     version: 1.0.0
 

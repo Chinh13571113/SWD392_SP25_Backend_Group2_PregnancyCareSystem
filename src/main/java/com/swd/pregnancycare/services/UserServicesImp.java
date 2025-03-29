@@ -1,15 +1,20 @@
 package com.swd.pregnancycare.services;
 
+import com.swd.pregnancycare.dto.CertificateDTO;
 import com.swd.pregnancycare.dto.DataMailDTO;
 import com.swd.pregnancycare.dto.UserDTO;
+import com.swd.pregnancycare.entity.CertificateEntity;
+import com.swd.pregnancycare.entity.PossessDegreeEntity;
 import com.swd.pregnancycare.entity.RoleEntity;
 import com.swd.pregnancycare.entity.UserEntity;
 import com.swd.pregnancycare.exception.AppException;
 import com.swd.pregnancycare.exception.ErrorCode;
 import com.swd.pregnancycare.mapper.UserMapper;
+import com.swd.pregnancycare.repository.PossessDegreeRepo;
 import com.swd.pregnancycare.repository.RoleRepo;
 import com.swd.pregnancycare.repository.UserRepo;
 import com.swd.pregnancycare.request.UserRequest;
+import com.swd.pregnancycare.response.ExpertResponse;
 import com.swd.pregnancycare.response.UserResponse;
 import com.swd.pregnancycare.utils.DataUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServicesImp implements UserServices{
@@ -32,6 +38,10 @@ public class UserServicesImp implements UserServices{
     PasswordEncoder passwordEncoder;
     @Autowired
     MailServices mailServices;
+    @Autowired
+    private PossessDegreeRepo possessDegreeRepo;
+    @Autowired
+    private MailServicesImp mailServicesImp;
 
 
     @Override
@@ -66,7 +76,7 @@ public class UserServicesImp implements UserServices{
     }
 
     @Override
-    @PreAuthorize("hasAnyRole( 'MEMBER', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public Boolean createUser(UserRequest request) {
 
         if(userRepo.existsByEmailAndStatusTrue(request.getEmail())) throw new AppException(ErrorCode.USER_EXIST);
@@ -91,7 +101,7 @@ public class UserServicesImp implements UserServices{
     }
 
     @Override
-    @PreAuthorize("hasRole('MEMBER')")
+    @PreAuthorize("hasAnyRole( 'MEMBER', 'ADMIN', 'EXPERT')")
     public void updateUser(int id, String fullName, String email) {
         // Update user
             if(userRepo.existsByEmailAndStatusTrue(email) && !userRepo.findById(id).map(UserEntity::getEmail).orElse("").equals(email)) {
@@ -146,6 +156,76 @@ public class UserServicesImp implements UserServices{
         else throw new AppException(ErrorCode.PASSWORD_NOT_CORRECT);
     }
 
+
+    @Override
+    public void resister(UserRequest request, String verificationCode) {
+        boolean result = mailServicesImp.verifyCode(request.getEmail(), verificationCode);
+
+        if(!result) {
+            throw new AppException(ErrorCode.VERIFICATION_CODE_ERROR);
+        }
+
+        if(userRepo.existsByEmailAndStatusTrue(request.getEmail())) throw new AppException(ErrorCode.USER_EXIST);
+        UserEntity user = new UserEntity();
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword())); // Mã hóa mật khẩu
+        user.setFullName(request.getFullName());
+        user.setStatus(true);
+        setDefaultRole(user,"MEMBER");
+        userRepo.save(user);
+    }
+
+
+
+    @Override
+    public ExpertResponse getExpertDetail(int expertId) {
+        UserEntity expert = userRepo.findByIdAndStatusTrue(expertId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
+
+        if (!expert.getRole().getName().equals("EXPERT"))
+            throw new AppException(ErrorCode.EXPERT_NOT_EXIST);
+
+        ExpertResponse expertResponse = new ExpertResponse();
+        expertResponse.setId(expert.getId());
+        expertResponse.setFullName(expert.getFullName());
+        expertResponse.setEmail(expert.getEmail());
+        expertResponse.setRole(expert.getRole().getName());
+        expertResponse.setDescription(expert.getDescription());
+
+        // Map Certificate
+        List<PossessDegreeEntity> degrees = possessDegreeRepo.findByUserId(expertId);
+
+        List<CertificateDTO> certificateDTOs = degrees.stream()
+                .map(degree -> {
+                    CertificateEntity cert = degree.getCertificate();
+                    CertificateDTO dto = new CertificateDTO();
+                    dto.setId(cert.getId());
+                    dto.setName(cert.getName());
+                    dto.setDateBegin(degree.getDateBegin());
+                    dto.setDateEnd(degree.getDateEnd());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+        expertResponse.setCertificates(certificateDTOs);
+        return expertResponse;
+    }
+
+    @Override
+    public List<ExpertResponse> getAllExperts() {
+        return userRepo.findAll().stream()
+                .filter(expert -> Boolean.TRUE.equals(expert.isStatus()))
+                .filter(expert -> expert.getRole().getName().equals("EXPERT"))
+                .map(expert -> {
+                    ExpertResponse expertResponse = new ExpertResponse();
+                    expertResponse.setId(expert.getId());
+                    expertResponse.setFullName(expert.getFullName());
+                    expertResponse.setEmail(expert.getEmail());
+                    expertResponse.setDescription(expert.getDescription());
+                    expertResponse.setRole(expert.getRole().getName());
+                    return expertResponse;
+                }).toList();
+    }
 
 
 
