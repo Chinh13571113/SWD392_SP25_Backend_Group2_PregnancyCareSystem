@@ -17,8 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@Tag(name = "Fetus API", description = "Api for Fetus Insert")
-@CrossOrigin
+
 @RequestMapping(value = "/api/fetus-record")
 public class FetusRecordController {
     @Autowired
