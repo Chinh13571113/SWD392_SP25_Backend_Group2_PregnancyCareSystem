@@ -67,4 +67,9 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "users")
     private List<AppointmentEntity> appointments;
+
+
+    // Advice List
+    @OneToMany(mappedBy = "expert")
+    private List<AdviceEntity> advices;
 }

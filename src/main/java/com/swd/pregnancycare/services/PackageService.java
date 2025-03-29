@@ -26,6 +26,7 @@ public class PackageService {
 
     }
     public void addNew(PackageEntity packageEntity){
+
         packageRepo.save(packageEntity);
     }
     public void update (PackageEntity packageEntity){

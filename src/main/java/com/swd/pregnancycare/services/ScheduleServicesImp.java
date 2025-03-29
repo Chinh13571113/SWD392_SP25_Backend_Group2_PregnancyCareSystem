@@ -26,7 +26,6 @@ import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class ScheduleServicesImp implements ScheduleServices{
@@ -44,7 +43,7 @@ public class ScheduleServicesImp implements ScheduleServices{
 
         LocalDateTime upperBound = appointmentEntity.getDateIssue().plusHours(1);
 
-        if(scheduleDTO.getDateRemind().isBefore(appointmentEntity.getDateIssue()) && scheduleDTO.getDateRemind().isAfter(upperBound)) throw new AppException(ErrorCode.SCHEDULE_EXISTED);
+        if(scheduleDTO.getDateRemind().isBefore(appointmentEntity.getDateIssue()) || scheduleDTO.getDateRemind().isAfter(upperBound)) throw new AppException(ErrorCode.SCHEDULE_EXISTED);
         ScheduleEntity scheduleEntity = ScheduleEntity.builder()
                 .notify(scheduleDTO.getNotify())
                 .appointment(appointmentEntity)
@@ -62,16 +61,13 @@ public class ScheduleServicesImp implements ScheduleServices{
     public List<ScheduleDTO> getReminderByAppointmentId(int id) {
         List<ScheduleEntity> scheduleEntityList = scheduleRepo.findByAppointmentId(id);
         if(scheduleEntityList.isEmpty()) throw new AppException(ErrorCode.SCHEDULE_NOT_EXIST);
-        List<ScheduleEntity> filteredList = scheduleEntityList.stream()
-                .filter(schedule -> !schedule.isNotice()) // Chỉ lấy những cái có isNotice = false
-                .toList();
-        return ScheduleMapper.INSTANCE.toListScheduleDTO(filteredList);
+        return ScheduleMapper.INSTANCE.toListScheduleDTO(scheduleEntityList);
     }
 
     @Override
     @PreAuthorize("hasRole('MEMBER')")
-    public void updateReminder( ScheduleDTO scheduleDTO) {
-        ScheduleEntity scheduleEntity= scheduleRepo.findById(scheduleDTO.getId()).orElseThrow(()-> new AppException(ErrorCode.SCHEDULE_NOT_EXIST));
+    public void updateReminder(int id, ScheduleDTO scheduleDTO) {
+        ScheduleEntity scheduleEntity= scheduleRepo.findById(id).orElseThrow(()-> new AppException(ErrorCode.SCHEDULE_NOT_EXIST));
         AppointmentEntity appointmentEntity = appointmentRepo.findById(scheduleDTO.getAppointmentId()).orElseThrow(()-> new AppException(ErrorCode.APPOINTMENT_NOT_EXIST));
         scheduleEntity.setAppointment(appointmentEntity);
         scheduleEntity.setDateRemind(appointmentEntity.getDateIssue());

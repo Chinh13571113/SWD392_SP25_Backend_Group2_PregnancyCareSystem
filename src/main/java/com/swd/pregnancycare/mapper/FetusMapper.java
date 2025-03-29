@@ -14,5 +14,9 @@ import java.util.List;
 public interface FetusMapper {
     FetusMapper INSTANCE = Mappers.getMapper(FetusMapper.class);
     List<FetusDTO> toListFetusDTO(List<FetusEntity> fetusEntityList);
+    @Mapping(source = "dateRecord", target = "dateRecord")
+    @Mapping(source = "id", target = "id")
+
     List<FetusRecodDTO> toListFetusRecordDTO(List<FetusRecordEntity> fetusRecordEntityList);
+
 }

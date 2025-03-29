@@ -42,7 +42,9 @@ public class SecurityConfig {
           "/api/users/register",
           "/api/duedate/**",
           "/api/fetal-growth/**",
-          "/api/package/**"
+          "/api/package/**",
+          "/api/due-date-calculator/**",
+
 
   };
   @Value("${jwt.key}")
@@ -72,8 +74,9 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(request ->
                     {
-                      request.requestMatchers(AUTH_WHITELIST).permitAll().anyRequest().authenticated();
-
+                      request.requestMatchers(AUTH_WHITELIST).permitAll();
+                      request.requestMatchers(HttpMethod.GET, "/api/blogs/articles", "/api/blogs/article-detail/**", "/api/blogs/posts", "/api/blogs/post-detail/**", "/api/blogs/article-detail/**").permitAll();
+                      request.anyRequest().authenticated();
                     }
             );
     http.oauth2ResourceServer(oauth2 ->

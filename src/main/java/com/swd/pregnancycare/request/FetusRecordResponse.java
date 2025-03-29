@@ -6,15 +6,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level= AccessLevel.PRIVATE)
-public class UserRequest {
-    String email;
-    String password;
-    String fullName;
-    String role;
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class FetusRecordResponse {
+    Integer fetusWeek;  // Thay thế dateRecord bằng fetusWeek
+    BigDecimal weight;
+    BigDecimal height;
+
 }

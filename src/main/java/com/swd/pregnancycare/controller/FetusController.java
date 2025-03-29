@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @Tag(name = "Fetus API", description = "Api for Fetus Insert")
 @RequestMapping(value = "/api/fetus")
+@CrossOrigin
 public class FetusController {
     @Autowired
     private FetusServicesImp fetusServicesImp;
@@ -270,6 +271,13 @@ public class FetusController {
         BaseResponse response = new BaseResponse();
         response.setData(fetusServicesImp.getFetusWeek(id));
         response.setMessage("Success");
+        return ResponseEntity.ok(response);
+    }
+    @Operation(summary = "Get Standard statistics table of fetus", description = "follow fetus growth")
+    @GetMapping("/Who")
+    public ResponseEntity<?> getWHOData(){
+        BaseResponse response = new BaseResponse();
+        response.setData(fetusServicesImp.getStandard());
         return ResponseEntity.ok(response);
     }
 }

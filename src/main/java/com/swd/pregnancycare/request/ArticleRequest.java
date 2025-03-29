@@ -1,16 +1,16 @@
 package com.swd.pregnancycare.request;
 
-import jakarta.annotation.Nullable;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BlogRequest {
+public class ArticleRequest {
    String title;
    String description;
-   @Nullable
-   Integer groupId;
    int blogCategoryId;
+   List<ArticleSectionRequest> articleSections;
 }

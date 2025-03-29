@@ -16,7 +16,9 @@ public class BlogDTO {
    LocalDateTime datePublish;
    boolean status;
    Boolean deleted;
+   String slug;
    UserDTO user;
    GroupDTO group;
    List<BlogCommentDTO> blogComments;
+   BlogCategoryDTO blogCategory;
 }

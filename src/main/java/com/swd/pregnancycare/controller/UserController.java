@@ -85,6 +85,7 @@ public class UserController {
 
     @Operation(
             summary = "Create a new User",
+            tags = {"Authenticated API"},
             description = "User can create a new user",
             responses = {
                     @ApiResponse(
