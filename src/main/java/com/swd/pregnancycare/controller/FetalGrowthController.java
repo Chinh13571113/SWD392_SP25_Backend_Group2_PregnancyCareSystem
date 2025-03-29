@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/fetal-growth")
+@CrossOrigin
 @Tag(name = "Fetus API", description = "API for monitoring fetal growth")
 public class FetalGrowthController {
     private final FetalGrowthService fetalGrowthService;

@@ -19,7 +19,6 @@ public class UserPackageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name = "id_utility")
     private int package_id ;
     @Column(name = "id_user")
     private int user_id ;
