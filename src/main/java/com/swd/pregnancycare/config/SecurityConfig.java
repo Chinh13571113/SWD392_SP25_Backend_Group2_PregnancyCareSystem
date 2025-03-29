@@ -45,6 +45,7 @@ public class SecurityConfig {
           "/api/package/**",
           "/api/due-date-calculator/**",
 
+          "/api/paypal/**",
 
   };
   @Value("${jwt.key}")
