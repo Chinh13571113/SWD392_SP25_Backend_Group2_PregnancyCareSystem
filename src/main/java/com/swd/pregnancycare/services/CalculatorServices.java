@@ -13,6 +13,4 @@ public interface CalculatorServices {
     String getConceptionDate(ConceptionInputDTO conceptionInputDTO);
     String getIVF(IVFInputDTO ivfInputDTO);
     String getUltraSound(UltrasoundInputDTO ultrasoundInputDTO);
-
-    String getFromDueDate(LocalDate dueDate);
 }

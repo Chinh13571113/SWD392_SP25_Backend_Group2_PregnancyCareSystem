@@ -67,14 +67,6 @@ public class CalculatorServicesImp implements CalculatorServices {
 
     }
 
-
-    @Override
-    public String getFromDueDate(LocalDate dueDate) {
-        return formatDate(dueDate);
-
-    }
-
-
     public static String formatDate(LocalDate date) {
         if (date == null) {
             throw new AppException(ErrorCode.DATA_INVALID);
